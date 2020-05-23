@@ -24,7 +24,11 @@ def guardar_partida (lista):
     guardar = lista
     guardar.pop(16)
     guardar.pop(15)
-    arch = open("C:/Users/Usuario/1_SeminarioPython/scrabbleAR/guardado.csv","w")
+    if ("win" in sys.platform):
+        arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
+    else:
+        arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/guardado.csv","w")
+
     escritor = csv.writer(arch)
     for aux in lista:
         escritor.writerow(aux[i].get_text() for i in range(len(aux)))
