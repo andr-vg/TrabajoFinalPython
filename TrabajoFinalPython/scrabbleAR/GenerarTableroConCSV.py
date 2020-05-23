@@ -1,37 +1,36 @@
-import PySimpleGUI as sg 
+import PySimpleGUI as sg
 import csv
 import sys
 import string
 import random
-#Inserto comentario aqui
-def get_vocal():
-    """
-    Devuelve una vocal random 
-    """
+
+import os
+absolute_path = os.path.dirname(os.path.abspath(__file__))      # Look for your absolute directory path
+
+def get_vocal():    #Devuelve una vocal random
     x=random.choice('AEIOU')
     return x
-def get_consonante():
-    """
-    Devuelve una consonante random
-    """
+
+def get_consonante():   #Devuelve una consonante random
     x=random.choice('BCDFGHJKLMNÑPQRSTVWXYZ')
     return x
 
 if ("win" in sys.platform):
-    arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
+    #arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
+
+    arch = open(absolute_path + '/Datos/tablero.csv',"r")       #esto lo agregue porque no me encontraba el archivo
 else:
     arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/tablero.csv","r")
 csvreader = csv.reader(arch)
 
-def guardar_partida (lista):
-    """
-    recibe el layout saca los botones que no son del tablero y los exporta a un csv
-    """
+def guardar_partida (lista):    #recibe el layout saca los botones que no son del tablero y los exporta a un csv
     guardar = lista
     guardar.pop(16)
     guardar.pop(15)
     if ("win" in sys.platform):
-        arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
+        #arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
+
+        arch = open(absolute_path + '/Datos/guardado.csv',"w")      #esto lo agregue porque no me encontraba el archivo
     else:
         arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/guardado.csv","w")
 
@@ -41,69 +40,66 @@ def guardar_partida (lista):
     arch.close()
 
 def crear_layout():
-    
-    """
-    Creacion del Layout
-    """
-    blanco = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key, 
+
+    #Creacion del Layout
+
+    blanco = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key,
     pad=(0,0),button_color=('black','white'))
 
-    descuento = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key, 
+    descuento = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key,
     pad=(0,0),button_color=('black','red'))
 
-    premio = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key, 
+    premio = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key,
     pad=(0,0),button_color=('black','green'))
 
     sg.theme("DarkAmber")
 
     layout = []
 
-    botones = dict()
+    botones = {}       #dict() == {}
     key = 0
     for fila in csvreader:
         fichas = []
         for boton in fila:
-            if boton == "":
+            if boton == "":         #esto antes eran 4 if, los cambie por un if y 3 elif
                 fichas.append(blanco("",key))
                 botones[key] = ""
-            if boton == "+":
+            elif boton == "+":
                 fichas.append(premio("+",key))
                 botones[key] = "+"
-            if boton == "-":
+            elif boton == "-":
                 fichas.append(descuento("-",key))
                 botones[key] = "-"
-            if boton in string.ascii_uppercase and boton != "":
+            elif boton in string.ascii_uppercase and boton != "":
                 fichas.append(blanco(boton,key))
                 botones[key] = ""
             key+=1
         layout.append(fichas)
-    letras = dict()
-    for i in range(4):                      #aca elegis con la funcion cuantas vocales queres
+    letras = {}
+    for i in range(4):                      #con range() elegis cuantas vocales queres
         val = get_vocal()
-        letras['-'+str(i)+'-'] = val        
-    for i in range(3):                              #y cuantas consonantes queres, la idea es que haya mas vocales que consonantes para que se puedan armar palabras
-        val = get_consonante()              #funciones arriba de todo*
-        letras['-'+str(i+4)+'-'] = val 
-        
-    letras_valores = list(map(lambda x: x[1], letras.items()))
-    letras_keys = list(map(lambda x: x[0], letras.items()))
-    fila_fichas =[sg.Button(button_text=letras_valores[i], key = letras_keys[i], size=(4, 2), button_color=('white','blue')) for i in range(7)]
+        letras['-'+str(i)+'-'] = val
+    for i in range(3):                          #si hay mas vocales que consonantes es mas facil armar palabras
+        val = get_consonante()
+        letras['-'+str(i+4)+'-'] = val
+
+    #letras_valores = list(map(lambda x: x[1], letras.items()))         list(map(lambda x: x[1], letras.items())) == list(letras.values())
+    letras_valores = list(letras.values())
+    letras_keys = list(letras.keys())
+    fila_fichas =[sg.Button(button_text= letras_valores[i], key = letras_keys[i], size=(4, 2), button_color=('white','blue')) for i in range(7)]
     fila_botones = [sg.Button("Confirmar",key="-c"), sg.Button("Deshacer",key="-d"),sg.Button("Terminar",key="-t"),sg.Button("Posponer",key="-p")]
     layout.append(fila_botones)
     layout.append(fila_fichas)
     return layout, letras, botones
 
-"""
 
-Config del tablero
-
-"""
+#Config del tablero:
 
 layout, letras, botones = crear_layout()
 
 window = sg.Window("Ventana de juego",layout)
 
-oper = ["-t","-c","-d,""-p"] #Para los botones Terminar Confirmar, Deshacer y Posponer
+oper = ["-t","-c","-d,""-p"] #Para los botones Terminar, Confirmar, Deshacer y Posponer
 
 
 
@@ -128,7 +124,7 @@ while True:  # Event Loop
             window[val].update(palabra_nueva[val], disabled=False)
         letras_usadas = dict()
         palabra_nueva = dict()
-    if event in letras.keys():   
+    if event in letras.keys():
         box = event # letra seleccionada
         letras_usadas[box] = letras[box]
         for val in letras.keys():
@@ -144,10 +140,7 @@ while True:  # Event Loop
             elif botones[ind] == "-":
                 print("boton menos")
             palabra_nueva[ind] = botones[ind]
-            window[ind].update(letras[box], disabled=True) # actualizo la casilla y la desactivo            
+            window[ind].update(letras[box], disabled=True) # actualizo la casilla y la desactivo
             for val in letras.keys():
                 if val not in letras_usadas.keys():
                     window[val].update(disabled=False) # refresco la tabla B
-            
-            
-
