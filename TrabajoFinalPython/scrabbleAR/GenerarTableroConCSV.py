@@ -4,10 +4,16 @@ import sys
 import string
 import random
 #Inserto comentario aqui
-def get_vocal():    
+def get_vocal():
+    """
+    Devuelve una vocal random 
+    """
     x=random.choice('AEIOU')
     return x
 def get_consonante():
+    """
+    Devuelve una consonante random
+    """
     x=random.choice('BCDFGHJKLMNÑPQRSTVWXYZ')
     return x
 
@@ -112,8 +118,9 @@ while True:  # Event Loop
         break
     if event == "-p":
         guardar_partida(layout)
-    if event == "-t":
-        window.FindElement(40,5).Update(button_color=("red","blue"))
+    if event == "-t": #Y no se termino el tiempo..
+        #Implementar
+        pass
     if event == "-d":
         for val in letras.keys():
             window[val].update(disabled=False)
