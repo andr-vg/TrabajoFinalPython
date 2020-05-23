@@ -3,7 +3,7 @@ import csv
 import sys
 import string
 import random
-
+#Inserto comentario aqui
 def get_vocal():    
     x=random.choice('AEIOU')
     return x
@@ -12,9 +12,9 @@ def get_consonante():
     return x
 
 if ("win" in sys.platform):
-    arch = open("C:/Users/Usuario/1_SeminarioPython/scrabbleAR/tablero.csv","r")
+    arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/tablero.csv","r")
 else:
-    arch = open("./scrabbleAR/tablero.csv","r")
+    arch = open("./datos/tablero.csv","r")
 csvreader = csv.reader(arch)
 
 def guardar_partida (lista):
