@@ -21,9 +21,9 @@ def get_consonante():   #Devuelve una consonante random
 if "win" in sys.platform:
     #arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
 
-    arch = open(absolute_path + '/Datos/tablero.csv',"r")       #esto lo agregue porque no me encontraba el archivo
+    arch = open(absolute_path + '\\Datos\\info\\tablero.csv',"r")       #esto lo agregue porque no me encontraba el archivo
 else:
-    arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/tablero.csv","r")
+    arch = open(absolute_path + "/Datos/info/tablero.csv","r")
 csvreader = csv.reader(arch)
 
 def guardar_partida (lista):    #recibe el layout saca los botones que no son del tablero y los exporta a un csv
@@ -33,9 +33,9 @@ def guardar_partida (lista):    #recibe el layout saca los botones que no son de
     if "win" in sys.platform:
         #arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
 
-        arch = open(absolute_path + '/Datos/guardado.csv',"w")      #esto lo agregue porque no me encontraba el archivo
+        arch = open(absolute_path + '\\Datos\\info\\guardado.csv',"w")      #esto lo agregue porque no me encontraba el archivo
     else:
-        arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/guardado.csv","w")
+        arch = open(absolute_path + "/Datos/info/guardado.csv","w")
 
     escritor = csv.writer(arch)
     for aux in lista:
@@ -111,7 +111,7 @@ palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando 
 start_time = time.process_time()  # tiempo inicial del juego en segundos -> 0.1 = 1 seg real, supongamos que tiene que durar maximo 2.0 = 20 segs
 print(start_time)
 while True:  # Event Loop
-    event, values = window.read()
+    event, values = window.read(timeout=10)
     print(event, values)
     window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
     if time.process_time() > 2:  # corto la ejecucion a los "20" segundos
