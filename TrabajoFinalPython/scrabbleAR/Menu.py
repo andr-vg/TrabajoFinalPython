@@ -14,17 +14,17 @@ else:
 
 def crear_layout():
     layout = [
-        [sg.Image(logo)],
+        [sg.Image(logo,background_color=("#2c2825"))],
         [sg.Button("Jugar",border_width=1,pad=(80,10),size=(30,2))],
         [sg.Button("Configuraciones",border_width=1,pad=(80,10),size=(30,2))],
         [sg.Button("Top 10",border_width=1,pad=(80,10),size=(30,2))]
 
     ]
-    sg.theme("DarkAmber")
     return layout
 
 def main():
     layout = crear_layout()
+    sg.theme("DarkAmber")
     window = sg.Window("ScrabbleAR",layout)
     while True:
         event,values = window.read()
