@@ -12,9 +12,9 @@ def get_consonante():
     return x
 
 if ("win" in sys.platform):
-    arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/tablero.csv","r")
+    arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
 else:
-    arch = open("./datos/tablero.csv","r")
+    arch = open("./TrabajoFinalPython/TrabajoFinalPython/scrabbleAR/Datos/tablero.csv","r")
 csvreader = csv.reader(arch)
 
 def guardar_partida (lista):
