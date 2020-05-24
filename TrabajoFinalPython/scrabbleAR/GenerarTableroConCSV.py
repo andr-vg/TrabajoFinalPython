@@ -65,9 +65,14 @@ def crear_layout():
 
     botones = {}       #dict() == {}
     key = 0
+    # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j) 
+    # 0<=i<=n-1 y 0<=j<=n-1
+    i = 0  # i lleva la posicion de fila
     for fila in csvreader:
         fichas = []
+        j = 0  # j lleva la posicion de columna
         for boton in fila:
+            key = (i,j)  # por lo tanto las key ahora son elementos de una matriz
             if boton == "":         #esto antes eran 4 if, los cambie por un if y 3 elif
                 fichas.append(blanco("",key))
                 botones[key] = ""
@@ -80,8 +85,10 @@ def crear_layout():
             elif boton in string.ascii_uppercase and boton != "":
                 fichas.append(blanco(boton,key))
                 botones[key] = ""
-            key+=1
+            j += 1
         layout.append(fichas)
+        i += 1
+
     letras = {}
     for i in range(4):                      #con range() elegis cuantas vocales queres
         val = get_vocal()
@@ -90,7 +97,6 @@ def crear_layout():
         val = get_consonante()
         letras['-'+str(i+4)+'-'] = val
 
-    #letras_valores = list(map(lambda x: x[1], letras.items()))         list(map(lambda x: x[1], letras.items())) == list(letras.values())
     letras_valores = list(letras.values())
     letras_keys = list(letras.keys())
     fila_fichas =[sg.Button(button_text= letras_valores[i], key = letras_keys[i], size=(4, 2), button_color=('white','blue')) for i in range(7)]
@@ -102,15 +108,21 @@ def crear_layout():
 
 #Config del tablero:
 
-layout, letras, botones = crear_layout()
+layout, letras, botones = crear_layout()  # botones es un diccionario de pares (tupla, valor)
 
 window = sg.Window("Ventana de juego",layout)
 
 oper = ["-t","-c","-d,""-p"] #Para los botones Terminar, Confirmar, Deshacer y Posponer
 
+tam = (len(botones.keys()))^int(1/2)  # ancho y alto de la matriz
+# tam lo vamos a usar para restringir los botones que el jugador podrá seleccionar
+# no queremos que ponga letras en cualquier parte del tablero, tienen que estar contiguas
+
 letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
 
 palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
+
+primer_letra = True   # solo cuando pone la primer letra de la palabra puede elegir cualquier casilla del tablero
 
 start_time = time.process_time()  # tiempo inicial del juego en segundos -> 0.1 = 1 seg real, supongamos que tiene que durar maximo 2.0 = 20 segs
 print(start_time)
@@ -128,6 +140,7 @@ while True:  # Event Loop
         #Implementar
         pass
     if event == "-d":
+        primer_letra = True
         window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
         if time.process_time() > 2:
             break   
@@ -137,6 +150,45 @@ while True:  # Event Loop
             window[val].update(palabra_nueva[val], disabled=False)
         letras_usadas = dict()
         palabra_nueva = dict()
+    # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
+    if event == "-c":
+        print(palabra_nueva)
+        keys_ordenados = sorted(palabra_nueva.keys()) # los ordeno por columna de menor a mayor
+        print(keys_ordenados)
+        columna_menor = keys_ordenados[0][1] # me guarda la columna mas chica con la cual voy a hacer una comparacion 
+        fila = keys_ordenados[0][0] # me guardo la primer fila para compararla con las otras a ver si son iguales
+        posiciones_validas = True
+        for i in range(1, len(keys_ordenados)):
+            if keys_ordenados[i][0] != fila: # aca comparamos las filas de cada letra con la de la primera
+                posiciones_validas = False
+                break  
+            if keys_ordenados[i][1] - i != columna_menor: # si son contiguas, la resta de las mayores columnas - i siempre es igual a la de la menor
+                posiciones_validas = False
+                break
+        # ahora analizamos si es valida o no:
+        if posiciones_validas:
+            lista_letras_ordenadas = []
+            for key in keys_ordenados:
+                lista_letras_ordenadas.append(palabra_nueva[key])
+            palabra_valida = ''.join(lista_letras_ordenadas)
+            print(palabra_valida)
+            # aca llamariamos a la funcion de pattern que analiza si la palabra es un verbo/sust/adj
+            break
+        else:
+            sg.popup_ok('Palabra no válida, por favor ingrese otra')
+            # reiniciamos todo como en deshacer: aca estoy repitiendo codigo, se puede hacer una funcion para reiniciar
+            # todo esto
+            primer_letra = True
+            window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
+            if time.process_time() > 2:
+                break   
+            for val in letras.keys():
+                window[val].update(disabled=False)
+            for val in palabra_nueva:
+                window[val].update(palabra_nueva[val], disabled=False)
+            letras_usadas = dict()
+            palabra_nueva = dict()
+
     if event in letras.keys():
         window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
         if time.process_time() > 2:
@@ -144,7 +196,8 @@ while True:  # Event Loop
         box = event # letra seleccionada
         letras_usadas[box] = letras[box]
         for val in letras.keys():
-            window[val].update(disabled=True) # desactivo los botones
+            window[val].update(disabled=True) # desactivo los botones de las fichas
+
         event, values = window.read()
         window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
         if time.process_time() > 2:
@@ -161,11 +214,12 @@ while True:  # Event Loop
                 print("boton mas")
             elif botones[ind] == "-":
                 print("boton menos")
-            palabra_nueva[ind] = botones[ind]
+            palabra_nueva[ind] = letras[box]
             window[ind].update(letras[box], disabled=True) # actualizo la casilla y la desactivo
             for val in letras.keys():
                 if val not in letras_usadas.keys():
                     window[val].update(disabled=False) # refresco la tabla B
+    
 
 start_time = time.process_time()
 print(start_time)
