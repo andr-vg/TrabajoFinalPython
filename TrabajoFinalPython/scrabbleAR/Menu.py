@@ -28,6 +28,8 @@ def main():
     window = sg.Window("ScrabbleAR",layout)
     while True:
         event,values = window.read()
+        print(event)
+        print(values)
         if (event == None):
             break
     
