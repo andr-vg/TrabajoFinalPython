@@ -104,7 +104,8 @@ def crear_layout():
     letras_valores = list(letras.values())
     letras_keys = list(letras.keys())
     fila_fichas =[sg.Button(button_text= letras_valores[i], key = letras_keys[i], size=(4, 2), button_color=('white','blue')) for i in range(7)]
-    fila_botones = [sg.Button("Confirmar",key="-c"), sg.Button("Deshacer",key="-d"),sg.Button("Terminar",key="-t"),sg.Button("Posponer",key="-p"), sg.Text(str(time.process_time()*10)+" seg", key = 'tiempo')]
+    fila_botones = [sg.Button("Confirmar",key="-c"), sg.Button("Deshacer",key="-d"),sg.Button("Terminar",key="-t"),sg.Button("Posponer",key="-p"),
+     sg.Text(" ", key = 'tiempo',pad=(150,None),)]
     layout.append(fila_botones)
     layout.append(fila_fichas)
     arch.close() #Cierro el "tablero.csv"
@@ -125,7 +126,7 @@ def main(args):
 
     while True:
         restar_tiempo =  time.time()
-        event, values = window.read(timeout=100)
+        event, values = window.read(timeout=1000)
         print(event,values)
         if (event == None):
             break
