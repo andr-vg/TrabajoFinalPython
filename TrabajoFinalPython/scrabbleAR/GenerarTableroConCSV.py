@@ -114,15 +114,9 @@ window = sg.Window("Ventana de juego",layout)
 
 oper = ["-t","-c","-d,""-p"] #Para los botones Terminar, Confirmar, Deshacer y Posponer
 
-tam = (len(botones.keys()))^int(1/2)  # ancho y alto de la matriz
-# tam lo vamos a usar para restringir los botones que el jugador podrá seleccionar
-# no queremos que ponga letras en cualquier parte del tablero, tienen que estar contiguas
-
 letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
 
 palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
-
-primer_letra = True   # solo cuando pone la primer letra de la palabra puede elegir cualquier casilla del tablero
 
 start_time = time.process_time()  # tiempo inicial del juego en segundos -> 0.1 = 1 seg real, supongamos que tiene que durar maximo 2.0 = 20 segs
 print(start_time)
@@ -140,7 +134,6 @@ while True:  # Event Loop
         #Implementar
         pass
     if event == "-d":
-        primer_letra = True
         window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
         if time.process_time() > 2:
             break   
