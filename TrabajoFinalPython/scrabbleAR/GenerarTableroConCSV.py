@@ -44,7 +44,11 @@ def guardar_partida (lista):    #recibe el layout saca los botones que no son de
 
 def crear_layout():
 
-    #Creacion del Layout
+    """Creacion del Layout
+
+    interpretando los caracteres del csv traduciendo a botones
+
+    """
 
     blanco = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key,
     pad=(0,0),button_color=('black','white'))
@@ -111,7 +115,7 @@ palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando 
 start_time = time.process_time()  # tiempo inicial del juego en segundos -> 0.1 = 1 seg real, supongamos que tiene que durar maximo 2.0 = 20 segs
 print(start_time)
 while True:  # Event Loop
-    event, values = window.read(timeout=10)
+    event, values = window.read()
     print(event, values)
     window['tiempo'].update(str(time.process_time()*10)+" seg") # actualizo el tiempo en segundos
     if time.process_time() > 2:  # corto la ejecucion a los "20" segundos
