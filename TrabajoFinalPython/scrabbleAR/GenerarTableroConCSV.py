@@ -10,14 +10,6 @@ import time # el problema: el tiempo si bien corre, tiene cierto delay, entonces
 import os
 absolute_path = os.path.dirname(os.path.abspath(__file__))      # Look for your absolute directory path
 
-def get_vocal():    #Devuelve una vocal random
-    x=random.choice('AEIOU')
-    return x
-
-def get_consonante():   #Devuelve una consonante random
-    x=random.choice('BCDFGHJKLMNÑPQRSTVWXYZ')
-    return x
-
 if "win" in sys.platform:
     #arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
 
@@ -42,13 +34,24 @@ def guardar_partida (lista):    #recibe el layout saca los botones que no son de
         escritor.writerow(aux[i].get_text() for i in range(len(aux)))
     arch.close()
 
-def crear_layout():
+bolsa= {"A":14,"E":11,"I":6,"O":8,"U":6,"S":7,"N":6,"L":4,"R":4,"T":4,"C":4,"D":4,"M":3,"B":3,"G":2,"P":2,"F":2,"H":2,"V":2,"J":2,"Y":1,"K":1,"Ñ":1,"Q":1,"W":1,"X":1,"Z":1,"LL":1,"RR":1}
+#bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
 
-    """Creacion del Layout
+def hay_fichas(necesito, bolsa):    
+    return necesito <= (sum(list(bolsa.values())))      #devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
-    interpretando los caracteres del csv traduciendo a botones
+def dar_fichas(cuantas, bolsa):     #devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
+    dar={}
+    i=0
+    while i < cuantas:
+        x=random.choice(list(bolsa.keys()))
+        if bolsa[x] != 0:
+            dar['-'+str(i)+'-']=x
+            bolsa[x]= (bolsa[x]) -1
+            i+=1
+    return (dar)
 
-    """
+def crear_layout():     #Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
     blanco = lambda name,key: sg.Button(name,border_width=1, size=(5, 2), key=key,
     pad=(0,0),button_color=('black','white'))
@@ -89,22 +92,16 @@ def crear_layout():
         layout.append(fichas)
         i += 1
 
-    letras = {}
-    for i in range(4):                      #con range() elegis cuantas vocales queres
-        val = get_vocal()
-        letras['-'+str(i)+'-'] = val
-    for i in range(3):                          #si hay mas vocales que consonantes es mas facil armar palabras
-        val = get_consonante()
-        letras['-'+str(i+4)+'-'] = val
-
-    letras_valores = list(letras.values())
-    letras_keys = list(letras.keys())
-    fila_fichas =[sg.Button(button_text= letras_valores[i], key = letras_keys[i], size=(4, 2), button_color=('white','blue')) for i in range(7)]
+    fichas_por_jugador= 7
+    if hay_fichas(fichas_por_jugador, bolsa):       #si en la bolsa hay suficentes fichas las reparto, si no no porque puede dar error
+        letras=dar_fichas(fichas_por_jugador,bolsa)
+        print("se entregaron las fichas: ",letras)
+  
+    fila_fichas =[sg.Button(button_text= list(letras.values())[i], key = list(letras.keys())[i], size=(4, 2), button_color=('white','blue')) for i in range(fichas_por_jugador)]
     fila_botones = [sg.Button("Confirmar",key="-c"), sg.Button("Deshacer",key="-d"),sg.Button("Terminar",key="-t"),sg.Button("Posponer",key="-p"), sg.Text(str(time.process_time()*10)+" seg", key = 'tiempo')]
     layout.append(fila_botones)
     layout.append(fila_fichas)
     return layout, letras, botones
-
 
 #Config del tablero:
 
