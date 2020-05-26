@@ -6,7 +6,7 @@ import random
 import time  # el problema: el tiempo si bien corre, tiene cierto delay, entonces si quiero que el programa finalice en
 # 20 segundos, termina finalizando en 40 o más, porque lo hice actualizar segun los botones que va
 # seleccionando, hay que encontrar otra forma de actualizarlo
-
+#AY LMAO
 import os
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path

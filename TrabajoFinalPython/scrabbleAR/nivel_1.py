@@ -6,7 +6,7 @@ import random
 import time
 import pattern.text.es
 import os
-
+#ASD
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # busca la direccion del archivo.py
 
 
