@@ -39,8 +39,7 @@ def guardar_partida(lista):  # recibe el layout saca los botones que no son del 
 
 
 bolsa = {"A": 14, "E": 11, "I": 6, "O": 8, "U": 6, "S": 7, "N": 6, "L": 4, "R": 4, "T": 4, "C": 4, "D": 4, "M": 3,
-         "B": 3, "G": 2, "P": 2, "F": 2, "H": 2, "V": 2, "J": 2, "Y": 1, "K": 1, "Ñ": 1, "Q": 1, "W": 1, "X": 1, "Z": 1,
-         "LL": 1, "RR": 1}
+         "B": 3, "G": 2, "P": 2, "F": 2, "H": 2, "V": 2, "J": 2, "Y": 1, "K": 1, "Ñ": 1, "Q": 1, "W": 1, "X": 1, "Z": 1}
 
 
 # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
