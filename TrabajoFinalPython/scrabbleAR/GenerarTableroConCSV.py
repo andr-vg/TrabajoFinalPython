@@ -66,13 +66,13 @@ def dar_fichas(cuantas,
 def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
-                                         pad=(0, 0), button_color=('black', 'white'))
+                                         pad=(0, 0), button_color=('black', '#FFFFFF')) # BLANCO FCFCFA
 
     descuento = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
-                                            pad=(0, 0), button_color=('black', 'red'))
+                                            pad=(0, 0), button_color=('black', '#ED5752')) # ROJO
 
     premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
-                                         pad=(0, 0), button_color=('black', 'green'))
+                                         pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE 
 
     sg.theme("DarkAmber")
 
@@ -153,7 +153,7 @@ while True:  # Event Loop
         for val in letras.keys():
             window[val].update(disabled=False)
         for val in palabra_nueva:
-            window[val].update(palabra_nueva[val], disabled=False)
+            window[val].update(botones[val], disabled=False)
         letras_usadas = dict()
         palabra_nueva = dict()
     # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
@@ -192,7 +192,7 @@ while True:  # Event Loop
             for val in letras.keys():
                 window[val].update(disabled=False)
             for val in palabra_nueva:
-                window[val].update(palabra_nueva[val], disabled=False)
+                window[val].update(botones[val], disabled=False)
             letras_usadas = dict()
             palabra_nueva = dict()
 
