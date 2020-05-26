@@ -120,14 +120,18 @@ letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
 
 palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
 
-start_time = time.process_time()  # tiempo inicial del juego en segundos -> 0.1 = 1 seg real, supongamos que tiene que durar maximo 2.0 = 20 segs
-print(start_time)
+cont_tiempo = 200  # Esto deberia venir como parametro
+cuenta_regresiva = int(time.time()) + cont_tiempo
+
 while True:  # Event Loop
-    event, values = window.read()
-    print(event, values)
-    window['tiempo'].update(str(time.process_time() * 10) + " seg")  # actualizo el tiempo en segundos
-    if time.process_time() > 2:  # corto la ejecucion a los "20" segundos
-        break
+    restar_tiempo = int(time.time())
+    event, values = window.read(timeout=1000)
+    window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
+    print(event, values) 
+    if restar_tiempo > cuenta_regresiva:
+        print("Se termino el tiempo")
+        # Implementar final de partida
+        pass  
     if event is None:
         break
     if event == "-p":
@@ -136,9 +140,6 @@ while True:  # Event Loop
         # Implementar
         pass
     if event == "-d":
-        window['tiempo'].update(str(time.process_time() * 10) + " seg")  # actualizo el tiempo en segundos
-        if time.process_time() > 2:
-            break
         for val in letras.keys():
             window[val].update(disabled=False)
         for val in palabra_nueva:
@@ -174,10 +175,6 @@ while True:  # Event Loop
             sg.popup_ok('Palabra no válida, por favor ingrese otra')
             # reiniciamos todo como en deshacer: aca estoy repitiendo codigo, se puede hacer una funcion para reiniciar
             # todo esto
-            primer_letra = True
-            window['tiempo'].update(str(time.process_time() * 10) + " seg")  # actualizo el tiempo en segundos
-            if time.process_time() > 2:
-                break
             for val in letras.keys():
                 window[val].update(disabled=False)
             for val in palabra_nueva:
@@ -186,25 +183,21 @@ while True:  # Event Loop
             palabra_nueva = dict()
 
     if event in letras.keys():
-        window['tiempo'].update(str(time.process_time() * 10) + " seg")  # actualizo el tiempo en segundos
-        if time.process_time() > 2:
-            break
         box = event  # letra seleccionada
         letras_usadas[box] = letras[box]
         for val in letras.keys():
             window[val].update(disabled=True)  # desactivo los botones de las fichas
-
+        restar_tiempo = int(time.time())
         event, values = window.read()
-        window['tiempo'].update(str(time.process_time() * 10) + " seg")  # actualizo el tiempo en segundos
-        if time.process_time() > 2:
-            break
+        # no pude agregar que actualice aca porque sino mueren las fichas
+        if restar_tiempo > cuenta_regresiva:
+            print("Se termino el tiempo")
+        # Implementar final de partida
+        pass
         if event is None:
             break
         if event in botones.keys():
-            window['tiempo'].update(str(time.process_time() * 10) + " seg")  # actualizo el tiempo en segundos
-            if time.process_time() > 2:
-                break
-                # refresco la tabla en la casilla seleccionada con la letra elegida antes
+            # refresco la tabla en la casilla seleccionada con la letra elegida antes
             ind = event  # casilla seleccionada
             if botones[ind] == "+":
                 print("boton mas")
