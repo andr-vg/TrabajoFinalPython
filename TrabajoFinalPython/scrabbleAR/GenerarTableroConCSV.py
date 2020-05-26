@@ -6,7 +6,7 @@ import random
 import time  # el problema: el tiempo si bien corre, tiene cierto delay, entonces si quiero que el programa finalice en
 # 20 segundos, termina finalizando en 40 o más, porque lo hice actualizar segun los botones que va
 # seleccionando, hay que encontrar otra forma de actualizarlo
-#AY LMAO
+from functools import reduce
 import os
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
@@ -37,30 +37,21 @@ def guardar_partida(lista):  # recibe el layout saca los botones que no son del 
         escritor.writerow(aux[i].get_text() for i in range(len(aux)))
     arch.close()
 
-
-bolsa = {"A": 14, "E": 11, "I": 6, "O": 8, "U": 6, "S": 7, "N": 6, "L": 4, "R": 4, "T": 4, "C": 4, "D": 4, "M": 3,
-         "B": 3, "G": 2, "P": 2, "F": 2, "H": 2, "V": 2, "J": 2, "Y": 1, "K": 1, "Ñ": 1, "Q": 1, "W": 1, "X": 1, "Z": 1}
-
-
+bolsa= {"E":15,"A":11,"I":6,"O":8,"U":6,"S":7,"N":6,"R":6,"L":4,"T":4,"C":4,"D":4,"M":3,"B":3,
+        "G":2,"P":2,"F":2,"H":2,"V":2,"J":2,"Y":1,"K":1,"Ñ":1,"Q":1,"W":1,"X":1,"Z":1}
 # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
 
 def hay_fichas(necesito, bolsa):
-    return necesito <= (
-        sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
+    return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
-
-def dar_fichas(cuantas,
-               bolsa):  # devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
+def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
     dar = {}
-    i = 0
-    while i < cuantas:
-        x = random.choice(list(bolsa.keys()))
-        if bolsa[x] != 0:
-            dar['-' + str(i) + '-'] = x
-            bolsa[x] = (bolsa[x]) - 1
-            i += 1
+    letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
+    for i in range(cuantas):
+        letra=random.choice(letras_juntas)
+        dar['-'+str(i)+'-']= letra
+        bolsa[letra]= (bolsa[letra]) -1
     return (dar)
-
 
 def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
@@ -104,8 +95,7 @@ def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv
         i += 1
 
     fichas_por_jugador = 7
-    if hay_fichas(fichas_por_jugador,
-                  bolsa):  # si en la bolsa hay suficentes fichas las reparto, si no no porque puede dar error
+    if hay_fichas(fichas_por_jugador, bolsa):  # si en la bolsa hay suficentes fichas las reparto, si no no porque puede dar error
         letras = dar_fichas(fichas_por_jugador, bolsa)
         print("se entregaron las fichas: ", letras)
 
