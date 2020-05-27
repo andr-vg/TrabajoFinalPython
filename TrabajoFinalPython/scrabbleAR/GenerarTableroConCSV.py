@@ -3,9 +3,8 @@ import csv
 import sys
 import string
 import random
-import time  # el problema: el tiempo si bien corre, tiene cierto delay, entonces si quiero que el programa finalice en
-# 20 segundos, termina finalizando en 40 o más, porque lo hice actualizar segun los botones que va
-# seleccionando, hay que encontrar otra forma de actualizarlo
+import time 
+import IdentificarPalabra as es
 from functools import reduce
 import os
 
@@ -107,6 +106,60 @@ def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv
     layout.append(fila_fichas)
     return layout, letras, botones
 
+def agregar_palabra_al_tablero(palabra_nueva, keys_ordenados, window):
+    for key in keys_ordenados:
+        window[key].update(palabra_nueva[key])
+
+def sacar_del_tablero(window, keys, palabra_nueva, botones):
+    """
+    Sacamos las letras del tablero que no son validas y reiniciamos los parametros
+    que guardan nuestras letras y la palabra
+    """
+    for val in keys:
+        window[val].update(disabled=False)  # reactivamos las fichas 
+    for val in palabra_nueva:
+        window[val].update(botones[val], disabled=False) # eliminamos del tablero las fichas
+    letras_usadas = dict()
+    palabra_nueva = dict()
+    return letras_usadas, palabra_nueva 
+
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas):
+    """
+    Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es 
+    actualiza el tablero y los parametros 
+    """
+    keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
+    print(keys_ordenados)
+    columna_menor = keys_ordenados[0][1]  # me guarda la columna mas chica con la cual voy a hacer una comparacion
+    fila = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales
+    posiciones_validas = True
+    for i in range(1, len(keys_ordenados)):
+        if keys_ordenados[i][0] != fila:  # aca comparamos las filas de cada letra con la de la primera
+            posiciones_validas = False
+            break
+        if keys_ordenados[i][1] - i != columna_menor:  # si son contiguas, la resta de las mayores columnas - i siempre es igual a la de la menor
+            posiciones_validas = False
+            break
+    # ahora analizamos si es valida o no:
+    if not posiciones_validas:
+        sg.popup_ok('Palabra no válida, por favor ingrese otra')
+        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+    else:
+        lista_letras_ordenadas = []
+        for key in keys_ordenados:
+            lista_letras_ordenadas.append(palabra_nueva[key])
+        palabra_obtenida = ''.join(lista_letras_ordenadas)
+        print(palabra_obtenida)
+        if es.palabra_valida(palabra_obtenida):
+            palabras_formadas.append(palabra_obtenida)
+            window['-d'].update(disabled=True)
+            letras_usadas = dict()
+            palabra_nueva = dict()
+        else:
+            sg.popup_ok('Palabra no válida, por favor ingrese otra')
+            letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+
+    return letras_usadas, palabra_nueva, palabras_formadas
 
 # Config del tablero:
 
@@ -119,6 +172,8 @@ oper = ["-t", "-c", "-d,""-p"]  # Para los botones Terminar, Confirmar, Deshacer
 letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
 
 palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
+
+palabras_formadas = [] # lista de palabras formadas por el jugador
 
 cont_tiempo = 200  # Esto deberia venir como parametro
 cuenta_regresiva = int(time.time()) + cont_tiempo
@@ -140,49 +195,15 @@ while True:  # Event Loop
         # Implementar
         pass
     if event == "-d":
-        for val in letras.keys():
-            window[val].update(disabled=False)
-        for val in palabra_nueva:
-            window[val].update(botones[val], disabled=False)
-        letras_usadas = dict()
-        palabra_nueva = dict()
+        # deshacer las palabras puestas en el tablero
+        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
     # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
     if event == "-c":
+        # boton de confirmar palabra
         print(palabra_nueva)
-        keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
-        print(keys_ordenados)
-        columna_menor = keys_ordenados[0][1]  # me guarda la columna mas chica con la cual voy a hacer una comparacion
-        fila = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales
-        posiciones_validas = True
-        for i in range(1, len(keys_ordenados)):
-            if keys_ordenados[i][0] != fila:  # aca comparamos las filas de cada letra con la de la primera
-                posiciones_validas = False
-                break
-            if keys_ordenados[i][
-                1] - i != columna_menor:  # si son contiguas, la resta de las mayores columnas - i siempre es igual a la de la menor
-                posiciones_validas = False
-                break
-        # ahora analizamos si es valida o no:
-        if posiciones_validas:
-            lista_letras_ordenadas = []
-            for key in keys_ordenados:
-                lista_letras_ordenadas.append(palabra_nueva[key])
-            palabra_valida = ''.join(lista_letras_ordenadas)
-            print(palabra_valida)
-            # aca llamariamos a la funcion de pattern que analiza si la palabra es un verbo/sust/adj
-            break
-        else:
-            sg.popup_ok('Palabra no válida, por favor ingrese otra')
-            # reiniciamos todo como en deshacer: aca estoy repitiendo codigo, se puede hacer una funcion para reiniciar
-            # todo esto
-            for val in letras.keys():
-                window[val].update(disabled=False)
-            for val in palabra_nueva:
-                window[val].update(botones[val], disabled=False)
-            letras_usadas = dict()
-            palabra_nueva = dict()
-
+        letras_usadas, palabra_nueva, palabras_formadas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas)
     if event in letras.keys():
+        window['-d'].update(disabled=False)
         box = event  # letra seleccionada
         letras_usadas[box] = letras[box]
         for val in letras.keys():
