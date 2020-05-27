@@ -116,9 +116,9 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     que guardan nuestras letras y la palabra
     """
     for val in keys:
-        window[val].update(disabled=False)
+        window[val].update(disabled=False)  # reactivamos las fichas 
     for val in palabra_nueva:
-        window[val].update(botones[val], disabled=False)
+        window[val].update(botones[val], disabled=False) # eliminamos del tablero las fichas
     letras_usadas = dict()
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva 
@@ -153,6 +153,8 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
         if es.palabra_valida(palabra_obtenida):
             palabras_formadas.append(palabra_obtenida)
             window['-d'].update(disabled=True)
+            letras_usadas = dict()
+            palabra_nueva = dict()
         else:
             sg.popup_ok('Palabra no válida, por favor ingrese otra')
             letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
