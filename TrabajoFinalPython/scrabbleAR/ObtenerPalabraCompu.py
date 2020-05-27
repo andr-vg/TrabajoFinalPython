@@ -35,7 +35,7 @@ def obtener_palabra_compu(fichas, long_max):
     lista_palabras = [] # aca almacenaremos las palabras que la compu vaya encontrando entre todas las permutaciones
     recursividadPalabras(fichas, long_max, palabra, lista_palabras)
     print(lista_palabras) 
-    return max(lista_palabras)
+    return '' if len(lista_palabras) == 0 else max(lista_palabras) # retornamos la mejor palabra o '' si no formo ninguna
 
 
 # probamos con un ejemplo de 5 fichas, y la longitud maxima que cabe en el tablero 4:
