@@ -8,8 +8,6 @@ import IdentificarPalabra as es
 from functools import reduce
 import os
 import json
-import Jugador
-import JugadorPC
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
 
@@ -92,7 +90,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
     grupos = [grupo_1,grupo_2,grupo_3,grupo_4,grupo_5,grupo_6,grupo_7]
     for grupo in grupos:
         for letra in grupo:
-            bolsa[letra] = config["grupo_"+str(cont)]
+            bolsa[letra] = config["grupo_"+str(cont)+"_cant"]
             puntos_por_letra[letra] = config["grupo_"+str(cont)]
         cont += 1
     
@@ -103,13 +101,21 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
 def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
+def generar_lista_letras(bolsa):
+    letras_juntas = []
+    for letras in bolsa.keys():
+        for cantidad in range(bolsa[letras]):
+            letras_juntas.append(letras)
+    return letras_juntas
+
 def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
     dar = {}
-    letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
+    # letras_juntas= reduce(lambda a,b: a+b, [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
+    letras_juntas = generar_lista_letras(bolsa)
     for i in range(cuantas):
         letra=random.choice(letras_juntas)
         dar['-'+str(i)+'-']= letra
-        bolsa[letra]= (bolsa[letra]) -1
+        bolsa[letra] = (bolsa[letra]) -1
     return (dar)
 
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
@@ -156,16 +162,22 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     fichas_por_jugador = 7
     if hay_fichas(fichas_por_jugador, bolsa):  # si en la bolsa hay suficentes fichas las reparto, si no no porque puede dar error
         letras = dar_fichas(fichas_por_jugador, bolsa)
+        letras_pc = dar_fichas(fichas_por_jugador,bolsa)
         print("se entregaron las fichas: ", letras)
-
-    fila_fichas = [sg.Button(button_text=list(letras.values())[i], key=list(letras.keys())[i], size=(4, 2),
+    colum = [
+        [sg.Text(str(time.process_time() * 10) + " seg", key='tiempo'),
+       sg.Text("Puntos jugador: 0",key="p_j"),sg.Text("Puntos Pc: 0",key="p_pc")]
+    ]
+    frame_colum = [
+        [sg.Frame("Info del juego",layout=colum)]
+    ]
+    fila_fichas = [sg.Button(button_text=list(letras.values())[i], key=list(letras.keys())[i], size=(4, 1),
                              button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
     fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),
-                    sg.Button("Posponer", key="-p"), sg.Text(str(time.process_time() * 10) + " seg", key='tiempo'),
-                    sg.Button("Pasar el turno", key = "-paso")]
+                    sg.Button("Posponer", key="-p")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
     layout.append(fila_fichas)
-    return layout, letras, botones
+    return layout, letras, botones, letras_pc
 
 def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
     duplicar = False
@@ -210,7 +222,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva 
 
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra,pj,pc):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es 
     actualiza el tablero y los parametros 
@@ -238,11 +250,16 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
         for key in keys_ordenados:
             lista_letras_ordenadas.append(palabra_nueva[key])
         palabra_obtenida = ''.join(lista_letras_ordenadas)
+        palabra_obtenida.strip()
         print(palabra_obtenida)
         if es.palabra_valida(palabra_obtenida):
             palabras_formadas.append(palabra_obtenida)
             ## funcion que suma los puntos por letra y segun cada boton duplica o resta puntos:
             puntos = sumar_puntos(puntos_por_letra, botones, palabra_nueva)
+            if (turno_jugador):
+                pj.puntos = puntos
+            else:
+                pc.puntos = puntos
             ## aca habria que enviarle a Jugador estos puntos
             window['-d'].update(disabled=True)
             letras_usadas = dict()
@@ -272,7 +289,15 @@ def main():
     bolsa , puntos_por_letra, tiempo = cargar_configuraciones(bolsa,puntos_por_letra)
     # print(bolsa)
     # print(puntos_por_letra)
-    layout, letras, botones = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
+    layout, letras, botones,letras_pc = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
+    #instancio jugador y pc
+    
+    from JugadorPC import PC 
+    from Jugador import Jugador
+    
+    pj = Jugador()
+    pc = PC(letras_pc)
+    
 
     window = sg.Window("Ventana de juego", layout)
 
@@ -333,9 +358,11 @@ def main():
             if event == "-c" and puede_confirmar:
                 # boton de confirmar palabra
                 print(palabra_nueva)
-                letras_usadas, palabra_nueva, palabras_formadas, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra)
+                letras_usadas, palabra_nueva, palabras_formadas, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra,pj,pc)
                 turno_jugador = True # estas dos sentencias se dejan por ahora hasta que este
                 turno_pc = False     # implementado lo de la pc
+                window["p_j"].update("Puntos jugador:"+str(pj.puntos))
+                window["p_pc"].update("Puntos PC:"+str(pc.puntos))
             if event in letras.keys():
                 window['-d'].update(disabled=False)
                 box = event  # letra seleccionada
