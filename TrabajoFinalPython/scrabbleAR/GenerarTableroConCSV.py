@@ -3,7 +3,7 @@ import csv
 import sys
 import string
 import random
-import time 
+import time
 import IdentificarPalabra as es
 from functools import reduce
 import os
@@ -21,8 +21,8 @@ csvreader = csv.reader(arch)
 
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
     guardar = lista
+    guardar.pop(17) #o 16 y 15?
     guardar.pop(16)
-    guardar.pop(15)
     if "win" in sys.platform:
         # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
 
@@ -43,14 +43,14 @@ bolsa= {"E":15,"A":11,"I":6,"O":8,"U":6,"S":7,"N":6,"R":6,"L":4,"T":4,"C":4,"D":
 def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
-def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
-    dar = {}
+def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
     letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
-    for i in range(cuantas):
-        letra=random.choice(letras_juntas)
-        dar['-'+str(i)+'-']= letra
-        bolsa[letra]= (bolsa[letra]) -1
-    return (dar)
+    for i in dic.keys():
+        if dic[i] == "":
+            letra=random.choice(letras_juntas)
+            letras_juntas.replace(letra,"",1)
+            dic[i]= letra
+            bolsa[letra]= (bolsa[letra]) -1
 
 def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
@@ -61,7 +61,7 @@ def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv
                                             pad=(0, 0), button_color=('black', '#ED5752')) # ROJO
 
     premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
-                                         pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE 
+                                         pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
 
     sg.theme("DarkAmber")
 
@@ -69,7 +69,7 @@ def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv
 
     botones = {}  # dict() == {}
     key = 0
-    # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j) 
+    # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
     i = 0  # i lleva la posicion de fila
     for fila in csvreader:
@@ -94,17 +94,26 @@ def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv
         i += 1
 
     fichas_por_jugador = 7
-    if hay_fichas(fichas_por_jugador, bolsa):  # si en la bolsa hay suficentes fichas las reparto, si no no porque puede dar error
-        letras = dar_fichas(fichas_por_jugador, bolsa)
-        print("se entregaron las fichas: ", letras)
+    letras_jugador= {0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}
+    letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
+    if hay_fichas(fichas_por_jugador, bolsa):
+        dar_fichas(letras_maquina, bolsa)
+        print("se entregaron las fichas a la maquina: ", letras_maquina)
 
-    fila_fichas = [sg.Button(button_text=list(letras.values())[i], key=list(letras.keys())[i], size=(4, 2),
+    if hay_fichas(fichas_por_jugador, bolsa):
+        dar_fichas(letras_jugador, bolsa)
+        print("se entregaron las fichas al jugador: ", letras_jugador)
+
+    fila_fichas_jugador = [sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 2),
+                             button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
+    fila_fichas_maquina = [sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 2),
                              button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
     fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),
                     sg.Button("Posponer", key="-p"), sg.Text(str(time.process_time() * 10) + " seg", key='tiempo')]
     layout.append(fila_botones)
-    layout.append(fila_fichas)
-    return layout, letras, botones
+    layout.append(fila_fichas_jugador)
+    layout.insert(0,fila_fichas_maquina)
+    return layout, letras_jugador, letras_maquina, botones
 
 def agregar_palabra_al_tablero(palabra_nueva, keys_ordenados, window):
     for key in keys_ordenados:
@@ -116,17 +125,17 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     que guardan nuestras letras y la palabra
     """
     for val in keys:
-        window[val].update(disabled=False)  # reactivamos las fichas 
+        window[val].update(disabled=False)  # reactivamos las fichas
     for val in palabra_nueva:
         window[val].update(botones[val], disabled=False) # eliminamos del tablero las fichas
     letras_usadas = dict()
     palabra_nueva = dict()
-    return letras_usadas, palabra_nueva 
+    return letras_usadas, palabra_nueva
 
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas):
     """
-    Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es 
-    actualiza el tablero y los parametros 
+    Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
+    actualiza el tablero y los parametros
     """
     keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
     print(keys_ordenados)
@@ -163,7 +172,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
 
 # Config del tablero:
 
-layout, letras, botones = crear_layout()  # botones es un diccionario de pares (tupla, valor)
+layout, letras, letras_maquina, botones = crear_layout()  # botones es un diccionario de pares (tupla, valor)
 
 window = sg.Window("Ventana de juego", layout)
 
@@ -182,17 +191,19 @@ while True:  # Event Loop
     restar_tiempo = int(time.time())
     event, values = window.read(timeout=1000)
     window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
-    print(event, values) 
+    print(event, values)
     if restar_tiempo > cuenta_regresiva:
         print("Se termino el tiempo")
         # Implementar final de partida
-        pass  
+        pass
     if event is None:
         break
     if event == "-p":
         guardar_partida(layout)
     if event == "-t":  # Y no se termino el tiempo..
         # Implementar
+        #suma puntos
+        #juega maquina:
         pass
     if event == "-d":
         # deshacer las palabras puestas en el tablero
