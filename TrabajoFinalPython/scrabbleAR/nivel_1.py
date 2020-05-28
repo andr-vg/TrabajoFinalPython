@@ -166,19 +166,21 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     layout.append(fila_fichas)
     return layout, letras, botones
 
-def sumar_puntos_por_casillero(botones, botones_elegidos):
+def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
     puntos = 0
-    for casillero in botones_elegidos:
-        if botones[casillero] == '+':
-            puntos = puntos + 10   # en realidad tenemos que pasar por parametro cuanto suma o resta la casilla porque variaba creo segun el nivel
-        elif botones[casillero] == '-':
-            puntos = puntos - 10 
-    return puntos
-    
-def sumar_puntos_por_ficha(puntos_por_letra, palabra_obtenida):
-    puntos = 0
-    for letra in palabra_obtenida:
-        puntos = puntos + puntos_por_letra[letra]
+    for casillero, letra in palabra_nueva.items():
+        puntaje_letra = puntos_por_letra[letra]
+        if botones[casillero] == '+':  # duplicamos el puntaje por letra
+            puntaje_letra = 2 * puntaje_letra
+        elif botones[casillero] == '++':  # triplicamos el puntaje por letra
+            puntaje_letra = 3 * puntaje_letra
+        elif botones[casillero] == '-':  # se le resta 1 punto al puntaje total obtenido
+            puntos += -1
+        elif botones[casillero] == '--':  # se le resta 2 puntos al puntaje total obtenido
+            puntos += -2
+        elif botones[casillero] == '---':  # se le resta 3 puntos al puntaje total obtenido
+            puntos += -3
+        puntos += puntaje_letra  # sumamos el puntaje por cada letra de la palabra
     return puntos
 
 def agregar_palabra_al_tablero(palabra_nueva, keys_ordenados, window):
@@ -227,8 +229,8 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
         print(palabra_obtenida)
         if es.palabra_valida(palabra_obtenida):
             palabras_formadas.append(palabra_obtenida)
-            ## creo una funcion que suma los puntos por letra:
-            puntos = sumar_puntos_por_ficha(puntos_por_letra, palabra_obtenida) + sumar_puntos_por_casillero(botones, palabra_nueva.keys())
+            ## funcion que suma los puntos por letra y segun cada boton duplica o resta puntos:
+            puntos = sumar_puntos(puntos_por_letra, botones, palabra_nueva)
             ## aca habria que enviarle a Jugador estos puntos
             window['-d'].update(disabled=True)
             letras_usadas = dict()
