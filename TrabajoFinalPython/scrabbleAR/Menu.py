@@ -19,8 +19,9 @@ def crear_layout():
 
     tab1_layout = [
         [sg.Text("")],
-        [sg.Button("Iniciar Juego", key="-1-")],
-        [sg.Button("Salir", key="-5-")]
+        [sg.Button("CONTINUAR",visible=False,key="-continuar-")],
+        [sg.Button("JUGAR", key="-jugar-")],
+        [sg.Button("SALIR", key="-salir-")]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default=True),
@@ -59,12 +60,12 @@ def crear_layout():
     tab2_layout = [
         [sg.Frame("Dificultad",layout=frame_0),sg.Column(frame_2)],
         [sg.Frame("Puntos por letra",layout=frame_1),sg.Column(frame_col)],                  
-        [sg.Button("Guardar", key="-guardar-")]
+        [sg.Button("Guardar", key="-guardar-"),sg.Button("Config predeterminada",key="-pred-")]
                    ]
 
     tab3_layout = [
         [sg.Text("Top 10")],
-        [sg.Listbox(top_10, default_values="Aun no hay partidas registradas", size=(55, 10))]
+        [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10 , default_values="Aun no hay partidas registradas", size=(55, 10))]
     ]
 
     tab_grupo = [
@@ -78,18 +79,31 @@ def crear_layout():
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 
-# def crear_predeterminado(config):
-#     arch = open(absolute_path + "\\Datos\\info\\configPred.json","w")
-#     json.dump(config,arch,indent=2)
-#     arch.close()
+
 
 def guardar_configuracion(config):
-    arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","w")
+    if ("win" in sys.platform):
+        arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","w")
+    else:
+        arch = open(absolute_path + "/Datos/info/configUsuario.json","w")
     json.dump(config,arch,indent=2)
     arch.close()
 
-def cagar_config():
-    arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
+def cargar_config_pred():
+    if ("win" in sys.platform):        
+        arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
+    else:
+        arch = open(absolute_path + "/Datos/info/configPred.json","r")
+    config = dict()
+    config = json.load(arch)
+    arch.close()
+    return config
+
+def cargar_config_usr():
+    if ("win" in sys.platform):        
+        arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","r")
+    else:
+        arch = open(absolute_path + "/Datos/info/configUsuario.json","r")
     config = dict()
     config = json.load(arch)
     arch.close()
@@ -98,14 +112,54 @@ def cagar_config():
 def main():
     sg.theme("DarkAmber")
     layout = crear_layout()
-    config = cagar_config()
     window = sg.Window("ScrabbleAR", layout)
     while True:
         event, values = window.read()
-        print(event, values)
-        if (event == None):
+        print("eventos y valores ",event, values)
+        if (event == None or event == "-salir-"):
             break
+        
+        if (event == "-pred-"):
+            if ("win" in sys.platform):
+                os.remove(absolute_path + "\\Datos\\info\\configUsuario.json")
+            else:
+                os.remove(absolute_path + "/Datos/info/configUsuario.json")
+            
+        if (event == "-jugar-"):
+            if ("win" in sys.platform):
+                if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
+                    print("HAY CONFIG")
+                    config = cargar_config_usr()
+
+                else:
+                    print("NO HAY CONFIG")
+                    config = cargar_config_pred()
+            else:
+                if "configUsuario.json" in os.listdir(absolute_path+"/Datos/info"):
+                    print("HAY CONFIG")
+                    config = cargar_config_usr()
+                else:
+                    print("NO HAY CONFIG")  
+                    config = cargar_config_pred()             
+            if(config["dificultad"] == "facil"):
+                print("Nivel_1")
+                nivel_1.main()
+            elif (config["dificultad"] == "medio"):
+                print("Nivel_2")
+            else:
+                print("Nivel_3")
+
         if (event == "-guardar-"):
+            if ("win" in sys.platform):
+                if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
+                    config = cargar_config_usr()
+                else:
+                    config = cargar_config_pred()
+            else:
+                if "configUsuario.json" in os.listdir(absolute_path+"/Datos/info"):
+                    config = cargar_config_usr()
+                else:
+                    config = cargar_config_pred()    
             config["tiempo"] = values["-tiempo-"]*60
             if (window["facil"].get()):
                 config["dificultad"] = "facil"
@@ -129,7 +183,7 @@ def main():
             config["grupo_7_cant"] = int(window.FindElement("grupo_7_cant").get())
 
             guardar_configuracion(config)
-            
+ 
 
 
     window.close()
