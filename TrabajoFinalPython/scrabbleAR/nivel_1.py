@@ -8,6 +8,8 @@ import IdentificarPalabra as es
 from functools import reduce
 import os
 import json
+import Jugador
+import JugadorPC
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
 
@@ -164,6 +166,12 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     layout.append(fila_fichas)
     return layout, letras, botones
 
+def sumar_puntos(puntos_por_letra, palabra_obtenida):
+    puntos = 0
+    for letra in palabra_obtenida:
+        puntos = puntos + puntos_por_letra[letra]
+    return puntos
+
 def agregar_palabra_al_tablero(palabra_nueva, keys_ordenados, window):
     for key in keys_ordenados:
         window[key].update(palabra_nueva[key])
@@ -181,7 +189,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva 
 
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es 
     actualiza el tablero y los parametros 
@@ -210,6 +218,9 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
         print(palabra_obtenida)
         if es.palabra_valida(palabra_obtenida):
             palabras_formadas.append(palabra_obtenida)
+            ## creo una funcion que suma los puntos por letra:
+            puntos = sumar_puntos(puntos_por_letra, palabra_obtenida)
+            ## aca habria que enviarle a Jugador estos puntos
             window['-d'].update(disabled=True)
             letras_usadas = dict()
             palabra_nueva = dict()
@@ -275,7 +286,7 @@ def main():
         if event == "-c":
             # boton de confirmar palabra
             print(palabra_nueva)
-            letras_usadas, palabra_nueva, palabras_formadas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas)
+            letras_usadas, palabra_nueva, palabras_formadas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra)
         if event in letras.keys():
             window['-d'].update(disabled=False)
             box = event  # letra seleccionada
@@ -284,25 +295,24 @@ def main():
                 window[val].update(disabled=True)  # desactivo los botones de las fichas
             restar_tiempo = int(time.time())
             event, values = window.read()
-        # no pude agregar que actualice aca porque sino mueren las fichas
-        if restar_tiempo > cuenta_regresiva:
-            print("Se termino el tiempo")
-        # Implementar final de partida
-        if event in botones.keys():
+            # no pude agregar que actualice aca porque sino mueren las fichas
+            if restar_tiempo > cuenta_regresiva:
+                print("Se termino el tiempo")
+            if event in botones.keys():
             # refresco la tabla en la casilla seleccionada con la letra elegida antes
-            ind = event  # casilla seleccionada
-            if botones[ind] == "+":
-                print("boton mas")
-            elif botones[ind] == "-":
-                print("boton menos")
-            palabra_nueva[ind] = letras[box]
-            window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
-            for val in letras.keys():
-                if val not in letras_usadas.keys():
-                    window[val].update(disabled=False)  # refresco la tabla B
+                ind = event  # casilla seleccionada
+                if botones[ind] == "+":
+                    print("boton mas")
+                elif botones[ind] == "-":
+                    print("boton menos")
+                palabra_nueva[ind] = letras[box]
+                window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
+                for val in letras.keys():
+                    if val not in letras_usadas.keys():
+                        window[val].update(disabled=False)  # refresco la tabla B
+        # Implementar final de partida
+        
 
-    start_time = time.process_time()
-    print(start_time)
     window.close()
 
 if __name__ == "__main__":
