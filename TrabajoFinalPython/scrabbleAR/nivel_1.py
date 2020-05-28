@@ -288,6 +288,8 @@ def main():
 
     primer_turno = True
 
+    puede_confirmar = False
+
     cont_tiempo = tiempo  # Esto deberia venir como parametro
     cuenta_regresiva = int(time.time()) + cont_tiempo
     #Cierro el archivo del tablero
@@ -303,7 +305,8 @@ def main():
             pass
         if primer_turno:
             primer_turno = False
-            turno = random.randint(0,1)
+            #turno = random.randint(0,1) # comentado por ahora
+            turno = 1 # lo dejamos en uno hasta poder implementar el turno de la pc, despues se saca
             if turno == 0:
                 turno_jugador = False
                 turno_pc = True
@@ -327,10 +330,12 @@ def main():
                 # deshacer las palabras puestas en el tablero
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
             # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-            if event == "-c":
+            if event == "-c" and puede_confirmar:
                 # boton de confirmar palabra
                 print(palabra_nueva)
                 letras_usadas, palabra_nueva, palabras_formadas, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra)
+                turno_jugador = True # estas dos sentencias se dejan por ahora hasta que este
+                turno_pc = False     # implementado lo de la pc
             if event in letras.keys():
                 window['-d'].update(disabled=False)
                 box = event  # letra seleccionada
@@ -343,6 +348,7 @@ def main():
                 if restar_tiempo > cuenta_regresiva:
                     print("Se termino el tiempo")
                 if event in botones.keys():
+                    puede_confirmar = True # recien ahora puede confirmar
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
                     if botones[ind] == "+":
