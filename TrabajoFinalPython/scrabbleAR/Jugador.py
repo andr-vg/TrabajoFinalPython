@@ -7,4 +7,6 @@ class Jugador():
     def sumPuntaje(self,punt):
         self.puntaje += punt
 
+    def getPuntaje(self):
+        return self.puntaje
 

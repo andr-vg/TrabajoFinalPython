@@ -122,7 +122,7 @@ def crear_layout():
     return layout, letras, botones
 
 
-def main(args):
+def main():
     # Layout
     layout, letras, botones = crear_layout()
     # Ventana
@@ -183,4 +183,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

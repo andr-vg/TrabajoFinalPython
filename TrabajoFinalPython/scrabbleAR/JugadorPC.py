@@ -4,6 +4,9 @@ class PC():
         self.fichas = fichas #Fichas seria una lista de CHAR
         self.puntaje = 0
     
+    def getPuntaje(self):
+        return self.puntaje
+
     def sumPuntaje(self,punt):
         self.puntaje += punt
     
