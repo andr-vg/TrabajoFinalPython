@@ -166,7 +166,16 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     layout.append(fila_fichas)
     return layout, letras, botones
 
-def sumar_puntos(puntos_por_letra, palabra_obtenida):
+def sumar_puntos_por_casillero(botones, botones_elegidos):
+    puntos = 0
+    for casillero in botones_elegidos:
+        if botones[casillero] == '+':
+            puntos = puntos + 10   # en realidad tenemos que pasar por parametro cuanto suma o resta la casilla porque variaba creo segun el nivel
+        elif botones[casillero] == '-':
+            puntos = puntos - 10 
+    return puntos
+    
+def sumar_puntos_por_ficha(puntos_por_letra, palabra_obtenida):
     puntos = 0
     for letra in palabra_obtenida:
         puntos = puntos + puntos_por_letra[letra]
@@ -219,7 +228,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
         if es.palabra_valida(palabra_obtenida):
             palabras_formadas.append(palabra_obtenida)
             ## creo una funcion que suma los puntos por letra:
-            puntos = sumar_puntos(puntos_por_letra, palabra_obtenida)
+            puntos = sumar_puntos_por_ficha(puntos_por_letra, palabra_obtenida) + sumar_puntos_por_casillero(botones, palabra_nueva.keys())
             ## aca habria que enviarle a Jugador estos puntos
             window['-d'].update(disabled=True)
             letras_usadas = dict()
