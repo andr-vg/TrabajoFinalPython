@@ -13,9 +13,9 @@ absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your abso
 if "win" in sys.platform:
     # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
 
-    arch = open(absolute_path + '\\Datos\\info\\tablero.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+    arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
 else:
-    arch = open(absolute_path + "/Datos/info/tablero.csv", "r")
+    arch = open(absolute_path + "/Datos/info/tablero-nivel-1.csv", "r")
 csvreader = csv.reader(arch)
 
 

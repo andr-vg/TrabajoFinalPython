@@ -221,9 +221,9 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
 
 def main():
     if "win" in sys.platform:
-        arch = open(absolute_path + '\\Datos\\info\\tablero.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+        arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
     else:
-        arch = open(absolute_path + "/Datos/info/tablero.csv", "r")
+        arch = open(absolute_path + "/Datos/info/tablero-nivel-1.csv", "r")
     csvreader = csv.reader(arch)
 
     # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
