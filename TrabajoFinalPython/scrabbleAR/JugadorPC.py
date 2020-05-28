@@ -4,21 +4,21 @@ class PC():
         self.fichas = fichas #Fichas seria una lista de CHAR
         self.puntaje = 0
     
-    def getPuntaje(self):
-        return self.puntaje
+    def getPuntos(self):
+        return self.puntaje 
 
-    def sumPuntaje(self,punt):
+    def sumPuntos(self,punt):
         self.puntaje += punt
     
     def _tiene_vocales(self,palabra):
         for letra in palabra:
-            if letra in "aeiou":
+            if letra in "AEIOU":
                 return True
         return False
     
     def _tiene_consonantes(self,palabra):
         for letra in palabra:
-            if not letra in "aeiou":
+            if not letra in "AEIOU":
                 return True
         return False
     
@@ -40,6 +40,8 @@ class PC():
         lista_palabras = []
         self._recursividadPalabras(self.fichas,long_max,palabra,lista_palabras)
         return "" if len(lista_palabras) == 0 else max(lista_palabras)
+
+    puntos = property(getPuntos,sumPuntos,doc="Setters y getters")
 
 
 

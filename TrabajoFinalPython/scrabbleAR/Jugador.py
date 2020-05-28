@@ -1,12 +1,13 @@
-import IdentificarPalabra as es 
 class Jugador():
-    def __init__(self,fichas):
-        self.fichas = fichas
+    def __init__(self):
         self.puntaje = 0
 
-    def sumPuntaje(self,punt):
+    def sumPuntos(self,punt):
         self.puntaje += punt
 
-    def getPuntaje(self):
+    def getPuntos(self):
         return self.puntaje
+
+    puntos =  property(getPuntos,sumPuntos,doc="Settet y Getter")
+
 
