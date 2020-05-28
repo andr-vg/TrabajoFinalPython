@@ -118,7 +118,6 @@ def main():
         print("eventos y valores ",event, values)
         if (event == None or event == "-salir-"):
             break
-        
         if (event == "-pred-"):
             if ("win" in sys.platform):
                 os.remove(absolute_path + "\\Datos\\info\\configUsuario.json")

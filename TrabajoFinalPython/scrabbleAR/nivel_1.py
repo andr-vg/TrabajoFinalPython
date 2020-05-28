@@ -8,16 +8,8 @@ import IdentificarPalabra as es
 from functools import reduce
 import os
 import json
-
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
-if "win" in sys.platform:
-    # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\tablero.csv","r")
-
-    arch = open(absolute_path + '\\Datos\\info\\tablero.csv', "r")  # esto lo agregue porque no me encontraba el archivo
-else:
-    arch = open(absolute_path + "/Datos/info/tablero.csv", "r")
-csvreader = csv.reader(arch)
 
 
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
@@ -66,12 +58,7 @@ def cargar_config_usr():
     return config
 
 
-# bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
-bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
-        "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
-#Puntos
-puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
-        "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
+
 
 def cargar_configuraciones(bolsa,puntos_por_letra):
     """
@@ -123,7 +110,7 @@ def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fi
         bolsa[letra]= (bolsa[letra]) -1
     return (dar)
 
-def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
+def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # BLANCO FCFCFA
@@ -232,66 +219,75 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pal
 
     return letras_usadas, palabra_nueva, palabras_formadas
 
-# Config del tablero:
-bolsa , puntos_por_letra, tiempo = cargar_configuraciones(bolsa,puntos_por_letra)
-# print(bolsa)
-# print(puntos_por_letra)
-layout, letras, botones = crear_layout()  # botones es un diccionario de pares (tupla, valor)
+def main():
+    if "win" in sys.platform:
+        arch = open(absolute_path + '\\Datos\\info\\tablero.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+    else:
+        arch = open(absolute_path + "/Datos/info/tablero.csv", "r")
+    csvreader = csv.reader(arch)
 
-window = sg.Window("Ventana de juego", layout)
+    # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
+    bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
+        "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
+    #Puntos
+    puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
+        "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
+    # Config del tablero:
+    bolsa , puntos_por_letra, tiempo = cargar_configuraciones(bolsa,puntos_por_letra)
+    # print(bolsa)
+    # print(puntos_por_letra)
+    layout, letras, botones = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
 
-oper = ["-t", "-c", "-d,""-p"]  # Para los botones Terminar, Confirmar, Deshacer y Posponer
+    window = sg.Window("Ventana de juego", layout)
 
-letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
+    letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
 
-palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
+    palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
 
-palabras_formadas = [] # lista de palabras formadas por el jugador
+    palabras_formadas = [] # lista de palabras formadas por el jugador
 
 
 
-cont_tiempo = tiempo  # Esto deberia venir como parametro
-cuenta_regresiva = int(time.time()) + cont_tiempo
-
-while True:  # Event Loop
-    restar_tiempo = int(time.time())
-    event, values = window.read(timeout=1000)
-    window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
-    print(event, values) 
-    if restar_tiempo > cuenta_regresiva:
-        print("Se termino el tiempo")
-        # Implementar final de partida
-        pass  
-    if event is None:
-        break
-    if event == "-p":
-        guardar_partida(layout)
-    if event == "-t":  # Y no se termino el tiempo..
-        # Implementar
-        pass
-    if event == "-d":
-        # deshacer las palabras puestas en el tablero
-        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-    # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-    if event == "-c":
-        # boton de confirmar palabra
-        print(palabra_nueva)
-        letras_usadas, palabra_nueva, palabras_formadas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas)
-    if event in letras.keys():
-        window['-d'].update(disabled=False)
-        box = event  # letra seleccionada
-        letras_usadas[box] = letras[box]
-        for val in letras.keys():
-            window[val].update(disabled=True)  # desactivo los botones de las fichas
+    cont_tiempo = tiempo  # Esto deberia venir como parametro
+    cuenta_regresiva = int(time.time()) + cont_tiempo
+    #Cierro el archivo del tablero
+    arch.close()
+    while True:  # Event Loop
         restar_tiempo = int(time.time())
-        event, values = window.read()
+        event, values = window.read(timeout=1000)
+        window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
+        print(event, values) 
+        if restar_tiempo > cuenta_regresiva:
+            print("Se termino el tiempo")
+            # Implementar final de partida
+            pass  
+        if event is None:
+            break
+        if event == "-p":
+            guardar_partida(layout)
+        if event == "-t":  # Y no se termino el tiempo..
+            # Implementar
+            pass
+        if event == "-d":
+            # deshacer las palabras puestas en el tablero
+            letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+        # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
+        if event == "-c":
+            # boton de confirmar palabra
+            print(palabra_nueva)
+            letras_usadas, palabra_nueva, palabras_formadas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas)
+        if event in letras.keys():
+            window['-d'].update(disabled=False)
+            box = event  # letra seleccionada
+            letras_usadas[box] = letras[box]
+            for val in letras.keys():
+                window[val].update(disabled=True)  # desactivo los botones de las fichas
+            restar_tiempo = int(time.time())
+            event, values = window.read()
         # no pude agregar que actualice aca porque sino mueren las fichas
         if restar_tiempo > cuenta_regresiva:
             print("Se termino el tiempo")
         # Implementar final de partida
-        pass
-        if event is None:
-            break
         if event in botones.keys():
             # refresco la tabla en la casilla seleccionada con la letra elegida antes
             ind = event  # casilla seleccionada
@@ -305,5 +301,9 @@ while True:  # Event Loop
                 if val not in letras_usadas.keys():
                     window[val].update(disabled=False)  # refresco la tabla B
 
-start_time = time.process_time()
-print(start_time)
+    start_time = time.process_time()
+    print(start_time)
+    window.close()
+
+if __name__ == "__main__":
+    main()
