@@ -52,6 +52,12 @@ def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se
             dic[i]= letra
             bolsa[letra]= (bolsa[letra]) -1
 
+def devolver_fichas(dic,keys):
+    for nro in keys:
+        bolsa[dic[nro]]+=1
+        dic[nro]=""
+    return dic
+
 def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
@@ -107,9 +113,10 @@ def crear_layout():  # Creacion del Layout, interpretando los caracteres del csv
     fila_fichas_jugador = [sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 2),
                              button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
     fila_fichas_maquina = [sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 2),
-                             button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
-    fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),
-                    sg.Button("Posponer", key="-p"), sg.Text(str(time.process_time() * 10) + " seg", key='tiempo')]
+                             button_color=('white', 'blue'),disabled=True) for i in range(fichas_por_jugador)]
+    fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),sg.Button("Posponer", key="-p"),
+                    sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
+                     sg.Text(str(time.process_time() * 10) + " seg", key='tiempo')]     #en lugar de un tooltip se podria hacer un sg.popup... para pensarlo
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
@@ -187,6 +194,8 @@ palabras_formadas = [] # lista de palabras formadas por el jugador
 cont_tiempo = 200  # Esto deberia venir como parametro
 cuenta_regresiva = int(time.time()) + cont_tiempo
 
+cambios_de_fichas=0
+
 while True:  # Event Loop
     restar_tiempo = int(time.time())
     event, values = window.read(timeout=1000)
@@ -198,6 +207,24 @@ while True:  # Event Loop
         pass
     if event is None:
         break
+    if (event == "-cf") and (cambios_de_fichas < 3):    #boton cambio de fichas
+        letras_a_cambiar=[]                                             #falta hacer que se termine el turno una vez realizado el cambio
+        while True:
+            event = window.read()[0]
+            if event is None:
+                break
+            elif event in letras.keys():
+                letras_a_cambiar.append(event)
+                window[event].update(disabled=True)
+            elif event == "-cf":
+                print(letras)
+                letras=devolver_fichas(letras,letras_a_cambiar)
+                dar_fichas(letras,bolsa)
+                print(letras)
+                for f in letras_a_cambiar:
+                    window[f].update(letras[f], disabled=False)
+                cambios_de_fichas+=1
+                break
     if event == "-p":
         guardar_partida(layout)
     if event == "-t":  # Y no se termino el tiempo..
