@@ -167,13 +167,17 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     return layout, letras, botones
 
 def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
+    duplicar = False
+    triplicar = False
     puntos = 0
     for casillero, letra in palabra_nueva.items():
         puntaje_letra = puntos_por_letra[letra]
         if botones[casillero] == '+':  # duplicamos el puntaje por letra
             puntaje_letra = 2 * puntaje_letra
+            duplicar = True
         elif botones[casillero] == '++':  # triplicamos el puntaje por letra
             puntaje_letra = 3 * puntaje_letra
+            triplicar = True
         elif botones[casillero] == '-':  # se le resta 1 punto al puntaje total obtenido
             puntos += -1
         elif botones[casillero] == '--':  # se le resta 2 puntos al puntaje total obtenido
@@ -181,6 +185,11 @@ def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
         elif botones[casillero] == '---':  # se le resta 3 puntos al puntaje total obtenido
             puntos += -3
         puntos += puntaje_letra  # sumamos el puntaje por cada letra de la palabra
+    if triplicar:
+        puntos = 3 * puntos
+    elif duplicar:
+        puntos = 2 * puntos
+    print(puntos)
     return puntos
 
 def agregar_palabra_al_tablero(palabra_nueva, keys_ordenados, window):
