@@ -6,7 +6,7 @@ def palabra_valida(palabra):
     from pattern.text.es import verbs, spelling, lexicon , parse
     import string
     if not (palabra.lower() in verbs) and (not palabra.lower() in spelling) and (not(palabra.lower() in lexicon) and not(palabra.upper() in lexicon) and not(palabra.capitalize() in lexicon)):
-        print('No se encuentra en pattern.es')
+        pass
     else:
         tipo_palabra = parse(palabra)
         return ("NN" in tipo_palabra) or ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
