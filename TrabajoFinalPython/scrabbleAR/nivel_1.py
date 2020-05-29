@@ -3,7 +3,7 @@ import csv
 import sys
 import string
 import random
-import time 
+import time
 import IdentificarPalabra as es
 from functools import reduce
 import os
@@ -31,10 +31,10 @@ def guardar_partida(lista):  # recibe el layout saca los botones que no son del 
 
 def cargar_config_pred():
     """
-    carga la configuracion del usuario 
+    carga la configuracion del usuario
     devuelve un diccionario
     """
-    if ("win" in sys.platform):        
+    if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
     else:
         arch = open(absolute_path + "/Datos/info/configPred.json","r")
@@ -45,10 +45,10 @@ def cargar_config_pred():
 
 def cargar_config_usr():
     """
-    carga la configuracion del usuario 
+    carga la configuracion del usuario
     devuelve un diccionario
     """
-    if ("win" in sys.platform):        
+    if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","r")
     else:
         arch = open(absolute_path + "/Datos/info/configUsuario.json","r")
@@ -77,9 +77,9 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
              print("HAY CONFIG")
              config = cargar_config_usr()
         else:
-            print("NO HAY CONFIG")  
+            print("NO HAY CONFIG")
             config = cargar_config_pred()
-    grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L"," R", "T"]
+    grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L","R", "T"]
     grupo_2 = ["C", "D", "G"]
     grupo_3 = ["M","B","P"]
     grupo_4 = ["F","H","V","Y"]
@@ -93,7 +93,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
             bolsa[letra] = config["grupo_"+str(cont)+"_cant"]
             puntos_por_letra[letra] = config["grupo_"+str(cont)]
         cont += 1
-    
+
     tiempo =  config["tiempo"]
 
     return bolsa,puntos_por_letra,tiempo
@@ -107,7 +107,7 @@ def generar_lista_letras(bolsa):
         for cantidad in range(bolsa[letras]):
             letras_juntas.append(letras)
     return letras_juntas
-
+'''
 def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
     dar = {}
     # letras_juntas= reduce(lambda a,b: a+b, [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
@@ -117,6 +117,21 @@ def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fi
         dar['-'+str(i)+'-']= letra
         bolsa[letra] = (bolsa[letra]) -1
     return (dar)
+'''
+def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
+    letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
+    for i in dic.keys():
+        if dic[i] == "":
+            letra=random.choice(letras_juntas)
+            letras_juntas.replace(letra,"",1)
+            dic[i]= letra
+            bolsa[letra]= (bolsa[letra]) -1
+
+def devolver_fichas(dic,keys,bolsa):
+    for nro in keys:
+        bolsa[dic[nro]]+=1
+        dic[nro]=""
+    return dic
 
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
@@ -127,7 +142,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
                                             pad=(0, 0), button_color=('black', '#ED5752')) # ROJO
 
     premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
-                                         pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE 
+                                         pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
 
     sg.theme("DarkAmber")
 
@@ -135,7 +150,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
 
     botones = {}  # dict() == {}
     key = 0
-    # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j) 
+    # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
     i = 0  # i lleva la posicion de fila
     for fila in csvreader:
@@ -160,10 +175,15 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
         i += 1
 
     fichas_por_jugador = 7
-    if hay_fichas(fichas_por_jugador, bolsa):  # si en la bolsa hay suficentes fichas las reparto, si no no porque puede dar error
-        letras = dar_fichas(fichas_por_jugador, bolsa)
-        letras_pc = dar_fichas(fichas_por_jugador,bolsa)
-        print("se entregaron las fichas: ", letras)
+    letras_jugador= {0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}
+    letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
+    if hay_fichas(fichas_por_jugador, bolsa):
+        dar_fichas(letras_maquina, bolsa)
+        print("se entregaron las fichas a la maquina: ", letras_maquina)
+
+    if hay_fichas(fichas_por_jugador, bolsa):
+        dar_fichas(letras_jugador, bolsa)
+        print("se entregaron las fichas al jugador: ", letras_jugador)
     colum = [
         [sg.Text(str(time.process_time() * 10) + " seg", key='tiempo'),
        sg.Text("Puntos jugador: 0",key="p_j"),sg.Text("Puntos Pc: 0",key="p_pc")]
@@ -171,13 +191,17 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
     ]
-    fila_fichas = [sg.Button(button_text=list(letras.values())[i], key=list(letras.keys())[i], size=(4, 1),
+    fila_fichas_jugador = [sg.Text("Fichas del Jugador: ")]+[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 2),
                              button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
+    fila_fichas_maquina = [sg.Text("Fichas de la Maquina: ")]+[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 2),
+                             button_color=('white', 'blue'),disabled=True) for i in range(fichas_por_jugador)]
     fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),
+                    sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
                     sg.Button("Posponer", key="-p")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
-    layout.append(fila_fichas)
-    return layout, letras, botones, letras_pc
+    layout.append(fila_fichas_jugador)
+    layout.insert(0,fila_fichas_maquina)
+    return layout, letras_jugador, letras_maquina, botones
 
 def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
     duplicar = False
@@ -215,17 +239,17 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     que guardan nuestras letras y la palabra
     """
     for val in keys:
-        window[val].update(disabled=False)  # reactivamos las fichas 
+        window[val].update(disabled=False)  # reactivamos las fichas
     for val in palabra_nueva:
         window[val].update(botones[val], disabled=False) # eliminamos del tablero las fichas
     letras_usadas = dict()
     palabra_nueva = dict()
-    return letras_usadas, palabra_nueva 
+    return letras_usadas, palabra_nueva
 
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, palabras_formadas, puntos_por_letra,pj,pc):
     """
-    Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es 
-    actualiza el tablero y los parametros 
+    Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
+    actualiza el tablero y los parametros
     """
     turno_jugador = True
     turno_pc = False
@@ -287,17 +311,17 @@ def main():
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     # Config del tablero:
     bolsa , puntos_por_letra, tiempo = cargar_configuraciones(bolsa,puntos_por_letra)
-    # print(bolsa)
-    # print(puntos_por_letra)
-    layout, letras, botones,letras_pc = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
+    print(bolsa)
+    #print(puntos_por_letra)
+    layout, letras, letras_pc,botones = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
     #instancio jugador y pc
-    
-    from JugadorPC import PC 
+
+    from JugadorPC import PC
     from Jugador import Jugador
-    
+
     pj = Jugador()
     pc = PC(letras_pc)
-    
+
 
     window = sg.Window("Ventana de juego", layout)
 
@@ -315,6 +339,8 @@ def main():
 
     puede_confirmar = False
 
+    cambios_de_fichas=0
+
     cont_tiempo = tiempo  # Esto deberia venir como parametro
     cuenta_regresiva = int(time.time()) + cont_tiempo
     #Cierro el archivo del tablero
@@ -323,7 +349,7 @@ def main():
         restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
         window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
-        print(event, values) 
+        print(event, values)
         if restar_tiempo > cuenta_regresiva:
             print("Se termino el tiempo")
             # Implementar final de partida
@@ -341,6 +367,27 @@ def main():
         if turno_jugador:
             if event is None:
                 break
+            if (event == "-cf") and (cambios_de_fichas < 3):    #boton cambio de fichas
+                letras_a_cambiar=[]                                             #falta hacer que se termine el turno una vez realizado el cambio
+                while True:
+                    event = window.read()[0]
+                    if event is None:
+                        break
+                    elif event in letras.keys():
+                        letras_a_cambiar.append(event)
+                        window[event].update(disabled=True)
+                    elif event == "-cf":
+                        print(letras)
+                        letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
+                        dar_fichas(letras,bolsa)
+                        print(letras)
+                        for f in letras_a_cambiar:
+                            window[f].update(letras[f], disabled=False)
+                        cambios_de_fichas+=1
+                        if cambios_de_fichas == 3:
+                            window["-cf"].update(disabled=True)
+                            window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                        break
             if event == "-paso":
                 # acá tendriamos que hacer algo como
                 # turno_jugador == False
@@ -392,7 +439,7 @@ def main():
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             pass
         # Implementar final de partida
-        
+
 
     window.close()
 
