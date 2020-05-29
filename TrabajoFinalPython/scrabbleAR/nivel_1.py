@@ -14,8 +14,9 @@ absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your abso
 
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
     guardar = lista
-    guardar.pop(16)
-    guardar.pop(15)
+    guardar.pop(0)
+    #guardar.pop(16)
+    #guardar.pop(17)
     if "win" in sys.platform:
         # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
 
@@ -107,17 +108,7 @@ def generar_lista_letras(bolsa):
         for cantidad in range(bolsa[letras]):
             letras_juntas.append(letras)
     return letras_juntas
-'''
-def dar_fichas(cuantas, bolsa):  # devuelve un diccionario con la cantidad de fichas requeridas, retirando esas fichas de la bolsa
-    dar = {}
-    # letras_juntas= reduce(lambda a,b: a+b, [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
-    letras_juntas = generar_lista_letras(bolsa)
-    for i in range(cuantas):
-        letra=random.choice(letras_juntas)
-        dar['-'+str(i)+'-']= letra
-        bolsa[letra] = (bolsa[letra]) -1
-    return (dar)
-'''
+
 def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
     letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
     for i in dic.keys():
