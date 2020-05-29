@@ -58,9 +58,6 @@ def cargar_config_usr():
     arch.close()
     return config
 
-
-
-
 def cargar_configuraciones(bolsa,puntos_por_letra):
     """
     Carga las configuraciones de usuario o predeterminadas en caso de que no existan las del usuario
@@ -126,13 +123,13 @@ def devolver_fichas(dic,keys,bolsa):
 
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
-    blanco = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
+    blanco = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # BLANCO FCFCFA
 
-    descuento = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
+    descuento = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#ED5752')) # ROJO
 
-    premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 2), key=key,
+    premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
 
     sg.theme("DarkAmber")
@@ -164,7 +161,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
             j += 1
         layout.append(fichas)
         i += 1
-
+    long_tablero  = len(layout) #Esto lo necesita la clase PC para las palabras
     fichas_por_jugador = 7
     letras_jugador= {0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}
     letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
@@ -188,11 +185,11 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
                              button_color=('white', 'blue'),disabled=True) for i in range(fichas_por_jugador)]
     fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
-                    sg.Button("Posponer", key="-p")]+[sg.Column(frame_colum)]
+                    sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
-    return layout, letras_jugador, letras_maquina, botones
+    return layout, letras_jugador, letras_maquina, botones , long_tablero
 
 def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
     duplicar = False
@@ -304,14 +301,14 @@ def main():
     bolsa , puntos_por_letra, tiempo = cargar_configuraciones(bolsa,puntos_por_letra)
     print(bolsa)
     #print(puntos_por_letra)
-    layout, letras, letras_pc,botones = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
-    #instancio jugador y pc
+    layout, letras, letras_pc,botones,long_tablero = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
+    
 
     from JugadorPC import PC
     from Jugador import Jugador
 
     pj = Jugador()
-    pc = PC(letras_pc)
+    pc = PC(letras_pc,long_tablero)
 
 
     window = sg.Window("Ventana de juego", layout)
@@ -387,9 +384,9 @@ def main():
             # boton de pasar el turno a la pc
             if event == "-paso":
                 # acá tendriamos que hacer algo como
-                # turno_jugador == False
-                # turno_pc = True
-                pass
+                turno_jugador = False
+                turno_pc = True
+
             # boton de guardar partida
             if event == "-p":
                 guardar_partida(layout)
@@ -405,8 +402,8 @@ def main():
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero)
-                turno_jugador = True # estas dos sentencias se dejan por ahora hasta que este
-                turno_pc = False     # implementado lo de la pc
+                turno_jugador = False # estas dos sentencias se dejan por ahora hasta que este
+                turno_pc = True     # implementado lo de la pc
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 window["p_pc"].update("Puntos PC:"+str(pc.puntos))
             # botones del atril del jugador
@@ -436,9 +433,11 @@ def main():
                             window[val].update(disabled=False)  # refresco la tabla B
         # turno de la pc: implementar
         if turno_pc:
+            pc.jugar(window,posiciones_ocupadas_tablero)
             # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
-            pass
+            turno_pc = False
+            turno_jugador = True
         # Implementar final de partida
 
 
