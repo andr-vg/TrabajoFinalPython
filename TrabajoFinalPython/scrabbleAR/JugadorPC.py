@@ -1,5 +1,6 @@
 import IdentificarPalabra as es
 import PySimpleGUI as sg
+import random
 class PC():
     def __init__ (self,fichas,long_tablero):
         self.fichas = fichas #Fichas seria una lista de CHAR
@@ -48,8 +49,12 @@ class PC():
                     cant += 1
                     posiciones.append((i,j))
                     j += 1
-                if cant >= 2 and not cant in long_y_posiciones.keys():
-                    long_y_posiciones[cant] = posiciones
+                if cant >= 2: 
+                    if not cant in long_y_posiciones.keys():
+                        long_y_posiciones[cant] = [posiciones]
+                    else:
+                        long_y_posiciones[cant].append(posiciones)
+
                 j += 1
         return long_y_posiciones 
 
@@ -86,10 +91,13 @@ class PC():
         long_max = self._calcular_long_maxima(long_max_tablero, len(self.fichas)) # nos quedamos con la max entre casillas y cant fichas
         mejor_palabra = self._obtenerPalabra(long_max)  # obtenemos la mejor palabra posible
         if mejor_palabra != '':  # caso en que encuentra una palabra valida
-            for i in range(len(mejor_palabra)):   # agregamos las posiciones a la lista de posiciones ocupadas
-                posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][i])
-                print(long_y_posiciones[long_max_tablero][i])
-                window[long_y_posiciones[long_max_tablero][i]].update(mejor_palabra[i]) # agregamos las letras al tablero
+            posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero]))
+            inicio_columna = random.randint(0,(long_max_tablero-len(mejor_palabra)))
+            fin_columna = inicio_columna + len(mejor_palabra)
+            for i in range(inicio_columna,fin_columna):   # agregamos las posiciones a la lista de posiciones ocupadas
+                posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
+                print(long_y_posiciones[long_max_tablero][posiciones_random][i])
+                window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna]) # agregamos las letras al tablero
         else:
             sg.popup("La PC le ha pasado el turno")
 
