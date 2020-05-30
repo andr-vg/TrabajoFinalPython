@@ -330,8 +330,6 @@ def main():
 
     primer_turno = True
 
-    puede_confirmar = False
-
     cambios_de_fichas = 0
 
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero

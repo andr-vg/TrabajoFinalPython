@@ -111,7 +111,7 @@ class PC():
             for i in range(inicio_columna,fin_columna):   # agregamos las posiciones a la lista de posiciones ocupadas
                 posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 print(long_y_posiciones[long_max_tablero][posiciones_random][i])
-                window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna]) # agregamos las letras al tablero
+                window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna], disabled=True) # agregamos las letras al tablero
                 ## actualizamos las fichas de la pc:
                 self.reinicioFichas(mejor_palabra)               
         else:
