@@ -183,7 +183,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
                              button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
     fila_fichas_maquina = [sg.Text("Fichas de la Maquina: ")]+[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 2),
                              button_color=('white', 'blue'),disabled=True) for i in range(fichas_por_jugador)]
-    fila_botones = [sg.Button("Confirmar", key="-c"), sg.Button("Deshacer", key="-d"), sg.Button("Terminar", key="-t"),
+    fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
@@ -318,7 +318,6 @@ def main():
     pj = Jugador()
     pc = PC(letras_pc,long_tablero)
 
-
     window = sg.Window("Ventana de juego", layout)
 
     letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
@@ -408,12 +407,11 @@ def main():
             if event == "-d":
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
             # boton de confirmar palabra
-            if event == "-c" and puede_confirmar:
+            if event == "-c":
+                window["-c"].update(disabled=True)
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
-                turno_jugador = False # estas dos sentencias se dejan por ahora hasta que este
-                turno_pc = True     # implementado lo de la pc
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 window["p_pc"].update("Puntos PC:"+str(pc.puntos))
             # botones del atril del jugador
@@ -431,7 +429,6 @@ def main():
                 if restar_tiempo > cuenta_regresiva:
                     print("Se termino el tiempo")
                 if event in botones.keys():
-                    puede_confirmar = True # recien ahora puede confirmar
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
                     if botones[ind] == "+":
@@ -439,6 +436,8 @@ def main():
                     elif botones[ind] == "-":
                         print("boton menos")
                     palabra_nueva[ind] = letras[box]
+                    if len(palabra_nueva.keys()) > 1:
+                        window["-c"].update(disabled=False) # recien ahora puede confirmar
                     window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
@@ -446,6 +445,9 @@ def main():
         # turno de la pc: implementar
         if turno_pc:
             pc.jugar(window,posiciones_ocupadas_tablero)
+            fichas_pc = pc.getFichas()
+            dar_fichas(fichas_pc, bolsa)
+            pc.setFichas(fichas_pc)
             # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             turno_pc = False

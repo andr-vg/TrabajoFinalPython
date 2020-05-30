@@ -6,13 +6,29 @@ class PC():
         self.fichas = fichas #Fichas seria una lista de CHAR
         self.puntaje = 0 
         self.long_tablero = long_tablero
+
+    def setFichas(self, fichas_nuevas):
+        self.fichas = fichas_nuevas
+
+    def getFichas(self):
+        return self.fichas
     
     def getPuntos(self):
         return self.puntaje 
 
     def sumPuntos(self,punt):
         self.puntaje += punt
-    
+
+    def reinicioFichas(self,palabra):
+        cant = len(palabra)
+        for clave in self.fichas.keys():
+            if cant > 0:
+                if self.fichas[clave] in palabra:
+                    self.fichas[clave] = ""
+                    cant += -1
+            else: 
+                break
+
     def _tiene_vocales(self,palabra):
         for letra in palabra:
             if letra in "AEIOU":
@@ -35,9 +51,7 @@ class PC():
     def _mapear_tablero(self,posiciones_ocupadas_tablero, long_tablero):
         """ Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
             en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
-            listas con las posiciones disponibles de esas longitudes
-            Observar que el diccionario solo se queda con las primeras longitudes que encuentre, es decir,
-            si la fila i tiene 2 zonas con 3 lugares disponibles, se queda con la primera. Lo mismo por filas. 
+            listas con listas de las posiciones disponibles para esas longitudes 
         """
         long_y_posiciones = dict()
         for i in range(long_tablero):
@@ -91,20 +105,20 @@ class PC():
         long_max = self._calcular_long_maxima(long_max_tablero, len(self.fichas)) # nos quedamos con la max entre casillas y cant fichas
         mejor_palabra = self._obtenerPalabra(long_max)  # obtenemos la mejor palabra posible
         if mejor_palabra != '':  # caso en que encuentra una palabra valida
-            posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero]))
+            posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero])-1)
             inicio_columna = random.randint(0,(long_max_tablero-len(mejor_palabra)))
             fin_columna = inicio_columna + len(mejor_palabra)
             for i in range(inicio_columna,fin_columna):   # agregamos las posiciones a la lista de posiciones ocupadas
                 posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 print(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna]) # agregamos las letras al tablero
+                ## actualizamos las fichas de la pc:
+                self.reinicioFichas(mejor_palabra)               
         else:
             sg.popup("La PC le ha pasado el turno")
 
 
     puntos = property(getPuntos,sumPuntos,doc="Setters y getters")
-
-
 
 
         
