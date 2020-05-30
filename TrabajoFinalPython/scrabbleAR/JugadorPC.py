@@ -76,7 +76,7 @@ class PC():
         Agrega a lista_palabras las palabras que considera validas formadas por elementos de lista
         """
         for elem in lista:
-            print("ELEMENTOOOOOO: ",elem)
+            #print("ELEMENTOOOOOO: ",elem)
             palabra = palabra + elem
             if len(palabra) > 1 and not palabra in lista_palabras and self._tiene_vocales(palabra) and self._tiene_consonantes(palabra) and es.palabra_valida(palabra):
                 lista_palabras.append(palabra)
