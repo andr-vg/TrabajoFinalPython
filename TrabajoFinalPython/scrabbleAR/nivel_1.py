@@ -93,8 +93,8 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
         cont += 1
 
     tiempo =  config["tiempo"]
-
-    return bolsa,puntos_por_letra,tiempo
+    dificultad = config["dificultad"]
+    return bolsa,puntos_por_letra,tiempo,dificultad
 
 def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
@@ -306,7 +306,8 @@ def main():
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     # Config del tablero:
-    bolsa , puntos_por_letra, tiempo = cargar_configuraciones(bolsa,puntos_por_letra)
+    bolsa , puntos_por_letra, tiempo ,dificultad = cargar_configuraciones(bolsa,puntos_por_letra)
+    #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
     print(bolsa)
     #print(puntos_por_letra)
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
@@ -316,7 +317,7 @@ def main():
     from Jugador import Jugador
 
     pj = Jugador()
-    pc = PC(letras_pc,long_tablero)
+    pc = PC(letras_pc,long_tablero,botones,puntos_por_letra)
 
     window = sg.Window("Ventana de juego", layout)
 
@@ -444,7 +445,9 @@ def main():
         if turno_pc:
             pc.jugar(window,posiciones_ocupadas_tablero)
             fichas_pc = pc.getFichas()
+            print("FICHAS de la pc antes:",fichas_pc)
             dar_fichas(fichas_pc, bolsa)
+            print("Fichas de la pc despues:",fichas_pc)
             pc.setFichas(fichas_pc)
             # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
