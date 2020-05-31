@@ -2,10 +2,12 @@ import IdentificarPalabra as es
 import PySimpleGUI as sg
 import random
 class PC():
-    def __init__ (self,fichas,long_tablero):
+    def __init__ (self,fichas,long_tablero,botones,puntos_por_letra):
         self.fichas = fichas #Fichas seria una lista de CHAR
         self.puntaje = 0 
         self.long_tablero = long_tablero
+        self.botones = botones
+        self.puntos_por_letra = puntos_por_letra
 
     def setFichas(self, fichas_nuevas):
         self.fichas = fichas_nuevas
@@ -108,12 +110,20 @@ class PC():
             posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero])-1)
             inicio_columna = random.randint(0,(long_max_tablero-len(mejor_palabra)))
             fin_columna = inicio_columna + len(mejor_palabra)
+            palabra_nueva = dict()
             for i in range(inicio_columna,fin_columna):   # agregamos las posiciones a la lista de posiciones ocupadas
                 posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 print(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna], disabled=True) # agregamos las letras al tablero
-                ## actualizamos las fichas de la pc:
-                self.reinicioFichas(mejor_palabra)               
+                # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
+                palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio_columna]                
+        
+            ## llamamos a la funcion sumar_puntos de la clase padre y actualizamos los puntos:
+            # self.sumPuntos(sumar_puntos(puntos_por_letra, botones, palabra_nueva)) comentada hasta formar la clase padre
+            # window['p_pc'].update("Puntos PC:"+str(self.getPuntos())) # aca se actualizaria la ventana
+            ## actualizamos las fichas de la pc:
+            self.reinicioFichas(mejor_palabra)             
+
         else:
             sg.popup("La PC le ha pasado el turno")
 
