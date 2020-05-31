@@ -1,7 +1,5 @@
 import PySimpleGUI as sg
-import nivel_1 #commit
-# import nivel_2
-# import nivel_3
+import nivel_1 #Hay que cambiar el nombre
 import os
 import sys
 import json
@@ -15,6 +13,9 @@ else:
 
 
 def crear_layout():
+    """
+    Crea el layout de la ventana menu
+    """
     top_10 = []
 
     tab1_layout = [
@@ -82,6 +83,9 @@ def crear_layout():
 
 
 def guardar_configuracion(config):
+    """
+    Guarda la configuracion que hizo el usuario en un .json 
+    """
     if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","w")
     else:
@@ -90,6 +94,9 @@ def guardar_configuracion(config):
     arch.close()
 
 def cargar_config_pred():
+    """
+    Carga la configuracion predeterminada del juego
+    """
     if ("win" in sys.platform):        
         arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
     else:
@@ -100,6 +107,10 @@ def cargar_config_pred():
     return config
 
 def cargar_config_usr():
+    """
+    Carga el archivo json con las configuraciones que hizo el usuario
+    en la pestaña de configuracion
+    """
     if ("win" in sys.platform):        
         arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","r")
     else:
@@ -125,6 +136,7 @@ def main():
                 os.remove(absolute_path + "/Datos/info/configUsuario.json")
             
         if (event == "-jugar-"):
+
             if ("win" in sys.platform):
                 if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
                     print("HAY CONFIG")
@@ -140,13 +152,9 @@ def main():
                 else:
                     print("NO HAY CONFIG")  
                     config = cargar_config_pred()             
-            if(config["dificultad"] == "facil"):
-                print("Nivel_1")
-                nivel_1.main()
-            elif (config["dificultad"] == "medio"):
-                print("Nivel_2")
-            else:
-                print("Nivel_3")
+
+            nivel_1.main() #Despues hay que cambiarle el nombre a nose.. juego?
+
 
         if (event == "-guardar-"):
             if ("win" in sys.platform):
@@ -190,3 +198,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
