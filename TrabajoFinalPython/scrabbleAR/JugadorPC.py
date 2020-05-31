@@ -8,11 +8,13 @@ class PC():
         self.long_tablero = long_tablero
         self.botones = botones
         self.puntos_por_letra = puntos_por_letra
-        self.dificultad = "facil"
-        self.tipo = "VB"
+        #Estos 2 los tengo que acomodar cuando haga la herencia
+        self._dificultad = "facil"
+        self._tipo = "NN"
 
     def setFichas(self, fichas_nuevas):
         self.fichas = fichas_nuevas
+        print("fichas",self.fichas)
 
     def getFichas(self):
         return self.fichas
@@ -45,11 +47,17 @@ class PC():
                 return True
         return False
        
+    # def _obtenerPalabra(self,long_max):
+    #     palabra = ""
+    #     lista_palabras = []
+    #     lista_fichas = list(self.fichas.values()) #Hago lista de las fichas
+    #     self._recursividadPalabras(lista_fichas,long_max,palabra,lista_palabras)
+    #     return "" if len(lista_palabras) == 0 else max(lista_palabras)
     def _obtenerPalabra(self):
         import itertools as it
         from pattern.text.es import verbs, spelling, lexicon , parse
         """
-        obtiene una palabra a partir de las fichas
+        obtiene una palabra a partir de las _fichas
         """
         letras = ""
         for letra in self.fichas.values():
@@ -72,21 +80,24 @@ class PC():
         l=list(set(l))
         print("LISTA",l)
         valido = False
-        palabra=max(l,key=lambda x: len(x))
+        
+        try:
+            palabra=max(l,key=lambda x: len(x))
+        except:
+            palabra = ""
         if not (palabra.lower() in verbs) and (not palabra.lower() in spelling) and (not(palabra.lower() in lexicon) and not(palabra.upper() in lexicon) and not(palabra.capitalize() in lexicon)):
             print("la palabra no existe")
         else:
             tipo_palabra = parse(palabra)
-            if (self.dificultad == "facil"):
+            if (self._dificultad == "facil"):
                 valido = ("NN" in tipo_palabra) or ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
-            elif (self.dificultad == "medio"):
+            elif (self._dificultad == "medio"):
                 valido =  ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
             else:
-                if self.tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
+                if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
                     valido = True
         if (valido):
-            return palabra
-
+            return palabra.upper()
     def _mapear_tablero(self,posiciones_ocupadas_tablero, long_tablero):
         """ Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
             en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
@@ -124,19 +135,19 @@ class PC():
         else:
             return long_max_tablero    
 
-    # def _recursividadPalabras(self,lista,long_max,palabra,lista_palabras):
-        # """
-        # Agrega a lista_palabras las palabras que considera validas formadas por elementos de lista
-        # """
-        # for elem in lista:
-        #     #print("ELEMENTOOOOOO: ",elem)
-        #     palabra = palabra + elem
-        #     if len(palabra) > 1 and not palabra in lista_palabras and self._tiene_vocales(palabra) and self._tiene_consonantes(palabra) and es.palabra_valida(palabra):
-        #         lista_palabras.append(palabra)
-        #     lista_reducida =  lista.copy()
-        #     lista_reducida.remove(elem)
-        #     self._recursividadPalabras(lista_reducida, long_max, palabra, lista_palabras)
-        #     palabra = palabra[:len(palabra)-1]
+    def _recursividadPalabras(self,lista,long_max,palabra,lista_palabras):
+        """
+        Agrega a lista_palabras las palabras que considera validas formadas por elementos de lista
+        """
+        for elem in lista:
+            #print("ELEMENTOOOOOO: ",elem)
+            palabra = palabra + elem
+            if len(palabra) > 1 and not palabra in lista_palabras and self._tiene_vocales(palabra) and self._tiene_consonantes(palabra) and es.palabra_valida(palabra):
+                lista_palabras.append(palabra)
+            lista_reducida =  lista.copy()
+            lista_reducida.remove(elem)
+            self._recursividadPalabras(lista_reducida, long_max, palabra, lista_palabras)
+            palabra = palabra[:len(palabra)-1]
  
     def jugar(self,window,posiciones_ocupadas_tablero):
         long_y_posiciones = self._mapear_tablero(posiciones_ocupadas_tablero,self.long_tablero) # obtenemos las posiciones libres en el tablero
@@ -159,6 +170,7 @@ class PC():
             # self.sumPuntos(sumar_puntos(puntos_por_letra, botones, palabra_nueva)) comentada hasta formar la clase padre
             # window['p_pc'].update("Puntos PC:"+str(self.getPuntos())) # aca se actualizaria la ventana
             ## actualizamos las fichas de la pc:
+            print("MEJOR PALABRA",mejor_palabra)
             self.reinicioFichas(mejor_palabra)             
 
         else:
@@ -166,7 +178,3 @@ class PC():
 
 
     puntos = property(getPuntos,sumPuntos,doc="Setters y getters")
-
-
-        
-        
