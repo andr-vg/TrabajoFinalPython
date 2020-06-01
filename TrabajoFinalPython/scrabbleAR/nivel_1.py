@@ -234,6 +234,14 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
 
+def analizo(keys_ordenados, menor_1, menor_2, j, k): # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical) 
+    for i in range(1, len(keys_ordenados)):          # menor_2 = columna_menor (caso horizontal) o fila_menor (caso vertical)
+        if keys_ordenados[i][j] != menor_1:      # j = 0 si es la fila (horizontal) o 1 si es columna (vertical)
+            return False                         # aca comparamos las filas/columnas de cada letra con la de la primera
+        if keys_ordenados[i][k] - i != menor_2:  # k = 1 si es la columna (horizontal) o 0 si es la fila (vertical)
+            return False                         # si son contiguas, la resta de las mayores columnas/filas - i siempre es igual a la de la menor
+    return True
+
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
@@ -244,18 +252,11 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
     print(keys_ordenados)
     columna_menor = keys_ordenados[0][1]  # me guarda la columna mas chica con la cual voy a hacer una comparacion
-    fila = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales
-    posiciones_validas = True
-    for i in range(1, len(keys_ordenados)):
-        if keys_ordenados[i][0] != fila:  # aca comparamos las filas de cada letra con la de la primera
-            posiciones_validas = False
-            break
-        if keys_ordenados[i][1] - i != columna_menor:  # si son contiguas, la resta de las mayores columnas - i siempre es igual a la de la menor
-            posiciones_validas = False
-            break
+    fila_menor = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales
+    
     # ahora analizamos si es valida o no:
-    if not posiciones_validas:
-        sg.popup_ok('Palabra no válida, por favor ingrese otra')
+    if not analizo(keys_ordenados, fila_menor, columna_menor, 0, 1) and not analizo(keys_ordenados, columna_menor, fila_menor, 1, 0):
+        sg.popup_ok('Palabra no válida, por favor ingrese en forma horizontal o vertical')
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
     else:
         lista_letras_ordenadas = []
