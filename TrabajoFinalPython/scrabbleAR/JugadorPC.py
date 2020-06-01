@@ -96,8 +96,9 @@ class PC():
             else:
                 if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
                     valido = True
-        if (valido):
-            return palabra.upper()
+        #if (valido):  # le agregue else "" porque sino daba error porque retornaba None cuando no encontraba
+            return palabra.upper() if valido else ""
+            
     def _mapear_tablero(self,posiciones_ocupadas_tablero, long_tablero):
         """ Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
             en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
@@ -154,7 +155,7 @@ class PC():
         long_max_tablero = max(long_y_posiciones.keys()) # calculamos la long maxima entre todas esas posiciones libres
         long_max = self._calcular_long_maxima(long_max_tablero, len(self.fichas)) # nos quedamos con la max entre casillas y cant fichas
         mejor_palabra = self._obtenerPalabra()  # obtenemos la mejor palabra posible
-        if mejor_palabra != '':  # caso en que encuentra una palabra valida
+        if mejor_palabra != "":  # caso en que encuentra una palabra valida
             posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero])-1)
             inicio_columna = random.randint(0,(long_max_tablero-len(mejor_palabra)))
             fin_columna = inicio_columna + len(mejor_palabra)
