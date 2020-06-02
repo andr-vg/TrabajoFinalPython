@@ -2,15 +2,15 @@ import IdentificarPalabra as es
 import PySimpleGUI as sg
 import random
 class PC():
-    def __init__ (self,fichas,long_tablero,botones,puntos_por_letra):
+    def __init__ (self,fichas,long_tablero,botones,puntos_por_letra,dificultad,tipo):
         self.fichas = fichas #Fichas seria una lista de CHAR
         self.puntaje = 0 
         self.long_tablero = long_tablero
-        self.botones = botones
+        self._botones = botones
         self.puntos_por_letra = puntos_por_letra
-        #Estos 2 los tengo que acomodar cuando haga la herencia
-        self._dificultad = "facil"
-        self._tipo = "NN"
+        self._dificultad = dificultad
+        self._tipo = tipo
+        self._palabras_usadas = []
 
     def setFichas(self, fichas_nuevas):
         self.fichas = fichas_nuevas
@@ -34,25 +34,32 @@ class PC():
                     cant += -1
             else: 
                 break
-    # comentamos estas funciones porque no se estarian usando      
-    #def _tiene_vocales(self,palabra):
-    #    for letra in palabra:
-    #        if letra in "AEIOU":
-    #            return True
-    #    return False
-    
-    #def _tiene_consonantes(self,palabra):
-    #    for letra in palabra:
-    #        if not letra in "AEIOU":
-    #            return True
-    #    return False
-       
-    # def _obtenerPalabra(self,long_max):
-    #     palabra = ""
-    #     lista_palabras = []
-    #     lista_fichas = list(self.fichas.values()) #Hago lista de las fichas
-    #     self._recursividadPalabras(lista_fichas,long_max,palabra,lista_palabras)
-    #     return "" if len(lista_palabras) == 0 else max(lista_palabras)
+    def _sumar_puntos(self,palabra_nueva):
+        duplicar = False
+        triplicar = False
+        puntos = 0
+        for casillero, letra in palabra_nueva.items():
+            puntaje_letra = self.puntos_por_letra[letra]
+            if self._botones[casillero] == '+':  # duplicamos el puntaje por letra
+                puntaje_letra = 2 * puntaje_letra
+                duplicar = True
+            elif self._botones[casillero] == '++':  # triplicamos el puntaje por letra
+                puntaje_letra = 3 * puntaje_letra
+                triplicar = True
+            elif self._botones[casillero] == '-':  # se le resta 1 punto al puntaje total obtenido
+                puntos += -1
+            elif self._botones[casillero] == '--':  # se le resta 2 puntos al puntaje total obtenido
+                puntos += -2
+            elif self._botones[casillero] == '---':  # se le resta 3 puntos al puntaje total obtenido
+                puntos += -3
+            puntos += puntaje_letra  # sumamos el puntaje por cada letra de la palabra
+        if triplicar:
+            puntos = 3 * puntos
+        elif duplicar:
+            puntos = 2 * puntos
+        print(str(puntos))
+        self.sumPuntos(puntos)
+
     def _obtenerPalabra(self):
         import itertools as it
         from pattern.text.es import verbs, spelling, lexicon , parse
@@ -85,18 +92,18 @@ class PC():
             palabra=max(l,key=lambda x: len(x))
         except:
             palabra = ""
-        if not (palabra.lower() in verbs) and (not palabra.lower() in spelling) and (not(palabra.lower() in lexicon) and not(palabra.upper() in lexicon) and not(palabra.capitalize() in lexicon)):
+        if not (palabra.lower() in verbs) and (not palabra.lower() in spelling) and (not(palabra.lower() in lexicon) and not(palabra.upper() in lexicon) and not(palabra.capitalize() in lexicon))and (palabra in self._palabras_usadas):
             print("la palabra no existe")
         else:
             tipo_palabra = parse(palabra)
             if (self._dificultad == "facil"):
-                valido = ("NN" in tipo_palabra) or ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
+                valido = ("NN" in tipo_palabra) 
             elif (self._dificultad == "medio"):
                 valido =  ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
             else:
                 if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
                     valido = True
-        #if (valido):  # le agregue else "" porque sino daba error porque retornaba None cuando no encontraba
+            self._palabras_usadas.append(palabra)
             return palabra.upper() if valido else ""
 
     def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
@@ -153,20 +160,6 @@ class PC():
         else:
             return long_max_tablero    
 
-    #def _recursividadPalabras(self,lista,long_max,palabra,lista_palabras):
-    #    """
-    #    Agrega a lista_palabras las palabras que considera validas formadas por elementos de lista
-    #    """
-    #    for elem in lista:
-    #        #print("ELEMENTOOOOOO: ",elem)
-    #        palabra = palabra + elem
-    #        if len(palabra) > 1 and not palabra in lista_palabras and self._tiene_vocales(palabra) and self._tiene_consonantes(palabra) and es.palabra_valida(palabra):
-    #            lista_palabras.append(palabra)
-    #        lista_reducida =  lista.copy()
-    #        lista_reducida.remove(elem)
-    #        self._recursividadPalabras(lista_reducida, long_max, palabra, lista_palabras)
-    #        palabra = palabra[:len(palabra)-1]
- 
     def jugar(self,window,posiciones_ocupadas_tablero):
         long_y_posiciones = self._mapear_tablero(posiciones_ocupadas_tablero) # obtenemos las posiciones libres en el tablero
         long_max_tablero = max(long_y_posiciones.keys()) # calculamos la long maxima entre todas esas posiciones libres
@@ -180,7 +173,7 @@ class PC():
             for i in range(inicio_columna,fin_columna):   # agregamos las posiciones a la lista de posiciones ocupadas
                 posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 print(long_y_posiciones[long_max_tablero][posiciones_random][i])
-                window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna], disabled=True) # agregamos las letras al tablero
+                window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
                 # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
                 palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio_columna]                
         
@@ -189,10 +182,16 @@ class PC():
             # window['p_pc'].update("Puntos PC:"+str(self.getPuntos())) # aca se actualizaria la ventana
             ## actualizamos las fichas de la pc:
             print("MEJOR PALABRA",mejor_palabra)
-            self.reinicioFichas(mejor_palabra)             
+            print("PALABRA NUEVA",palabra_nueva)
+            self._sumar_puntos(palabra_nueva)
+            self.reinicioFichas(mejor_palabra)
+            print("SELF PUNTOS",self.puntos)
+            window["p_pc"].update(str(self.puntos))        
 
         else:
             sg.popup("La PC le ha pasado el turno")
+            letras = ""
+            self.reinicioFichas(letras.join(self.fichas.values()))
 
 
     puntos = property(getPuntos,sumPuntos,doc="Setters y getters")
