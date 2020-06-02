@@ -34,18 +34,18 @@ class PC():
                     cant += -1
             else: 
                 break
-
-    def _tiene_vocales(self,palabra):
-        for letra in palabra:
-            if letra in "AEIOU":
-                return True
-        return False
+    # comentamos estas funciones porque no se estarian usando      
+    #def _tiene_vocales(self,palabra):
+    #    for letra in palabra:
+    #        if letra in "AEIOU":
+    #            return True
+    #    return False
     
-    def _tiene_consonantes(self,palabra):
-        for letra in palabra:
-            if not letra in "AEIOU":
-                return True
-        return False
+    #def _tiene_consonantes(self,palabra):
+    #    for letra in palabra:
+    #        if not letra in "AEIOU":
+    #            return True
+    #    return False
        
     # def _obtenerPalabra(self,long_max):
     #     palabra = ""
@@ -98,28 +98,45 @@ class PC():
                     valido = True
         #if (valido):  # le agregue else "" porque sino daba error porque retornaba None cuando no encontraba
             return palabra.upper() if valido else ""
-            
-    def _mapear_tablero(self,posiciones_ocupadas_tablero, long_tablero):
+
+    def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
+        cant = 0
+        posiciones = []
+        while not (i,j) in posiciones_ocupadas_tablero and j < self.long_tablero:
+            cant += 1
+            posiciones.append((i,j))
+            j += 1
+        return cant, posiciones
+
+    def _mapeoVertical(self, i, j, posiciones_ocupadas_tablero):
+        cant = 0
+        posiciones = []
+        while not (j,i) in posiciones_ocupadas_tablero and j < self.long_tablero:
+            cant += 1
+            posiciones.append((j,i))
+            j += 1
+        return cant, posiciones
+
+    def _agrego_posiciones(self, cant, posiciones, long_y_posiciones):
+        if cant >= 2: 
+            if not cant in long_y_posiciones.keys():
+                long_y_posiciones[cant] = [posiciones]
+            else:
+                long_y_posiciones[cant].append(posiciones)
+
+    def _mapear_tablero(self,posiciones_ocupadas_tablero):
         """ Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
             en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
             listas con listas de las posiciones disponibles para esas longitudes 
         """
         long_y_posiciones = dict()
-        for i in range(long_tablero):
-            j = 0
-            while j < long_tablero:
-                cant = 0
-                posiciones = []
-                while not (i,j) in posiciones_ocupadas_tablero and j < long_tablero:
-                    cant += 1
-                    posiciones.append((i,j))
-                    j += 1
-                if cant >= 2: 
-                    if not cant in long_y_posiciones.keys():
-                        long_y_posiciones[cant] = [posiciones]
-                    else:
-                        long_y_posiciones[cant].append(posiciones)
-
+        for i in range(self.long_tablero):
+            j = 0  
+            while j < self.long_tablero: 
+                cant, posiciones = self._mapeoHorizontal(i, j, posiciones_ocupadas_tablero) # mapeo horizontalmente
+                self._agrego_posiciones(cant, posiciones, long_y_posiciones)
+                cant, posiciones = self._mapeoVertical(j, i, posiciones_ocupadas_tablero) # mapeo verticalmente
+                self._agrego_posiciones(cant, posiciones, long_y_posiciones)
                 j += 1
         return long_y_posiciones 
 
@@ -136,22 +153,22 @@ class PC():
         else:
             return long_max_tablero    
 
-    def _recursividadPalabras(self,lista,long_max,palabra,lista_palabras):
-        """
-        Agrega a lista_palabras las palabras que considera validas formadas por elementos de lista
-        """
-        for elem in lista:
-            #print("ELEMENTOOOOOO: ",elem)
-            palabra = palabra + elem
-            if len(palabra) > 1 and not palabra in lista_palabras and self._tiene_vocales(palabra) and self._tiene_consonantes(palabra) and es.palabra_valida(palabra):
-                lista_palabras.append(palabra)
-            lista_reducida =  lista.copy()
-            lista_reducida.remove(elem)
-            self._recursividadPalabras(lista_reducida, long_max, palabra, lista_palabras)
-            palabra = palabra[:len(palabra)-1]
+    #def _recursividadPalabras(self,lista,long_max,palabra,lista_palabras):
+    #    """
+    #    Agrega a lista_palabras las palabras que considera validas formadas por elementos de lista
+    #    """
+    #    for elem in lista:
+    #        #print("ELEMENTOOOOOO: ",elem)
+    #        palabra = palabra + elem
+    #        if len(palabra) > 1 and not palabra in lista_palabras and self._tiene_vocales(palabra) and self._tiene_consonantes(palabra) and es.palabra_valida(palabra):
+    #            lista_palabras.append(palabra)
+    #        lista_reducida =  lista.copy()
+    #        lista_reducida.remove(elem)
+    #        self._recursividadPalabras(lista_reducida, long_max, palabra, lista_palabras)
+    #        palabra = palabra[:len(palabra)-1]
  
     def jugar(self,window,posiciones_ocupadas_tablero):
-        long_y_posiciones = self._mapear_tablero(posiciones_ocupadas_tablero,self.long_tablero) # obtenemos las posiciones libres en el tablero
+        long_y_posiciones = self._mapear_tablero(posiciones_ocupadas_tablero) # obtenemos las posiciones libres en el tablero
         long_max_tablero = max(long_y_posiciones.keys()) # calculamos la long maxima entre todas esas posiciones libres
         long_max = self._calcular_long_maxima(long_max_tablero, len(self.fichas)) # nos quedamos con la max entre casillas y cant fichas
         mejor_palabra = self._obtenerPalabra()  # obtenemos la mejor palabra posible
