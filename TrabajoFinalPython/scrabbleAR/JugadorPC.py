@@ -61,20 +61,25 @@ class PC():
         self.sumPuntos(puntos)
 
     def _obtenerPalabra(self):
+
         import itertools as it
         from pattern.text.es import verbs, spelling, lexicon , parse
         """
         obtiene una palabra a partir de las _fichas
         """
+        vocales = {'A': 'Á', 'E': 'E', 'I': 'Í', 'O': 'Ó', 'U': 'Ú'}
         letras = ""
-        for letra in self.fichas.values():
+        for letra in self.fichas.values(): # agregamos tambien las letras con tildes
             print("LETRA;",letra)
             letras += letra
+            if letra in vocales.keys() and not vocales[letra] in letras:
+                letras+=vocales[letra]
         letras = letras.lower()
         l=[]
         s=spelling.keys()
         le=lexicon.keys()
-        for opcion in range(2,len(letras)+1): #iterar por la combinación
+        
+        for opcion in range(2,len(self.fichas.values())+1): #iterar por la combinación
             pals = it.combinations(letras,opcion)
             for combinacion in pals:
                 for pal in combinacion:
@@ -103,8 +108,16 @@ class PC():
             else:
                 if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
                     valido = True
-            self._palabras_usadas.append(palabra)
-            return palabra.upper() if valido else ""
+            if valido:
+                palabra_sin_tildes = ''  # le sacamos las tildes al momento de imprimir y guardar la palabra
+                for i in range(len(palabra)):
+                    if palabra[i] in vocales.values():
+                        palabra_sin_tildes += vocales.items()[i][0]  # que agregue la letra sin tilde
+                    else:
+                        palabra_sin_tildes += palabra[i]
+                self._palabras_usadas.append(palabra_sin_tildes)
+                return palabra_sin_tildes.upper()
+        return ""  # caso en que no encuentra palabra
 
     def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
         cant = 0

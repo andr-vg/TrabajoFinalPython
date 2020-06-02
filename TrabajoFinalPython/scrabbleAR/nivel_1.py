@@ -108,12 +108,18 @@ def generar_lista_letras(bolsa):
 
 def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
     letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
+    print("cant de letras = "+str(letras_juntas))
+    cant_reemplazadas = 0
     for i in dic.keys():
         if dic[i] == "":
             letra=random.choice(letras_juntas)
-            letras_juntas.replace(letra,"",1)
-            dic[i]= letra
-            bolsa[letra]= (bolsa[letra]) -1     #preguntar si esta bien que no ponga nungun return y cambie el dic por "referencia"
+            if bolsa[letra] > 0:
+                letras_juntas.replace(letra,"",1)
+                dic[i]= letra
+                bolsa[letra]= (bolsa[letra]) -1  
+                cant_reemplazadas += 1  
+    if cant_reemplazadas == 0:
+        sg.popup('Se acabaron las fichas')
 
 def devolver_fichas(dic,keys,bolsa):
     for nro in keys:
