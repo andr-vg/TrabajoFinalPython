@@ -173,8 +173,9 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
         dar_fichas(letras_jugador, bolsa)
         print("se entregaron las fichas al jugador: ", letras_jugador)
     colum = [
-        [sg.Text(str(time.process_time() * 10) + " seg", key='tiempo'),
-       sg.Text("Puntos jugador: 0",key="p_j"),sg.Text("Puntos Pc: 0",key="p_pc")]
+        [sg.T("Tiempo: "),sg.Text(str(time.process_time() * 10), key='tiempo')],
+       [sg.Text("Puntos jugador:"),sg.T("",key="p_j",size=(0,1))], #Puse (0,1) porque sino no entraban numeros de 2 digitos
+       [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))]
     ]
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
@@ -294,12 +295,6 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero
 
 def main():
-    if "win" in sys.platform:
-        arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
-    else:
-        arch = open(absolute_path + "/Datos/info/tablero-nivel-1.csv", "r")
-    csvreader = csv.reader(arch)
-
     # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
@@ -308,17 +303,41 @@ def main():
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     # Config del tablero:
     bolsa , puntos_por_letra, tiempo ,dificultad = cargar_configuraciones(bolsa,puntos_por_letra)
-    #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
-    print(bolsa)
-    #print(puntos_por_letra)
-    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
 
+    #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
+    #Abro el tablero correspondiente a la dificultad seleccionada
+
+    if "win" in sys.platform: #Abre para windows
+        if(dificultad == "facil"):
+            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+        elif (dificultad == "medio"):
+            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
+        else:
+            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-3.csv', "r")
+    else: #Abre para linux
+        if(dificultad == "facil"):
+            arch = open(absolute_path + '/Datos/info/tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+        elif (dificultad == "medio"):
+            arch = open(absolute_path + '/Datos/info/tablero-nivel-2.csv', "r")
+        else:
+            arch = open(absolute_path + '/Datos/info/tablero-nivel-3.csv', "r")
+   
+    csvreader = csv.reader(arch)
+    
+    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
 
     from JugadorPC import PC
     from Jugador import Jugador
 
+    #Opciones de dificultad
+    dificultad_random = ["NN","JJ","VB"]   
+    if (dificultad == "dificil"):
+        import random
+        tipo = dificultad_random[random.randint(0,2)]
+    else:
+        tipo = ""
     pj = Jugador()
-    pc = PC(letras_pc,long_tablero,botones,puntos_por_letra)
+    pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo)
 
     window = sg.Window("Ventana de juego", layout)
 
@@ -340,7 +359,6 @@ def main():
     cuenta_regresiva = int(time.time()) + cont_tiempo
     #Cierro el archivo del tablero
     arch.close()
-
     while True:  # Event Loop
         # Actualizamos el tiempo en pantalla
         restar_tiempo = int(time.time())
@@ -413,7 +431,7 @@ def main():
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
-                window["p_pc"].update("Puntos PC:"+str(pc.puntos))
+               
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
