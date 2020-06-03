@@ -10,8 +10,6 @@ import os
 import json
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
-
-
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
     guardar = lista
     guardar.pop(0)
@@ -99,13 +97,6 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
 def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
-def generar_lista_letras(bolsa):
-    letras_juntas = []
-    for letras in bolsa.keys():
-        for cantidad in range(bolsa[letras]):
-            letras_juntas.append(letras)
-    return letras_juntas
-
 def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
     letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
     print("cant de letras = "+str(letras_juntas))
@@ -116,8 +107,8 @@ def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se
             if bolsa[letra] > 0:
                 letras_juntas.replace(letra,"",1)
                 dic[i]= letra
-                bolsa[letra]= (bolsa[letra]) -1  
-                cant_reemplazadas += 1  
+                bolsa[letra]= (bolsa[letra]) -1
+                cant_reemplazadas += 1
     if cant_reemplazadas == 0:
         sg.popup('Se acabaron las fichas')
 
@@ -141,8 +132,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     sg.theme("Material1")
 
     layout = []
-
-    botones = {}  # dict() == {}
+    botones = {}
     key = 0
     # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
@@ -243,7 +233,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
 
-def analizo(keys_ordenados, menor_1, menor_2, j, k): # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical) 
+def analizo(keys_ordenados, menor_1, menor_2, j, k): # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical)
     for i in range(1, len(keys_ordenados)):          # menor_2 = columna_menor (caso horizontal) o fila_menor (caso vertical)
         if keys_ordenados[i][j] != menor_1:      # j = 0 si es la fila (horizontal) o 1 si es columna (vertical)
             return False                         # aca comparamos las filas/columnas de cada letra con la de la primera
@@ -262,7 +252,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     print(keys_ordenados)
     columna_menor = keys_ordenados[0][1]  # me guarda la columna mas chica con la cual voy a hacer una comparacion
     fila_menor = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales
-    
+
     # ahora analizamos si es valida o no:
     if not analizo(keys_ordenados, fila_menor, columna_menor, 0, 1) and not analizo(keys_ordenados, columna_menor, fila_menor, 1, 0):
         sg.popup_ok('Palabra no válida, por favor ingrese en forma horizontal o vertical')
@@ -302,11 +292,12 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
 
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero
 
+    def pasar_turno(tj, tpc, wind):
+        tj= Not(tj)
+        tpc= Not(tpc)
 def main():
-    # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
-
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     # Config del tablero:
@@ -329,16 +320,16 @@ def main():
             arch = open(absolute_path + '/Datos/info/tablero-nivel-2.csv', "r")
         else:
             arch = open(absolute_path + '/Datos/info/tablero-nivel-3.csv', "r")
-   
+
     csvreader = csv.reader(arch)
-    
+
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa,csvreader)  # botones es un diccionario de pares (tupla, valor)
 
     from JugadorPC import PC
     from Jugador import Jugador
 
     #Opciones de dificultad
-    dificultad_random = ["NN","JJ","VB"]   
+    dificultad_random = ["NN","JJ","VB"]
     if (dificultad == "dificil"):
         import random
         tipo = dificultad_random[random.randint(0,2)]
@@ -349,9 +340,9 @@ def main():
 
     window = sg.Window("Ventana de juego", layout)
 
-    letras_usadas = dict()  # pares (clave, valor) de las letras seleccionadas
+    letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
 
-    palabra_nueva = dict()  # pares (clave, valor) de la palabra que se va formando en el tablero
+    palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
 
     turno_jugador = False
 
@@ -436,10 +427,9 @@ def main():
             if event == "-c":
                 window["-c"].update(disabled=True)
                 print(palabra_nueva)
-                # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update(str(pj.puntos))
-               
+
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
@@ -481,7 +471,6 @@ def main():
             turno_pc = False
             turno_jugador = True
         # Implementar final de partida
-
 
     window.close()
 
