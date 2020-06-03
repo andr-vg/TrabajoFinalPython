@@ -138,7 +138,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
 
-    sg.theme("DarkAmber")
+    sg.theme("Material1")
 
     layout = []
 
@@ -186,10 +186,12 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
     ]
-    fila_fichas_jugador = [sg.Text("Fichas del Jugador: ")]+[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 2),
-                             button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
-    fila_fichas_maquina = [sg.Text("Fichas de la Maquina: ")]+[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 2),
-                             button_color=('white', 'blue'),disabled=True) for i in range(fichas_por_jugador)]
+    frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 1),
+                             button_color=('white', '#93D5E2'),border_width=0) for i in range(fichas_por_jugador)]]
+    frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 1),border_width=0,
+                             button_color=('white', '#93D5E2'),disabled=True) for i in range(fichas_por_jugador)]]
+    fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]
+    fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
@@ -436,19 +438,19 @@ def main():
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
-                window["p_j"].update("Puntos jugador:"+str(pj.puntos))
+                window["p_j"].update(str(pj.puntos))
                
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
                 box = event  # letra seleccionada
                 letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', 'yellow'))    #al seleccionado se le cambia el color
+                window[box].update(button_color=('white', '#00FFFB'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
                     window[val].update(disabled=True)  # desactivo los botones de las fichas
                 restar_tiempo = int(time.time())
                 event, values = window.read()
-                window[box].update(button_color=('white', 'blue'))      #se le devuelve el color
+                window[box].update(button_color=('white', '#93D5E2'))      #se le devuelve el color
                 # no pude agregar que actualice aca porque sino mueren las fichas
                 if restar_tiempo > cuenta_regresiva:
                     print("Se termino el tiempo")
