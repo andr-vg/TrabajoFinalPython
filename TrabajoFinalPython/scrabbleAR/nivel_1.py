@@ -242,7 +242,22 @@ def analizo(keys_ordenados, menor_1, menor_2, j, k): # menor_1 = fila_menor (cas
             return False                         # si son contiguas, la resta de las mayores columnas/filas - i siempre es igual a la de la menor
     return True
 
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa):
+def palabra_valida(palabra,dificultad,tipo):
+    from pattern.text.es import verbs, spelling, lexicon , parse
+    if not (palabra.lower() in verbs) and (not palabra.lower() in spelling) and (not(palabra.lower() in lexicon) and not(palabra.upper() in lexicon) and not(palabra.capitalize() in lexicon)):
+        return False
+    else:
+        tipo_palabra = parse(palabra)
+        if (dificultad == "facil"):
+            valido = True  #Valido es verdadero, porque ya se comprobo si la palabra existe y es dificultad facil 
+        elif (dificultad == "medio"):
+            valido =  ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
+        else:
+            if tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
+                valido = True
+    return valido
+
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa,dificultad,tipo):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
     actualiza el tablero y los parametros
@@ -265,7 +280,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
         palabra_obtenida = ''.join(lista_letras_ordenadas)
         palabra_obtenida.strip()
         print(palabra_obtenida)
-        if es.palabra_valida(palabra_obtenida):
+        if palabra_valida(palabra_obtenida,dificultad,tipo):
             posiciones_ocupadas_tablero.extend(palabra_nueva.keys())
             ## funcion que suma los puntos por letra y segun cada boton duplica o resta puntos:
             puntos = sumar_puntos(puntos_por_letra, botones, palabra_nueva)
@@ -383,7 +398,6 @@ def main():
         restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
         window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
-        print(event, values)
         if restar_tiempo > cuenta_regresiva:
             print("Se termino el tiempo")
             # Implementar final de partida
@@ -461,7 +475,7 @@ def main():
             elif event == "-c":
                 window["-c"].update(disabled=True)
                 print(palabra_nueva)
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa,dificultad,tipo)
                 window["p_j"].update(str(pj.puntos))
         elif turno_pc:    #aca va un if o un elif??
             #time.sleep(0.5)   #maquina pensando la jugarreta
