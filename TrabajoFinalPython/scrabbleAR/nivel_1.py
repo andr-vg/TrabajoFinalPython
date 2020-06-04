@@ -302,6 +302,7 @@ def cambiar_turno(turnoj, turnopc, window):#
         window["turno"].update("Turno del la maquina")
     window["turnoj"].update("¡Es tu turno!",visible= turnoj)
     window["turnopc"].update("Turno del la maquina",visible= turnopc)
+    window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
 
 def main():
@@ -391,50 +392,6 @@ def main():
         if turno_jugador:
             if event is None:
                 break
-            #boton cambio de fichas
-            if (event == "-cf") and (cambios_de_fichas < 3):
-                letras_a_cambiar=[]
-                while True:
-                    event = window.read()[0]
-                    if event is None:
-                        break   #ver
-                    elif event in letras.keys():
-                        letras_a_cambiar.append(event)
-                        window[event].update(disabled=True)
-                    elif event == "-cf":
-                        print(letras)
-                        letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
-                        dar_fichas(letras,bolsa)
-                        print(letras)
-                        for f in letras_a_cambiar:
-                            window[f].update(letras[f], disabled=False)
-                        cambios_de_fichas+=1
-                        if cambios_de_fichas == 3:
-                            window["-cf"].update(disabled=True)
-                            window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
-                        break
-                turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
-            # boton de pasar el turno a la pc
-            elif event == "-paso":
-                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-                turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
-            # boton de guardar partida
-            elif event == "-p":
-                guardar_partida(layout)
-            # boton de terminar partida
-            if event == "-t":  # Y no se termino el tiempo..
-                # Implementar
-                pass
-            # boton de deshacer las palabras puestas en el tablero
-            if event == "-d":
-                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-            # boton de confirmar palabra
-            if event == "-c":
-                window["-c"].update(disabled=True)
-                print(palabra_nueva)
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
-                window["p_j"].update(str(pj.puntos))
-
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
@@ -463,8 +420,51 @@ def main():
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B
-        elif turno_pc:
-            time.sleep(1)   #maquina pensando la jugarreta
+            # boton de deshacer las palabras puestas en el tablero
+            elif event == "-d":
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+            # boton de pasar el turno a la pc
+            elif event == "-paso":
+                turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+            #boton cambio de fichas
+            elif (event == "-cf") and (cambios_de_fichas < 3):
+                letras_a_cambiar=[]
+                while True:
+                    event = window.read()[0]
+                    if event is None:
+                        break   #ver
+                    elif event in letras.keys():
+                        letras_a_cambiar.append(event)
+                        window[event].update(disabled=True)
+                    elif event == "-cf":
+                        print(letras)
+                        letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
+                        dar_fichas(letras,bolsa)
+                        print(letras)
+                        for f in letras_a_cambiar:
+                            window[f].update(letras[f], disabled=False)
+                        cambios_de_fichas+=1
+                        if cambios_de_fichas == 3:
+                            window["-cf"].update(disabled=True)
+                            window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                        break
+                turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
+            # boton de guardar partida
+            elif event == "-p":
+                guardar_partida(layout)
+            # boton de terminar partida
+            elif event == "-t":  # Y no se termino el tiempo..
+                # Implementar
+                pass
+            # boton de confirmar palabra
+            elif event == "-c":
+                window["-c"].update(disabled=True)
+                print(palabra_nueva)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
+                window["p_j"].update(str(pj.puntos))
+        elif turno_pc:    #aca va un if o un elif??
+            #time.sleep(0.5)   #maquina pensando la jugarreta
             pc.jugar(window,posiciones_ocupadas_tablero)
             fichas_pc = pc.getFichas()
             print("FICHAS de la pc antes:",fichas_pc)
