@@ -10,8 +10,6 @@ import os
 import json
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
-
-
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
     guardar = lista
     guardar.pop(0)
@@ -138,7 +136,8 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
 
-    sg.theme("DarkAmber")
+    sg.theme("lightblue")
+    #sg.theme_background_color('#488A99')
 
     layout = []
 
@@ -187,9 +186,9 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
         [sg.Frame("Info del juego",layout=colum)]
     ]
     fila_fichas_jugador = [sg.Text("Fichas del Jugador: ")]+[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 2),
-                             button_color=('white', 'blue')) for i in range(fichas_por_jugador)]
+                             button_color=('white', '#CE5A57')) for i in range(fichas_por_jugador)]
     fila_fichas_maquina = [sg.Text("Fichas de la Maquina: ")]+[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 2),
-                             button_color=('white', 'blue'),disabled=True) for i in range(fichas_por_jugador)]
+                             button_color=('white', '#CE5A57'),disabled=True) for i in range(fichas_por_jugador)]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
@@ -197,36 +196,6 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
     return layout, letras_jugador, letras_maquina, botones , long_tablero
-
-def sumar_puntos(puntos_por_letra, botones, palabra_nueva):
-    duplicar = False
-    triplicar = False
-    puntos = 0
-    for casillero, letra in palabra_nueva.items():
-        puntaje_letra = puntos_por_letra[letra]
-        if botones[casillero] == '+':  # duplicamos el puntaje por letra
-            puntaje_letra = 2 * puntaje_letra
-            duplicar = True
-        elif botones[casillero] == '++':  # triplicamos el puntaje por letra
-            puntaje_letra = 3 * puntaje_letra
-            triplicar = True
-        elif botones[casillero] == '-':  # se le resta 1 punto al puntaje total obtenido
-            puntos += -1
-        elif botones[casillero] == '--':  # se le resta 2 puntos al puntaje total obtenido
-            puntos += -2
-        elif botones[casillero] == '---':  # se le resta 3 puntos al puntaje total obtenido
-            puntos += -3
-        puntos += puntaje_letra  # sumamos el puntaje por cada letra de la palabra
-    if triplicar:
-        puntos = 3 * puntos
-    elif duplicar:
-        puntos = 2 * puntos
-    print(puntos)
-    return puntos
-
-def agregar_palabra_al_tablero(palabra_nueva, keys_ordenados, window):
-    for key in keys_ordenados:
-        window[key].update(palabra_nueva[key])
 
 def sacar_del_tablero(window, keys, palabra_nueva, botones):
     """
@@ -241,64 +210,29 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
 
-def analizo(keys_ordenados, menor_1, menor_2, j, k): # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical) 
-    for i in range(1, len(keys_ordenados)):          # menor_2 = columna_menor (caso horizontal) o fila_menor (caso vertical)
-        if keys_ordenados[i][j] != menor_1:      # j = 0 si es la fila (horizontal) o 1 si es columna (vertical)
-            return False                         # aca comparamos las filas/columnas de cada letra con la de la primera
-        if keys_ordenados[i][k] - i != menor_2:  # k = 1 si es la columna (horizontal) o 0 si es la fila (vertical)
-            return False                         # si son contiguas, la resta de las mayores columnas/filas - i siempre es igual a la de la menor
-    return True
-
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
     actualiza el tablero y los parametros
     """
     turno_jugador = True
     turno_pc = False
-    keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
-    print(keys_ordenados)
-    columna_menor = keys_ordenados[0][1]  # me guarda la columna mas chica con la cual voy a hacer una comparacion
-    fila_menor = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales
-    
-    # ahora analizamos si es valida o no:
-    if not analizo(keys_ordenados, fila_menor, columna_menor, 0, 1) and not analizo(keys_ordenados, columna_menor, fila_menor, 1, 0):
-        sg.popup_ok('Palabra no válida, por favor ingrese en forma horizontal o vertical')
-        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+    letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero)
+    if actualizar_juego:
+        window['-d'].update(disabled=True)
+        letras = pj.getFichas()
+        dar_fichas(letras, bolsa)
+        pj.setFichas(letras)
+        for f in letras_usadas.keys():  #en el lugar de las fichas que se usaron pongo las letras nuevas en el tablero
+            window[f].update(letras[f], disabled=False)
+        letras_usadas = dict()
+        palabra_nueva = dict()
+        turno_jugador = False
+        turno_pc = True
     else:
-        lista_letras_ordenadas = []
-        for key in keys_ordenados:
-            lista_letras_ordenadas.append(palabra_nueva[key])
-        palabra_obtenida = ''.join(lista_letras_ordenadas)
-        palabra_obtenida.strip()
-        print(palabra_obtenida)
-        if es.palabra_valida(palabra_obtenida):
-            posiciones_ocupadas_tablero.extend(palabra_nueva.keys())
-            ## funcion que suma los puntos por letra y segun cada boton duplica o resta puntos:
-            puntos = sumar_puntos(puntos_por_letra, botones, palabra_nueva)
-            if (turno_jugador):
-                pj.puntos = puntos
-            else:
-                pc.puntos = puntos
-            ## aca habria que enviarle a Jugador estos puntos
-            window['-d'].update(disabled=True)
+        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+    return letras_usadas, palabra_nueva, turno_jugador, turno_pc
 
-            print("Palabra valida!!!")
-            for k in letras_usadas.keys():  #saco fichas de la bolsa para ponerlas en letras
-                letras[k]=""
-            dar_fichas(letras, bolsa)
-            for f in letras_usadas.keys():  #en el lugar de las fichas que se usaron pongo las letras nuevas en el tablero
-                window[f].update(letras[f], disabled=False)
-
-            letras_usadas = dict()
-            palabra_nueva = dict()
-            turno_jugador = False
-            turno_pc = True
-        else:
-            sg.popup_ok('Palabra no válida, por favor ingrese otra')
-            letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-
-    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero
 
 def main():
     # bolsa contiene las letras a usar por los 2 jugadores, con un numero limitado de letras, a medida que se van repartiendo se van descontando
@@ -342,7 +276,8 @@ def main():
         tipo = dificultad_random[random.randint(0,2)]
     else:
         tipo = ""
-    pj = Jugador()
+
+    pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo)
 
     window = sg.Window("Ventana de juego", layout)
@@ -405,6 +340,7 @@ def main():
                         print(letras)
                         letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
                         dar_fichas(letras,bolsa)
+                        pj.setFichas(letras)
                         print(letras)
                         for f in letras_a_cambiar:
                             window[f].update(letras[f], disabled=False)
@@ -435,7 +371,7 @@ def main():
                 window["-c"].update(disabled=True)
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, pc, posiciones_ocupadas_tablero, bolsa)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                
             # botones del atril del jugador
@@ -443,22 +379,18 @@ def main():
                 window['-d'].update(disabled=False)
                 box = event  # letra seleccionada
                 letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', 'yellow'))    #al seleccionado se le cambia el color
+                window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
                     window[val].update(disabled=True)  # desactivo los botones de las fichas
                 restar_tiempo = int(time.time())
                 event, values = window.read()
-                window[box].update(button_color=('white', 'blue'))      #se le devuelve el color
+                window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
                 # no pude agregar que actualice aca porque sino mueren las fichas
                 if restar_tiempo > cuenta_regresiva:
                     print("Se termino el tiempo")
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
-                    if botones[ind] == "+":
-                        print("boton mas")
-                    elif botones[ind] == "-":
-                        print("boton menos")
                     palabra_nueva[ind] = letras[box]
                     if len(palabra_nueva.keys()) > 1:
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
