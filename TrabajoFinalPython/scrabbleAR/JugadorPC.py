@@ -4,7 +4,7 @@ import random
 class PC():
     def __init__ (self,fichas,long_tablero,botones,puntos_por_letra,dificultad,tipo):
         self.fichas = fichas #Fichas seria una lista de CHAR
-        self.puntaje = 0 
+        self.puntaje = 0
         self.long_tablero = long_tablero
         self._botones = botones
         self.puntos_por_letra = puntos_por_letra
@@ -18,9 +18,9 @@ class PC():
 
     def getFichas(self):
         return self.fichas
-    
+
     def getPuntos(self):
-        return self.puntaje 
+        return self.puntaje
 
     def sumPuntos(self,punt):
         self.puntaje += punt
@@ -32,7 +32,7 @@ class PC():
                 if self.fichas[clave] in palabra:
                     self.fichas[clave] = ""
                     cant += -1
-            else: 
+            else:
                 break
     def _sumar_puntos(self,palabra_nueva):
         duplicar = False
@@ -78,7 +78,7 @@ class PC():
         l=[]
         s=spelling.keys()
         le=lexicon.keys()
-        
+
         for opcion in range(2,len(self.fichas.values())+1): #iterar por la combinación
             pals = it.combinations(letras,opcion)
             for combinacion in pals:
@@ -92,7 +92,7 @@ class PC():
         l=list(set(l))
         print("LISTA",l)
         valido = False
-        
+
         try:
             palabra=max(l,key=lambda x: len(x))
         except:
@@ -102,7 +102,7 @@ class PC():
         else:
             tipo_palabra = parse(palabra)
             if (self._dificultad == "facil"):
-                valido = ("NN" in tipo_palabra) 
+                valido = ("NN" in tipo_palabra)
             elif (self._dificultad == "medio"):
                 valido =  ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
             else:
@@ -138,7 +138,7 @@ class PC():
         return cant, posiciones
 
     def _agrego_posiciones(self, cant, posiciones, long_y_posiciones):
-        if cant >= 2: 
+        if cant >= 2:
             if not cant in long_y_posiciones.keys():
                 long_y_posiciones[cant] = [posiciones]
             else:
@@ -147,18 +147,18 @@ class PC():
     def _mapear_tablero(self,posiciones_ocupadas_tablero):
         """ Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
             en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
-            listas con listas de las posiciones disponibles para esas longitudes 
+            listas con listas de las posiciones disponibles para esas longitudes
         """
         long_y_posiciones = dict()
         for i in range(self.long_tablero):
-            j = 0  
-            while j < self.long_tablero: 
+            j = 0
+            while j < self.long_tablero:
                 cant, posiciones = self._mapeoHorizontal(i, j, posiciones_ocupadas_tablero) # mapeo horizontalmente
                 self._agrego_posiciones(cant, posiciones, long_y_posiciones)
                 cant, posiciones = self._mapeoVertical(j, i, posiciones_ocupadas_tablero) # mapeo verticalmente
                 self._agrego_posiciones(cant, posiciones, long_y_posiciones)
                 j += 1
-        return long_y_posiciones 
+        return long_y_posiciones
 
     def _calcular_long_maxima(self,long_max_tablero, cant_fichas):
         """Esta funcion retorna la longitud maxima segun dos cosas: la cantidad de fichas disponibles
@@ -171,7 +171,7 @@ class PC():
         if long_max_tablero >= cant_fichas:
             return cant_fichas
         else:
-            return long_max_tablero    
+            return long_max_tablero
 
     def jugar(self,window,posiciones_ocupadas_tablero):
         long_y_posiciones = self._mapear_tablero(posiciones_ocupadas_tablero) # obtenemos las posiciones libres en el tablero
@@ -188,8 +188,8 @@ class PC():
                 print(long_y_posiciones[long_max_tablero][posiciones_random][i])
                 window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
                 # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
-                palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio_columna]                
-        
+                palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio_columna]
+
             ## llamamos a la funcion sumar_puntos de la clase padre y actualizamos los puntos:
             # self.sumPuntos(sumar_puntos(puntos_por_letra, botones, palabra_nueva)) comentada hasta formar la clase padre
             # window['p_pc'].update("Puntos PC:"+str(self.getPuntos())) # aca se actualizaria la ventana
@@ -199,7 +199,7 @@ class PC():
             self._sumar_puntos(palabra_nueva)
             self.reinicioFichas(mejor_palabra)
             print("SELF PUNTOS",self.puntos)
-            window["p_pc"].update(str(self.puntos))        
+            window["p_pc"].update(str(self.puntos))
 
         else:
             sg.popup("La PC le ha pasado el turno")

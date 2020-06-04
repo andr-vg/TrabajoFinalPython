@@ -171,7 +171,8 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     colum = [
         [sg.T("Tiempo: "),sg.Text(str(time.process_time() * 10), key='tiempo')],
        [sg.Text("Puntos jugador:"),sg.T("",key="p_j",size=(0,1))], #Puse (0,1) porque sino no entraban numeros de 2 digitos
-       [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))]
+       [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))],
+       [sg.Text("Turno actual: ",size=(13,1)),sg.Text("",key="turno",size=(15,1))]
     ]
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
@@ -180,8 +181,8 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
                              button_color=('white', '#93D5E2'),border_width=0) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 1),border_width=0,
                              button_color=('white', '#93D5E2'),disabled=True) for i in range(fichas_por_jugador)]]
-    fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]
-    fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]
+    fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
+    fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
@@ -292,9 +293,17 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
 
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, posiciones_ocupadas_tablero
 
-    def pasar_turno(tj, tpc, wind):
-        tj= Not(tj)
-        tpc= Not(tpc)
+def cambiar_turno(turnoj, turnopc, window):#
+    turnoj= not(turnoj)
+    turnopc= not(turnopc)
+    if turnoj:
+        window["turno"].update("¡Es tu turno!")
+    else:
+        window["turno"].update("Turno del la maquina")
+    window["turnoj"].update("¡Es tu turno!",visible= turnoj)
+    window["turnopc"].update("Turno del la maquina",visible= turnopc)
+    return turnoj,turnopc
+
 def main():
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
@@ -344,7 +353,7 @@ def main():
 
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
 
-    turno_jugador = False
+    turno_jugador = True
 
     turno_pc = False
 
@@ -358,6 +367,16 @@ def main():
     cuenta_regresiva = int(time.time()) + cont_tiempo
     #Cierro el archivo del tablero
     arch.close()
+    window.finalize()
+
+    # se decide de forma aleatoria quien comienza la partida
+    #turno = random.randint(0,1) # comentado por ahora
+    turno = 1 # lo dejamos en uno hasta poder implementar el turno de la pc, despues se saca
+    if turno == 1:
+        turno_jugador, turno_pc = cambiar_turno(not(turno_jugador), not(turno_pc), window)
+    else:
+        turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
+
     while True:  # Event Loop
         # Actualizamos el tiempo en pantalla
         restar_tiempo = int(time.time())
@@ -368,29 +387,17 @@ def main():
             print("Se termino el tiempo")
             # Implementar final de partida
             pass
-        # se decide de forma aleatoria quien comienza la partida
-        if primer_turno:
-            primer_turno = False
-            #turno = random.randint(0,1) # comentado por ahora
-            turno = 1 # lo dejamos en uno hasta poder implementar el turno de la pc, despues se saca
-            if turno == 0:
-                turno_jugador = False
-                turno_pc = True
-            else:
-                turno_jugador = True
-                turno_pc = False
         # mientras sea el turno del jugador, podrá realizar todos los eventos del tablero
         if turno_jugador:
             if event is None:
                 break
             #boton cambio de fichas
-            #falta hacer que se termine el turno una vez realizado el cambio
             if (event == "-cf") and (cambios_de_fichas < 3):
                 letras_a_cambiar=[]
                 while True:
                     event = window.read()[0]
                     if event is None:
-                        break
+                        break   #ver
                     elif event in letras.keys():
                         letras_a_cambiar.append(event)
                         window[event].update(disabled=True)
@@ -406,15 +413,13 @@ def main():
                             window["-cf"].update(disabled=True)
                             window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
                         break
+                turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
             # boton de pasar el turno a la pc
-            if event == "-paso":
-                # acá tendriamos que hacer algo como
-                turno_jugador = False
-                turno_pc = True
+            elif event == "-paso":
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-
+                turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
             # boton de guardar partida
-            if event == "-p":
+            elif event == "-p":
                 guardar_partida(layout)
             # boton de terminar partida
             if event == "-t":  # Y no se termino el tiempo..
@@ -458,8 +463,8 @@ def main():
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B
-        # turno de la pc: implementar
-        if turno_pc:
+        elif turno_pc:
+            time.sleep(1)   #maquina pensando la jugarreta
             pc.jugar(window,posiciones_ocupadas_tablero)
             fichas_pc = pc.getFichas()
             print("FICHAS de la pc antes:",fichas_pc)
@@ -468,8 +473,7 @@ def main():
             pc.setFichas(fichas_pc)
             # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
-            turno_pc = False
-            turno_jugador = True
+            turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
         # Implementar final de partida
 
     window.close()
