@@ -121,13 +121,22 @@ def devolver_fichas(dic,keys,bolsa):
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', '#FFFFFF')) # BLANCO FCFCFA
+                                         pad=(0, 0), button_color=('black', '#F44336')) # rojo
 
     descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#ED5752')) # ROJO
+                                            pad=(0, 0), button_color=('black', '#FFB74D')) # marron
+   
+    descuento_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                            pad=(0, 0), button_color=('black', '#000000')) # negro
+
+    descuento_3 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde
 
     premio = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
+                                         pad=(0, 0), button_color=('black', '#FFFFFF')) # blanco
+
+    premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                         pad=(0, 0), button_color=('black', '#2196F3')) # celeste
 
     sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
@@ -147,11 +156,20 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
                 fichas.append(blanco("", key))
                 botones[key] = ""
             elif boton == "+":
-                fichas.append(premio("+", key))
+                fichas.append(premio("", key))
                 botones[key] = "+"
+            elif boton == "++":
+                fichas.append(premio_2("", key))
+                botones[key] = "++"
             elif boton == "-":
-                fichas.append(descuento("-", key))
+                fichas.append(descuento("", key))
                 botones[key] = "-"
+            elif boton == "--":
+                fichas.append(descuento_2('', key))
+                botones[key] = "--"
+            elif boton == "---":
+                fichas.append(descuento_3('', key))
+                botones[key] = "---"
             elif boton in string.ascii_uppercase and boton != "":
                 fichas.append(blanco(boton, key))
                 botones[key] = ""
@@ -255,7 +273,7 @@ def main():
 
     if "win" in sys.platform: #Abre para windows
         if(dificultad == "facil"):
-            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+            arch = open(absolute_path + '\\Datos\\info\\tablero-mario.csv', "r")  # esto lo agregue porque no me encontraba el archivo
         elif (dificultad == "medio"):
             arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
         else:
