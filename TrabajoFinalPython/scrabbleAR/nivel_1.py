@@ -120,13 +120,13 @@ def devolver_fichas(dic,keys,bolsa):
 
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
-    blanco = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
+    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # BLANCO FCFCFA
 
-    descuento = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
+    descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#ED5752')) # ROJO
 
-    premio = lambda name, key: sg.Button(name, border_width=1, size=(5, 1), key=key,
+    premio = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#C1E1DC')) # VERDE
 
     sg.theme("lightblue")
@@ -178,6 +178,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
     ]
+   
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 1),
                              button_color=('white', '#CE5A57'),border_width=0) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 1),border_width=0,
