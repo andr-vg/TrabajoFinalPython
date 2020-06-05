@@ -333,12 +333,12 @@ def main():
                 window['-d'].update(disabled=False)
                 box = event  # letra seleccionada
                 letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', '#00FFFB'))    #al seleccionado se le cambia el color
+                window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
                     window[val].update(disabled=True)  # desactivo los botones de las fichas
                 restar_tiempo = int(time.time())
                 event, values = window.read()
-                window[box].update(button_color=('white', '#93D5E2'))      #se le devuelve el color
+                window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
                 # no pude agregar que actualice aca porque sino mueren las fichas
                 if restar_tiempo > cuenta_regresiva:
                     print("Se termino el tiempo")
