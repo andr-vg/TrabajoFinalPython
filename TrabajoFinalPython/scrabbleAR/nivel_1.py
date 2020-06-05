@@ -219,7 +219,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     for val in keys:
         window[val].update(disabled=False)  # reactivamos las fichas
     for val in palabra_nueva:
-        window[val].update(botones[val], disabled=False) # eliminamos del tablero las fichas
+        window[val].update("", disabled=False) # eliminamos del tablero las fichas
     letras_usadas = dict()
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
