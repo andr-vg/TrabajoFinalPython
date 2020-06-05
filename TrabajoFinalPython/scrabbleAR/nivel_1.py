@@ -120,22 +120,22 @@ def devolver_fichas(dic,keys,bolsa):
 
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
-    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', '#F44336')) # rojo
+    descuento_3 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                         pad=(0, 0), button_color=('black', '#F44336')) # rojo #Descuento_3
 
-    descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#FFB74D')) # marron
-   
     descuento_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                            pad=(0, 0), button_color=('black', '#FFB74D')) # marron #descuento_1
+   
+    descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#000000')) # negro
 
-    descuento_3 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde
+    premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde 
 
-    premio = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # blanco
 
-    premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    premio = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#2196F3')) # celeste
 
     sg.theme("lightblue")
@@ -273,7 +273,7 @@ def main():
 
     if "win" in sys.platform: #Abre para windows
         if(dificultad == "facil"):
-            arch = open(absolute_path + '\\Datos\\info\\tablero-mario.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+            arch = open(absolute_path + '\\Datos\\info\\hola.csv', "r")  # esto lo agregue porque no me encontraba el archivo
         elif (dificultad == "medio"):
             arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
         else:

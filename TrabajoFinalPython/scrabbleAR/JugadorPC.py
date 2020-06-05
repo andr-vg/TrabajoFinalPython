@@ -17,13 +17,8 @@ class PC(Jugadores):
             else: 
                 break
 
-<<<<<<< HEAD
     def _obtenerPalabra(self, long_max):
 
-=======
-    def _obtenerPalabra(self):
-        
->>>>>>> e4ebef9b0166cb25d9a19a9848e281d48faf5ce9
         import itertools as it
         from pattern.text.es import verbs, spelling, lexicon , parse
         """
@@ -37,12 +32,8 @@ class PC(Jugadores):
         l=[]
         s=spelling.keys()
         le=lexicon.keys()
-<<<<<<< HEAD
         
         for opcion in range(2,long_max+1): #iterar por la combinación
-=======
-        for opcion in range(2,len(letras)+1): #iterar por la combinación
->>>>>>> e4ebef9b0166cb25d9a19a9848e281d48faf5ce9
             pals = it.combinations(letras,opcion)
             for combinacion in pals:
                 for pal in combinacion:
