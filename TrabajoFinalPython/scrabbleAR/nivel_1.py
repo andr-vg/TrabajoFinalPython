@@ -273,7 +273,7 @@ def main():
 
     if "win" in sys.platform: #Abre para windows
         if(dificultad == "facil"):
-            arch = open(absolute_path + '\\Datos\\info\\hola.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv',"r")  # esto lo agregue porque no me encontraba el archivo
         elif (dificultad == "medio"):
             arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
         else:
@@ -421,29 +421,6 @@ def main():
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 # botones del atril del jugador
-            if event in letras.keys():
-                window['-d'].update(disabled=False)
-                box = event  # letra seleccionada
-                letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
-                for val in letras.keys():
-                    window[val].update(disabled=True)  # desactivo los botones de las fichas
-                restar_tiempo = int(time.time())
-                event, values = window.read()
-                window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
-                # no pude agregar que actualice aca porque sino mueren las fichas
-                if restar_tiempo > cuenta_regresiva:
-                    print("Se termino el tiempo")
-                if event in botones.keys():
-                # refresco la tabla en la casilla seleccionada con la letra elegida antes
-                    ind = event  # casilla seleccionada
-                    palabra_nueva[ind] = letras[box]
-                    if len(palabra_nueva.keys()) > 1:
-                        window["-c"].update(disabled=False) # recien ahora puede confirmar
-                    window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
-                    for val in letras.keys():
-                        if val not in letras_usadas.keys():
-                            window[val].update(disabled=False)  # refresco la tabla B
         # turno de la pc: implementar
         if turno_pc:
            #aca va un if o un elif??
