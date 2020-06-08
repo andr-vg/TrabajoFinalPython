@@ -204,7 +204,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
-                    sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
+                    sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
@@ -384,7 +384,15 @@ def main():
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
             #boton cambio de fichas
             elif (event == "-cf") and (cambios_de_fichas < 3):
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones) #si ya hay fichas jugadas en el tablero volveran al atril
                 letras_a_cambiar=[]
+                window["-c"].update(disabled=True)  #los desactivo para que no se toque nada que no sean las fichas a cambiar
+                window["-d"].update(disabled=True)  #-c y -d no los vuelvo a activar porque los quiero desactivados cuando empiece el sigueinte turno
+                window["-paso"].update(disabled=True)
+                window["-p"].update(disabled=True)
+                window["-t"].update(disabled=True)
+                sg.Popup('Cambio de fichas:',
+                             'Seleccione clickeando las letras que quiere cambiar y vuelva a clickear en \"Cambiar fichas\" para confirmar el cambio')
                 while True:
                     event = window.read()[0]
                     if event is None:
@@ -393,19 +401,26 @@ def main():
                         letras_a_cambiar.append(event)
                         window[event].update(disabled=True)
                     elif event == "-cf":
-                        print(letras)
-                        letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
-                        dar_fichas(letras,bolsa)
-                        pj.setFichas(letras)
-                        print(letras)
-                        for f in letras_a_cambiar:
-                            window[f].update(letras[f], disabled=False)
-                        cambios_de_fichas+=1
-                        if cambios_de_fichas == 3:
-                            window["-cf"].update(disabled=True)
-                            window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                        if letras_a_cambiar:
+                            print(letras)
+                            letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
+                            dar_fichas(letras,bolsa)
+                            pj.setFichas(letras)
+                            print(letras)
+                            for f in letras_a_cambiar:
+                                window[f].update(letras[f], disabled=False)
+                            cambios_de_fichas+=1
+                            if cambios_de_fichas == 3:
+                                window["-cf"].update(disabled=True)
+                                window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                            print("Cambio de letras realizado.")
+                        else:
+                            print("No se selecciono ninguna letra, no se realizo ningun cambio.")
                         break
                 turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
+                window["-paso"].update(disabled=False)
+                window["-p"].update(disabled=False)
+                window["-t"].update(disabled=False)
             # boton de guardar partida
             elif event == "-p":
                 guardar_partida(layout)
