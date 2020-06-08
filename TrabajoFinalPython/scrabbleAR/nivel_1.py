@@ -205,7 +205,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
-                    sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
+                    sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
@@ -404,7 +404,15 @@ def main():
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
             #boton cambio de fichas
             elif (event == "-cf") and (cambios_de_fichas < 3):
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones) #si ya hay fichas jugadas en el tablero volveran al atril
                 letras_a_cambiar=[]
+                window["-c"].update(disabled=True)  #los desactivo para que no se toque nada que no sean las fichas a cambiar
+                window["-d"].update(disabled=True)  #-c y -d no los vuelvo a activar porque los quiero desactivados cuando empiece el sigueinte turno
+                window["-paso"].update(disabled=True)
+                window["-p"].update(disabled=True)
+                window["-t"].update(disabled=True)
+                sg.Popup('Cambio de fichas:',
+                             'Seleccione clickeando las letras que quiere cambiar y vuelva a clickear en \"Cambiar fichas\" para confirmar el cambio')
                 while True:
                     event = window.read()[0]
                     if event is None:
@@ -413,19 +421,26 @@ def main():
                         letras_a_cambiar.append(event)
                         window[event].update(disabled=True)
                     elif event == "-cf":
-                        print(letras)
-                        letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
-                        dar_fichas(letras,bolsa)
-                        pj.setFichas(letras)
-                        print(letras)
-                        for f in letras_a_cambiar:
-                            window[f].update(letras[f], disabled=False)
-                        cambios_de_fichas+=1
-                        if cambios_de_fichas == 3:
-                            window["-cf"].update(disabled=True)
-                            window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                        if letras_a_cambiar:
+                            print(letras)
+                            letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
+                            dar_fichas(letras,bolsa)
+                            pj.setFichas(letras)
+                            print(letras)
+                            for f in letras_a_cambiar:
+                                window[f].update(letras[f], disabled=False)
+                            cambios_de_fichas+=1
+                            if cambios_de_fichas == 3:
+                                window["-cf"].update(disabled=True)
+                                window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                            print("Cambio de letras realizado.")
+                        else:
+                            print("No se selecciono ninguna letra, no se realizo ningun cambio.")
                         break
                 turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
+                window["-paso"].update(disabled=False)
+                window["-p"].update(disabled=False)
+                window["-t"].update(disabled=False)
             # boton de guardar partida
             elif event == "-p":
                 # guardar_partida(layout)
@@ -455,29 +470,6 @@ def main():
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 # botones del atril del jugador
-            if event in letras.keys():
-                window['-d'].update(disabled=False)
-                box = event  # letra seleccionada
-                letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
-                for val in letras.keys():
-                    window[val].update(disabled=True)  # desactivo los botones de las fichas
-                restar_tiempo = int(time.time())
-                event, values = window.read()
-                window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
-                # no pude agregar que actualice aca porque sino mueren las fichas
-                if restar_tiempo > cuenta_regresiva:
-                    print("Se termino el tiempo")
-                if event in botones.keys():
-                # refresco la tabla en la casilla seleccionada con la letra elegida antes
-                    ind = event  # casilla seleccionada
-                    palabra_nueva[ind] = letras[box]
-                    if len(palabra_nueva.keys()) > 1:
-                        window["-c"].update(disabled=False) # recien ahora puede confirmar
-                    window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
-                    for val in letras.keys():
-                        if val not in letras_usadas.keys():
-                            window[val].update(disabled=False)  # refresco la tabla B
         # turno de la pc: implementar
         if turno_pc:
            #aca va un if o un elif??
