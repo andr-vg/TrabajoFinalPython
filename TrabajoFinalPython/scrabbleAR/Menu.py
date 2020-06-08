@@ -11,18 +11,29 @@ if ("win" in sys.platform):
 else:
     logo = absolute_path + "/Datos/media/Logo.png"
 
+def cargar_top_10():
+    if ("win" in sys.platform):
+        arch = open( absolute_path + "\\Datos\\info\\top_10.json","r")
+    else:
+        arch = open(absolute_path + "/Datos/info/top_10.json","r")
+    list_aux = []
+    top_10 = json.load(arch)
+    for key in top_10.keys():
+        str_aux = "Fecha: " + key +" Puntos: "+ str(top_10[key])
+        list_aux.append(str_aux)
+    return list_aux
 
 def crear_layout():
     """
     Crea el layout de la ventana menu
     """
-    top_10 = []
+    top_10 = cargar_top_10()
 
     tab1_layout = [
         [sg.Text("")],
-        [sg.Button("CONTINUAR",visible=False,key="-continuar-")],
-        [sg.Button("JUGAR", key="-jugar-")],
-        [sg.Button("SALIR", key="-salir-")]
+        [sg.Button("CONTINUAR",visible=False,key="-continuar-",size=(50,4))],
+        [sg.Button("JUGAR", key="-jugar-",size=(50,4))],
+        [sg.Button("SALIR", key="-salir-",size=(50,4))]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default=True),
@@ -66,17 +77,17 @@ def crear_layout():
 
     tab3_layout = [
         [sg.Text("Top 10")],
-        [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10 , default_values="Aun no hay partidas registradas", size=(55, 10))]
+        [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10 , default_values="Aun no hay partidas registradas", size=(60, 10))]
     ]
 
     tab_grupo = [
-        [sg.Tab("Juego", tab1_layout, key="-tab1-", background_color="#2c2825", title_color="#2c2825", border_width=0),
-         sg.Tab("Config nivel", tab2_layout, key="-tab2-", background_color="#2c2825", title_color="#2c2825",
+        [sg.Tab("Juego", tab1_layout, key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
+         sg.Tab("Config nivel", tab2_layout, key="-tab2-", background_color="#E3F2FD", title_color="#E3F2FD",
                 border_width=0),
-         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#2c2825", title_color="#2c2825", border_width=0)]
+         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
     ]
 
-    layout = [[sg.Image(logo, background_color=("#2c2825"))],
+    layout = [[sg.Image(logo, background_color=("#E3F2FD"))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 
@@ -120,13 +131,22 @@ def cargar_config_usr():
     arch.close()
     return config
 
+
+
 def main():
-    sg.theme("DarkAmber")
+    sg.theme("lightblue")
     layout = crear_layout()
-    window = sg.Window("ScrabbleAR", layout)
+    window = sg.Window("ScrabbleAR", layout,size=(550,400),resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
+    #Me fijo si hay partida guardada para mostrar el boton de continuar partida
+    if ("win" in sys.platform):
+        if ("guardado.csv" in os.listdir(absolute_path+"\\Datos\\info")):
+            window["-continuar-"].update(visible=True)
+    else:
+        if "guardado.csv" in os.listdir(absolute_path+"/Datos/info"):
+            window["-continuar-"].update(visible=True)
+
     while True:
         event, values = window.read()
-        print("eventos y valores ",event, values)
         if (event == None or event == "-salir-"):
             break
         if (event == "-pred-"):

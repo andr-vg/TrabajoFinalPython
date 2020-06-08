@@ -8,6 +8,7 @@ import IdentificarPalabra as es
 from functools import reduce
 import os
 import json
+import Menu
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
@@ -260,6 +261,22 @@ def cambiar_turno(turnoj, turnopc, window):#
     window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
 
+def cargar_puntuaciones():
+    if ("win" in sys.platform):        
+        arch = open(absolute_path + "\\Datos\\info\\top_10.json","r")
+    else:
+        arch = open(absolute_path + "/Datos/info/top_10.json","r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
+    top_10 = json.load(arch)
+    return top_10
+
+def guardar_puntuaciones(datos):
+    if ("win" in sys.platform):        
+        arch = open(absolute_path + "\\Datos\\info\\top_10.json","w")
+    else:
+        arch = open(absolute_path + "/Datos/info/top_10.json","w")
+    json.dump(datos,arch)
+    
+
 def main():
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
@@ -273,7 +290,7 @@ def main():
 
     if "win" in sys.platform: #Abre para windows
         if(dificultad == "facil"):
-            arch = open(absolute_path + '\\Datos\\info\\hola.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
         elif (dificultad == "medio"):
             arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
         else:
@@ -309,6 +326,9 @@ def main():
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
 
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
+
+    puntos_jugador = dict()
+    puntos_jugador = cargar_puntuaciones()
 
     turno_jugador = True
 
@@ -408,11 +428,25 @@ def main():
                 turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
             # boton de guardar partida
             elif event == "-p":
-                guardar_partida(layout)
+                # guardar_partida(layout)
+                sg.popup("No esta bien implementado todavia")
+                pass
             # boton de terminar partida
             elif event == "-t":  # Y no se termino el tiempo..
-                # Implementar
-                pass
+                if (pj.puntos > pc.puntos):
+                    sg.popup_no_frame("Termino el juego \n Ganaste!")
+                else:
+                    sg.popup_no_frame("Termino el juego \n Perdiste :( ")
+                from datetime import date
+                fecha =  str(date.today())
+                puntos_jugador[fecha] = pj.puntos
+                guardar_puntuaciones(puntos_jugador)
+                sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
+                window.close()
+                Menu.main()
+                break
+                
+
             # boton de confirmar palabra
             elif event == "-c":
                 window["-c"].update(disabled=True)
