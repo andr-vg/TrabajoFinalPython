@@ -8,6 +8,7 @@ import IdentificarPalabra as es
 from functools import reduce
 import os
 import json
+import Menu
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
 def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
@@ -120,22 +121,22 @@ def devolver_fichas(dic,keys,bolsa):
 
 def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
 
-    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', '#F44336')) # rojo
+    descuento_3 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                         pad=(0, 0), button_color=('black', '#F44336')) # rojo #Descuento_3
 
-    descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#FFB74D')) # marron
-   
     descuento_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                            pad=(0, 0), button_color=('black', '#FFB74D')) # marron #descuento_1
+   
+    descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#000000')) # negro
 
-    descuento_3 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde
+    premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde 
 
-    premio = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # blanco
 
-    premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    premio = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#2196F3')) # celeste
 
     sg.theme("lightblue")
@@ -204,7 +205,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
-                    sg.Button("Cambiar fichas", key="-cf",tooltip='Un click aqui para seleccionar las letras,\nClick en las letras a cambiar,\nOtro click aqui para cambiarlas.'),
+                    sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
@@ -260,6 +261,22 @@ def cambiar_turno(turnoj, turnopc, window):#
     window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
 
+def cargar_puntuaciones():
+    if ("win" in sys.platform):        
+        arch = open(absolute_path + "\\Datos\\info\\top_10.json","r")
+    else:
+        arch = open(absolute_path + "/Datos/info/top_10.json","r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
+    top_10 = json.load(arch)
+    return top_10
+
+def guardar_puntuaciones(datos):
+    if ("win" in sys.platform):        
+        arch = open(absolute_path + "\\Datos\\info\\top_10.json","w")
+    else:
+        arch = open(absolute_path + "/Datos/info/top_10.json","w")
+    json.dump(datos,arch)
+    
+
 def main():
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
@@ -273,7 +290,7 @@ def main():
 
     if "win" in sys.platform: #Abre para windows
         if(dificultad == "facil"):
-            arch = open(absolute_path + '\\Datos\\info\\tablero-mario.csv', "r")  # esto lo agregue porque no me encontraba el archivo
+            arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
         elif (dificultad == "medio"):
             arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
         else:
@@ -309,6 +326,9 @@ def main():
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
 
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
+
+    puntos_jugador = dict()
+    puntos_jugador = cargar_puntuaciones()
 
     turno_jugador = True
 
@@ -384,7 +404,15 @@ def main():
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
             #boton cambio de fichas
             elif (event == "-cf") and (cambios_de_fichas < 3):
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones) #si ya hay fichas jugadas en el tablero volveran al atril
                 letras_a_cambiar=[]
+                window["-c"].update(disabled=True)  #los desactivo para que no se toque nada que no sean las fichas a cambiar
+                window["-d"].update(disabled=True)  #-c y -d no los vuelvo a activar porque los quiero desactivados cuando empiece el sigueinte turno
+                window["-paso"].update(disabled=True)
+                window["-p"].update(disabled=True)
+                window["-t"].update(disabled=True)
+                sg.Popup('Cambio de fichas:',
+                             'Seleccione clickeando las letras que quiere cambiar y vuelva a clickear en \"Cambiar fichas\" para confirmar el cambio')
                 while True:
                     event = window.read()[0]
                     if event is None:
@@ -393,26 +421,47 @@ def main():
                         letras_a_cambiar.append(event)
                         window[event].update(disabled=True)
                     elif event == "-cf":
-                        print(letras)
-                        letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
-                        dar_fichas(letras,bolsa)
-                        pj.setFichas(letras)
-                        print(letras)
-                        for f in letras_a_cambiar:
-                            window[f].update(letras[f], disabled=False)
-                        cambios_de_fichas+=1
-                        if cambios_de_fichas == 3:
-                            window["-cf"].update(disabled=True)
-                            window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                        if letras_a_cambiar:
+                            print(letras)
+                            letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
+                            dar_fichas(letras,bolsa)
+                            pj.setFichas(letras)
+                            print(letras)
+                            for f in letras_a_cambiar:
+                                window[f].update(letras[f], disabled=False)
+                            cambios_de_fichas+=1
+                            if cambios_de_fichas == 3:
+                                window["-cf"].update(disabled=True)
+                                window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                            print("Cambio de letras realizado.")
+                        else:
+                            print("No se selecciono ninguna letra, no se realizo ningun cambio.")
                         break
                 turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
+                window["-paso"].update(disabled=False)
+                window["-p"].update(disabled=False)
+                window["-t"].update(disabled=False)
             # boton de guardar partida
             elif event == "-p":
-                guardar_partida(layout)
+                # guardar_partida(layout)
+                sg.popup("No esta bien implementado todavia")
+                pass
             # boton de terminar partida
             elif event == "-t":  # Y no se termino el tiempo..
-                # Implementar
-                pass
+                if (pj.puntos > pc.puntos):
+                    sg.popup_no_frame("Termino el juego \n Ganaste!")
+                else:
+                    sg.popup_no_frame("Termino el juego \n Perdiste :( ")
+                from datetime import date
+                fecha =  str(date.today())
+                puntos_jugador[fecha] = pj.puntos
+                guardar_puntuaciones(puntos_jugador)
+                sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
+                window.close()
+                Menu.main()
+                break
+                
+
             # boton de confirmar palabra
             elif event == "-c":
                 window["-c"].update(disabled=True)
@@ -421,29 +470,6 @@ def main():
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 # botones del atril del jugador
-            if event in letras.keys():
-                window['-d'].update(disabled=False)
-                box = event  # letra seleccionada
-                letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
-                for val in letras.keys():
-                    window[val].update(disabled=True)  # desactivo los botones de las fichas
-                restar_tiempo = int(time.time())
-                event, values = window.read()
-                window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
-                # no pude agregar que actualice aca porque sino mueren las fichas
-                if restar_tiempo > cuenta_regresiva:
-                    print("Se termino el tiempo")
-                if event in botones.keys():
-                # refresco la tabla en la casilla seleccionada con la letra elegida antes
-                    ind = event  # casilla seleccionada
-                    palabra_nueva[ind] = letras[box]
-                    if len(palabra_nueva.keys()) > 1:
-                        window["-c"].update(disabled=False) # recien ahora puede confirmar
-                    window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
-                    for val in letras.keys():
-                        if val not in letras_usadas.keys():
-                            window[val].update(disabled=False)  # refresco la tabla B
         # turno de la pc: implementar
         if turno_pc:
            #aca va un if o un elif??
