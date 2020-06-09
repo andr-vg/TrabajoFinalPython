@@ -99,18 +99,20 @@ def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
 def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
-    letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
-    print("cant de letras = "+str(letras_juntas))
-    cant_reemplazadas = 0
+    print("bolsa = ",bolsa)
+    #letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
+    #letras_juntas = list(map(lambda x: x[0] for k in range(x[1]), bolsa.items()))
+    letras_juntas = [] # armamos una lista con todas las letras posibles
+    for letra, cant in bolsa.items():
+        for i in range(cant):
+            letras_juntas.append(letra)
     for i in dic.keys():
-        if dic[i] == "":
-            letra=random.choice(letras_juntas)
-            if bolsa[letra] > 0:
-                letras_juntas.replace(letra,"",1)
-                dic[i]= letra
-                bolsa[letra]= (bolsa[letra]) -1
-                cant_reemplazadas += 1
-    if cant_reemplazadas == 0:
+        if dic[i] == "" and len(letras_juntas) > 0:
+            indice = random.randint(0, len(letras_juntas) - 1)
+            dic[i] = letras_juntas[indice]
+            bolsa[letras_juntas[indice]] -= 1
+            letras_juntas.pop(indice)
+    if len(letras_juntas) == 0:
         sg.popup('Se acabaron las fichas')
 
 def devolver_fichas(dic,keys,bolsa):
@@ -225,6 +227,12 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
 
+def pocas_fichas(fichas):
+    if len("".join(fichas.values())) < len(fichas.keys()):
+        return True 
+    else:
+        return False
+
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
@@ -232,21 +240,23 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     """
     turno_jugador = True
     turno_pc = False
+    fin_juego = False
     letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero)
     if actualizar_juego:
         window['-d'].update(disabled=True)
         letras = pj.getFichas()
         dar_fichas(letras, bolsa)
         pj.setFichas(letras)
-        for f in letras_usadas.keys():  #en el lugar de las fichas que se usaron pongo las letras nuevas en el tablero
-            window[f].update(letras[f], disabled=False)
-        letras_usadas = dict()
-        palabra_nueva = dict()
-        turno_jugador = False
-        turno_pc = True
+        fin_juego = pocas_fichas(pj.getFichas())
+        if not fin_juego:
+            for f in letras_usadas.keys():  #en el lugar de las fichas que se usaron pongo las letras nuevas en el tablero
+                window[f].update(letras[f], disabled=False)
+            letras_usadas = dict()
+            palabra_nueva = dict()
+            turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
     else:
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-    return letras_usadas, palabra_nueva, turno_jugador, turno_pc  
+    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego  
 
 
 def cambiar_turno(turnoj, turnopc, window):#
@@ -339,6 +349,8 @@ def main():
     cambios_de_fichas = 0
 
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero
+
+    fin_fichas = False
 
     cont_tiempo = tiempo  # Esto deberia venir como parametro
     cuenta_regresiva = int(time.time()) + cont_tiempo
@@ -447,7 +459,7 @@ def main():
                 sg.popup("No esta bien implementado todavia")
                 pass
             # boton de terminar partida
-            elif event == "-t":  # Y no se termino el tiempo..
+            elif event == "-t" or fin_fichas:  # Y no se termino el tiempo..
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
                 else:
@@ -467,7 +479,7 @@ def main():
                 window["-c"].update(disabled=True)
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 # botones del atril del jugador
         # turno de la pc: implementar
@@ -480,6 +492,7 @@ def main():
             dar_fichas(fichas_pc, bolsa)
             print("Fichas de la pc despues:",fichas_pc)
             pc.setFichas(fichas_pc)
+            fin_fichas = pocas_fichas(pc.getFichas())
             # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)

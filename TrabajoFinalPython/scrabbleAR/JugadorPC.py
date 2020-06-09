@@ -62,7 +62,7 @@ class PC(Jugadores):
                 if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
                     valido = True
             self._palabras_usadas.append(palabra)
-            return palabra.upper() if valido else ""
+        return palabra.upper() if valido else ""
 
     def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
         cant = 0
@@ -139,10 +139,9 @@ class PC(Jugadores):
             # self.sumPuntos(sumar_puntos(puntos_por_letra, botones, palabra_nueva)) comentada hasta formar la clase padre
             # window['p_pc'].update("Puntos PC:"+str(self.getPuntos())) # aca se actualizaria la ventana
             ## actualizamos las fichas de la pc:
-            self.sumar_puntos(palabra_nueva)
-            self.reinicioFichas(mejor_palabra)
-            window["p_pc"].update(str(self.getPuntos()))        
-
+            self.sumar_puntos(palabra_nueva) 
+            self.reinicioFichas(mejor_palabra)            
+            window["p_pc"].update(str(self.getPuntos()))               
         else:
             sg.popup("La PC le ha pasado el turno")
             letras = ""
