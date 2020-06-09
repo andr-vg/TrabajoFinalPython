@@ -233,7 +233,7 @@ def pocas_fichas(fichas):
     else:
         return False
 
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
     actualiza el tablero y los parametros
@@ -241,7 +241,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     turno_jugador = True
     turno_pc = False
     fin_juego = False
-    letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero)
+    letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
     if actualizar_juego:
         window['-d'].update(disabled=True)
         letras = pj.getFichas()
@@ -288,6 +288,8 @@ def guardar_puntuaciones(datos):
     
 
 def main():
+    import random
+
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
@@ -340,10 +342,6 @@ def main():
     puntos_jugador = dict()
     puntos_jugador = cargar_puntuaciones()
 
-    turno_jugador = True
-
-    turno_pc = False
-
     primer_turno = True
 
     cambios_de_fichas = 0
@@ -360,11 +358,13 @@ def main():
 
     # se decide de forma aleatoria quien comienza la partida
     #turno = random.randint(0,1) # comentado por ahora
-    turno = 1 # lo dejamos en uno hasta poder implementar el turno de la pc, despues se saca
-    if turno == 1:
-        turno_jugador, turno_pc = cambiar_turno(not(turno_jugador), not(turno_pc), window)
-    else:
-        turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
+    turno = random.randint(0,1)
+    if turno == 1: # empieza el jugador
+        turno_jugador = True
+        turno_pc = False
+    else:  # empieza la compu
+        turno_jugador = False
+        turno_pc = True
 
     while True:  # Event Loop
         # Actualizamos el tiempo en pantalla
@@ -479,14 +479,18 @@ def main():
                 window["-c"].update(disabled=True)
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno)
+                if primer_turno:
+                    primer_turno = False
                 window["p_j"].update("Puntos jugador:"+str(pj.puntos))
                 # botones del atril del jugador
         # turno de la pc: implementar
         if turno_pc:
            #aca va un if o un elif??
             time.sleep(2)   #maquina pensando la jugarreta
-            pc.jugar(window,posiciones_ocupadas_tablero)
+            pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
+            if primer_turno:
+                primer_turno = False
             fichas_pc = pc.getFichas()
             print("FICHAS de la pc antes:",fichas_pc)
             dar_fichas(fichas_pc, bolsa)

@@ -118,29 +118,58 @@ class PC(Jugadores):
         else:
             return long_max_tablero    
 
-    def jugar(self,window,posiciones_ocupadas_tablero):
+    def jugar(self,window,posiciones_ocupadas_tablero, primer_turno):
         long_y_posiciones = self._mapear_tablero(posiciones_ocupadas_tablero) # obtenemos las posiciones libres en el tablero
         long_max_tablero = max(long_y_posiciones.keys()) # calculamos la long maxima entre todas esas posiciones libres
         long_max = self._calcular_long_maxima(long_max_tablero, len(self.fichas.values())) # nos quedamos con la max entre casillas y cant fichas
         mejor_palabra = self._obtenerPalabra(long_max)  # obtenemos la mejor palabra posible
         if mejor_palabra != "":  # caso en que encuentra una palabra valida
-            posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero])-1)
-            inicio_columna = random.randint(0,(long_max_tablero-len(mejor_palabra)))
-            fin_columna = inicio_columna + len(mejor_palabra)
-            palabra_nueva = dict()
-            for i in range(inicio_columna,fin_columna):   # agregamos las posiciones a la lista de posiciones ocupadas
-                posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
-                print(long_y_posiciones[long_max_tablero][posiciones_random][i])
-                window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio_columna], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
-                # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
-                palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio_columna]                
+            if not primer_turno:
+                posiciones_random = random.randint(0, len(long_y_posiciones[long_max_tablero])-1) # me quedo con una lista de posiciones valida 
+                inicio = random.randint(0,(long_max_tablero-len(mejor_palabra)))
+                fin = inicio + len(mejor_palabra)
+                palabra_nueva = dict()
+                for i in range(inicio,fin):   # agregamos las posiciones a la lista de posiciones ocupadas
+                    posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
+                    print(long_y_posiciones[long_max_tablero][posiciones_random][i])
+                    window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i-inicio], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
+                    # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
+                    palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio]                
         
+            else: ## primer turno de la compu: ubicamos la palabra en el centro del tablero
+                palabra_nueva = dict()
+                centro = self.long_tablero//2
+                indice_letra_centro = random.randint(0,len(mejor_palabra)-1)         
+                orientacion = random.randint(0,1) ## orientacion = 1 : vertical, 0: horizontal
+                print(mejor_palabra)
+                print(mejor_palabra[indice_letra_centro])
+                for i in range(centro-indice_letra_centro,centro): # antes del centro
+                    pos = (centro, i) if orientacion == 0 else (i, centro)
+                    posiciones_ocupadas_tablero.append(pos)
+                    print(pos)
+                    print(mejor_palabra[indice_letra_centro-(centro-i)])
+                    window[pos].update(mejor_palabra[indice_letra_centro-(centro-i)], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
+                    palabra_nueva[pos] = mejor_palabra[indice_letra_centro-(centro-i)]
+                posiciones_ocupadas_tablero.append((centro, centro)) # agregamos el centro
+                window[(centro,centro)].update(mejor_palabra[indice_letra_centro], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
+                palabra_nueva[(centro,centro)] = mejor_palabra[indice_letra_centro]
+                print((centro,centro))
+                print(mejor_palabra[indice_letra_centro])
+                for i in range(centro+1, centro+len(mejor_palabra)-indice_letra_centro): # despues del centro
+                    pos = (centro, i) if orientacion == 0 else (i, centro)
+                    print(pos)
+                    print(mejor_palabra[indice_letra_centro-(centro-i)])
+                    posiciones_ocupadas_tablero.append(pos)
+                    window[pos].update(mejor_palabra[indice_letra_centro+i-centro], disabled=True,button_color=("black","#A4E6FD")) # agregamos las letras al tablero
+                    palabra_nueva[pos] = mejor_palabra[indice_letra_centro+i-centro]
+
             ## llamamos a la funcion sumar_puntos de la clase padre y actualizamos los puntos:
             self.sumar_puntos(palabra_nueva)            
             ## actualizamos las fichas de la pc:        
             self.reinicioFichas(mejor_palabra) 
             ## se actualizan los puntos         
-            window["p_pc"].update(str(self.getPuntos()))                
+            window["p_pc"].update(str(self.getPuntos())) 
+                        
         else:
             sg.popup("La PC le ha pasado el turno")
             letras = ""
