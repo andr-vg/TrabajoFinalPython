@@ -1,6 +1,7 @@
 import IdentificarPalabra as es
 import PySimpleGUI as sg
 from Jugadores import Jugadores
+
 class Jugador(Jugadores):
     def __init__ (self,fichas,long_tablero,botones,puntos_por_letra,dificultad,tipo):
         Jugadores.__init__(self, fichas,long_tablero,botones,puntos_por_letra,dificultad,tipo)
