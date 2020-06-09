@@ -136,12 +136,11 @@ class PC(Jugadores):
                 palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i-inicio_columna]                
         
             ## llamamos a la funcion sumar_puntos de la clase padre y actualizamos los puntos:
-            # self.sumPuntos(sumar_puntos(puntos_por_letra, botones, palabra_nueva)) comentada hasta formar la clase padre
-            # window['p_pc'].update("Puntos PC:"+str(self.getPuntos())) # aca se actualizaria la ventana
-            ## actualizamos las fichas de la pc:
-            self.sumar_puntos(palabra_nueva) 
-            self.reinicioFichas(mejor_palabra)            
-            window["p_pc"].update(str(self.getPuntos()))               
+            self.sumar_puntos(palabra_nueva)            
+            ## actualizamos las fichas de la pc:        
+            self.reinicioFichas(mejor_palabra) 
+            ## se actualizan los puntos         
+            window["p_pc"].update(str(self.getPuntos()))                
         else:
             sg.popup("La PC le ha pasado el turno")
             letras = ""

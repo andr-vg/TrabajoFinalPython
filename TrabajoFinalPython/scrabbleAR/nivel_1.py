@@ -485,7 +485,7 @@ def main():
         # turno de la pc: implementar
         if turno_pc:
            #aca va un if o un elif??
-            #time.sleep(0.5)   #maquina pensando la jugarreta
+            time.sleep(2)   #maquina pensando la jugarreta
             pc.jugar(window,posiciones_ocupadas_tablero)
             fichas_pc = pc.getFichas()
             print("FICHAS de la pc antes:",fichas_pc)
@@ -495,8 +495,7 @@ def main():
             fin_fichas = pocas_fichas(pc.getFichas())
             # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
-            turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
-        # Implementar final de partida
+            turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
 
