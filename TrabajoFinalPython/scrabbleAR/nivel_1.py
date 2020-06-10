@@ -482,7 +482,7 @@ def main():
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno)
                 if primer_turno:
                     primer_turno = False
-                window["p_j"].update("Puntos jugador:"+str(pj.puntos))
+                window["p_j"].update(str(pj.puntos))
                 # botones del atril del jugador
         # turno de la pc: implementar
         if turno_pc:

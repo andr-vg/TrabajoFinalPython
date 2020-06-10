@@ -172,8 +172,10 @@ def main():
                 else:
                     print("NO HAY CONFIG")  
                     config = cargar_config_pred()             
-
+            window.close()
             nivel_1.main() #Despues hay que cambiarle el nombre a nose.. juego?
+            
+            break
 
 
         if (event == "-guardar-"):
