@@ -4,7 +4,6 @@ import sys
 import string
 import random
 import time
-import IdentificarPalabra as es
 from functools import reduce
 import os
 import json
