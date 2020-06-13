@@ -50,17 +50,8 @@ class PC(Jugadores):
             palabra=max(l,key=lambda x: len(x))
         except:
             palabra = ""
-        if not (palabra.lower() in verbs) and (not palabra.lower() in spelling) and (not(palabra.lower() in lexicon) and not(palabra.upper() in lexicon) and not(palabra.capitalize() in lexicon))and (palabra in self._palabras_usadas):
-            print("la palabra no existe")
-        else:
-            tipo_palabra = parse(palabra)
-            if (self._dificultad == "facil"):
-                valido = True  #Valido es verdadero, porque ya se comprobo si la palabra existe y es dificultad facil 
-            elif (self._dificultad == "medio"):
-                valido =  ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
-            else:
-                if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
-                    valido = True
+        if not palabra in self._palabras_usadas:
+            valido = self.es_palabra_valida(palabra)
             self._palabras_usadas.append(palabra)
         return palabra.upper() if valido else ""
 

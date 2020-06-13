@@ -1,4 +1,3 @@
-import IdentificarPalabra as es
 import PySimpleGUI as sg
 from Jugadores import Jugadores
 
@@ -35,7 +34,7 @@ class Jugador(Jugadores):
                 lista_letras_ordenadas.append(palabra_nueva[key])
             palabra_obtenida = ''.join(lista_letras_ordenadas)
             palabra_obtenida.strip()
-            if es.palabra_valida(palabra_obtenida):
+            if self.es_palabra_valida(palabra_obtenida):
                 al_centro = self._estan_en_el_centro(keys_ordenados)
                 if (not primer_turno) or (primer_turno and al_centro):
                     posiciones_ocupadas_tablero.extend(palabra_nueva.keys())
