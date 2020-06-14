@@ -1,7 +1,7 @@
 class Jugadores:
-    def __init__ (self,fichas,long_tablero,botones,puntos_por_letra,dificultad,tipo):
-        self.fichas = fichas 
-        self.puntaje = 0 
+    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):
+        self.fichas = fichas
+        self.puntaje = 0
         self.long_tablero = long_tablero
         self._botones = botones
         self.puntos_por_letra = puntos_por_letra
@@ -10,36 +10,37 @@ class Jugadores:
 
     def setFichas(self, fichas_nuevas):
         self.fichas = fichas_nuevas
-        print("fichas",self.fichas)
+        print("fichas", self.fichas)
 
     def getFichas(self):
         return self.fichas
-    
-    def getPuntos(self):
-        return self.puntaje 
 
-    def sumPuntos(self,punt):
+    def getPuntos(self):
+        return self.puntaje
+
+    def sumPuntos(self, punt):
         self.puntaje += punt
 
     def es_palabra_valida(self, palabra):
         """
         Verifica si la palabra formada existe y devuelve true y es un Sustantivo, Adjetivo o Verbo
         """
-        from pattern.text.es import verbs, spelling, lexicon , parse
+        from pattern.text.es import verbs, spelling, lexicon, parse
         import string
-        if (palabra.lower() in verbs) or (palabra.lower() in spelling) or (palabra.lower() in lexicon) or (palabra.upper() in lexicon) or (palabra.capitalize() in lexicon):
+        if (palabra.lower() in verbs) or (palabra.lower() in spelling) or (palabra.lower() in lexicon) or (
+                palabra.upper() in lexicon) or (palabra.capitalize() in lexicon):
             tipo_palabra = parse(palabra)
             if (self._dificultad == "facil"):
-                return True  #Valido es verdadero, porque ya se comprobo si la palabra existe y es dificultad facil 
+                return True  # Valido es verdadero, porque ya se comprobo si la palabra existe y es dificultad facil
             elif (self._dificultad == "medio"):
-                return  ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
+                return ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
             else:
-                if self._tipo in tipo_palabra:   #Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
+                if self._tipo in tipo_palabra:  # Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
                     return True
         else:
             return False
 
-    def sumar_puntos(self,palabra_nueva):
+    def sumar_puntos(self, palabra_nueva):
         duplicar = False
         triplicar = False
         puntos = 0
@@ -64,5 +65,5 @@ class Jugadores:
             puntos = 2 * puntos
         print(str(puntos))
         self.sumPuntos(puntos)
-    
-    puntos =  property(getPuntos,sumPuntos,doc="Settet y Getter")
+
+    puntos = property(getPuntos, sumPuntos, doc="Setter y Getter")
