@@ -52,7 +52,8 @@ class PC(Jugadores):
             palabra = ""
         if not palabra in self._palabras_usadas:
             valido = self.es_palabra_valida(palabra)
-            self._palabras_usadas.append(palabra)
+            if valido:
+                self._palabras_usadas.append(palabra)
         return palabra.upper() if valido else ""
 
     def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
