@@ -10,30 +10,12 @@ import json
 import Menu
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
-def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
-    guardar = lista
-    guardar.pop(0)
-    #guardar.pop(16)
-    #guardar.pop(17)
-    if "win" in sys.platform:
-        # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
-
-        arch = open(absolute_path + '\\Datos\\info\\guardado.csv',
-                    "w")  # esto lo agregue porque no me encontraba el archivo
-    else:
-        arch = open(absolute_path + "/Datos/info/guardado.csv", "w")
-
-    escritor = csv.writer(arch)
-    for aux in lista:
-        escritor.writerow(aux[i].get_text() for i in range(len(aux)))
-    arch.close()
-
 def cargar_config_pred():
     """
     carga la configuracion del usuario
     devuelve un diccionario
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
     config = dict()
     config = json.load(arch)
     arch.close()
@@ -80,6 +62,24 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
     dificultad = config["dificultad"]
     return bolsa,puntos_por_letra,tiempo,dificultad
 
+def guardar_partida(lista):  # recibe el layout saca los botones que no son del tablero y los exporta a un csv
+    guardar = lista
+    guardar.pop(0)
+    #guardar.pop(16)
+    #guardar.pop(17)
+    if "win" in sys.platform:
+        # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
+
+        arch = open(absolute_path + '\\Datos\\info\\guardado.csv',
+                    "w")  # esto lo agregue porque no me encontraba el archivo
+    else:
+        arch = open(absolute_path + "/Datos/info/guardado.csv", "w")
+
+    escritor = csv.writer(arch)
+    for aux in lista:
+        escritor.writerow(aux[i].get_text() for i in range(len(aux)))
+    arch.close()
+
 def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
@@ -113,12 +113,12 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
 
     descuento_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#FFB74D')) # marron #descuento_1
-   
+
     descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#000000')) # negro
 
     premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde 
+                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # blanco
@@ -184,7 +184,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
     ]
-   
+
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 1),
                              button_color=('white', '#CE5A57'),border_width=0) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 1),border_width=0,
@@ -214,7 +214,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
 
 def pocas_fichas(fichas):
     if len("".join(fichas.values())) < len(fichas.keys()):
-        return True 
+        return True
     else:
         return False
 
@@ -241,7 +241,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
             turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
     else:
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego  
+    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego
 
 
 def cambiar_turno(turnoj, turnopc, window):#
@@ -257,7 +257,7 @@ def cambiar_turno(turnoj, turnopc, window):#
     return turnoj,turnopc
 
 def cargar_puntuaciones():
-    if ("win" in sys.platform):        
+    if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\top_10.json","r")
     else:
         arch = open(absolute_path + "/Datos/info/top_10.json","r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
@@ -265,12 +265,12 @@ def cargar_puntuaciones():
     return top_10
 
 def guardar_puntuaciones(datos):
-    if ("win" in sys.platform):        
+    if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\top_10.json","w")
     else:
         arch = open(absolute_path + "/Datos/info/top_10.json","w")
     json.dump(datos,arch)
-    
+
 
 def main():
     import random
@@ -457,7 +457,7 @@ def main():
                 window.close()
                 Menu.main()
                 break
-                
+
 
             # boton de confirmar palabra
             elif event == "-c":
