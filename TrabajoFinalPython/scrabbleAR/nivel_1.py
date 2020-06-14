@@ -33,10 +33,7 @@ def cargar_config_pred():
     carga la configuracion del usuario
     devuelve un diccionario
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/configPred.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r")
     config = dict()
     config = json.load(arch)
     arch.close()
@@ -47,10 +44,7 @@ def cargar_config_usr():
     carga la configuracion del usuario
     devuelve un diccionario
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/configUsuario.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
     config = dict()
     config = json.load(arch)
     arch.close()
@@ -61,20 +55,12 @@ def cargar_configuraciones(bolsa,puntos_por_letra):
     Carga las configuraciones de usuario o predeterminadas en caso de que no existan las del usuario
     """
     config = dict()
-    if ("win" in sys.platform):
-        if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
-            print("HAY CONFIG")
-            config = cargar_config_usr()
-        else:
-            print("NO HAY CONFIG")
-            config = cargar_config_pred()
+    if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+        print("HAY CONFIG")
+        config = cargar_config_usr()
     else:
-        if "configUsuario.json" in os.listdir(absolute_path+"/Datos/info"):
-             print("HAY CONFIG")
-             config = cargar_config_usr()
-        else:
-            print("NO HAY CONFIG")
-            config = cargar_config_pred()
+        print("NO HAY CONFIG")
+        config = cargar_config_pred()
     grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L","R", "T"]
     grupo_2 = ["C", "D", "G"]
     grupo_3 = ["M","B","P"]
