@@ -405,6 +405,8 @@ def main(guardado):
 
     fin_fichas = False
 
+    fin_juego = False
+
     cont_tiempo = tiempo  # Esto deberia venir como parametro
     cuenta_regresiva = int(time.time()) + cont_tiempo
     #Cierro el archivo del tablero
@@ -427,9 +429,9 @@ def main(guardado):
         event, values = window.read(timeout=1000)
         window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
         if restar_tiempo > cuenta_regresiva:
-            print("Se termino el tiempo")
+            sg.popup("Se termino el tiempo")
             # Implementar final de partida
-            pass
+            fin_juego = True
         # mientras sea el turno del jugador, podrá realizar todos los eventos del tablero
         if turno_jugador:
             if event is None:
@@ -445,9 +447,7 @@ def main(guardado):
                 restar_tiempo = int(time.time())
                 event, values = window.read()
                 window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
-                # no pude agregar que actualice aca porque sino mueren las fichas
-                if restar_tiempo > cuenta_regresiva:
-                    print("Se termino el tiempo")
+    
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
@@ -521,7 +521,7 @@ def main(guardado):
                 # sg.popup("No esta bien implementado todavia")
                 break
             # boton de terminar partida
-            elif event == "-t" or fin_fichas:  # Y no se termino el tiempo..
+            elif event == "-t" or fin_fichas or fin_juego:  # Y no se termino el tiempo..
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
                 else:
