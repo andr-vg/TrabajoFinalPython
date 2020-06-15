@@ -568,3 +568,5 @@ if __name__ == "__main__":
     main(False) #Para testear le puse un True al parametro cuando el juego se ejecute desde el menu
     #si se hace nuevo juego el main se ejecutaria con un True y si es continuar con un False
 #Tambien cuando este finalizado el juego se ejecutaria del menu.. entonces este if se iria
+#False no hay guardada
+#True hay guardada
