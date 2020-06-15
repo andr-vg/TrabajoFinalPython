@@ -137,6 +137,7 @@ class PC(Jugadores):
                     palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i - inicio]
 
             else:  ## primer turno de la compu: ubicamos la palabra en el centro del tablero
+                primer_turno = False
                 palabra_nueva = dict()
                 centro = self.long_tablero // 2
                 indice_letra_centro = random.randint(0, len(mejor_palabra) - 1)
@@ -180,6 +181,7 @@ class PC(Jugadores):
             sg.popup("La PC le ha pasado el turno")
             letras = ""
             self.reinicioFichas(letras.join(self.fichas.values()))
+        return primer_turno
     
     def getBotones(self):
         for pos in self._pos_usadas_tablero:

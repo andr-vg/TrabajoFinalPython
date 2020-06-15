@@ -541,7 +541,7 @@ def main(guardado):
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno)
-                if primer_turno:
+                if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
                 # botones del atril del jugador
@@ -549,9 +549,7 @@ def main(guardado):
         if turno_pc:
            #aca va un if o un elif??
             time.sleep(2)   #maquina pensando la jugarreta
-            pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
-            if primer_turno:
-                primer_turno = False
+            primer_turno = pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
             fichas_pc = pc.getFichas()
             print("FICHAS de la pc antes:",fichas_pc)
             dar_fichas(fichas_pc, bolsa)
