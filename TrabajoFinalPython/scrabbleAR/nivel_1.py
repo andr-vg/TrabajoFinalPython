@@ -98,7 +98,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     """
     config = dict()
     if ("win" in sys.platform):
-        if (guardado):
+        if not(guardado):
             if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
                 print("HAY CONFIG")
                 config = cargar_config_usr()
@@ -109,7 +109,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
             config = cargar_config_guardada()
 
     else:
-        if (guardado):
+        if not(guardado):
             if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
                 print("HAY CONFIG")
                 config = cargar_config_usr()
