@@ -15,32 +15,17 @@ def guardar_info_partida(datos):
     Guarda las puntuaciones, tiempo restante
 
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\datos_guardados.json","w")
-    else:
-        arch = open(absolute_path + "/Datos/info/datos_guardados.json","w")
-    
-
+    arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "w")
     json.dump(datos,arch,indent = 2)
     arch.close()
 
-
-
-def guardar_partida(lista,botones):  
-    """ 
+def guardar_partida(lista,botones):
+    """
     recibe el layout saca los botones que no son del tablero y los exporta a un csv
 
     """
     guardar = lista[1:16] #Aislo el tablero del layout
-
-    if "win" in sys.platform:
-        # arch = open(".\\TrabajoFinalPython\\TrabajoFinalPython\\scrabbleAR\\Datos\\guardado.csv","w")
-
-        arch = open(absolute_path + '\\Datos\\info\\guardado.csv',
-                    "w")  # esto lo agregue porque no me encontraba el archivo
-    else:
-        arch = open(absolute_path + "/Datos/info/guardado.csv", "w")
-
+    arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w")
     escritor = csv.writer(arch)
     x = 0 #Pos de la lista
     for aux in guardar:
@@ -53,10 +38,7 @@ def cargar_config_pred():
     carga la configuracion del usuario
     devuelve un diccionario
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/configPred.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
     config = dict()
     config = json.load(arch)
     arch.close()
@@ -67,57 +49,38 @@ def cargar_config_usr():
     carga la configuracion del usuario
     devuelve un diccionario
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/configUsuario.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
     config = dict()
     config = json.load(arch)
     arch.close()
-        
+
     return config
 
 def cargar_config_guardada():
     """
     carga la configuracion de un juego guardado
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\datos_guardados.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/datos_guardados.json","r")
-    
+    arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "r")
     config = dict()
     config =  json.load(arch)
     arch.close()
 
-    return config    
+    return config
 
 def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     """
     Carga las configuraciones de usuario o predeterminadas en caso de que no existan las del usuario
     """
     config = dict()
-    if ("win" in sys.platform):
-        if not(guardado):
-            if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
-                print("HAY CONFIG")
-                config = cargar_config_usr()
-            else:
-                print("NO HAY CONFIG")
-                config = cargar_config_pred()
+    if not(guardado):
+        if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+            print("HAY CONFIG")
+            config = cargar_config_usr()
         else:
-            config = cargar_config_guardada()
-
+            print("NO HAY CONFIG")
+            config = cargar_config_pred()
     else:
-        if not(guardado):
-            if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
-                print("HAY CONFIG")
-                config = cargar_config_usr()
-            else:
-                print("NO HAY CONFIG")
-                config = cargar_config_pred()
-        else:
-            config = cargar_config_guardada()
+        config = cargar_config_guardada()
 
     grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L","R", "T"]
     grupo_2 = ["C", "D", "G"]
@@ -171,12 +134,12 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
 
     descuento_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#FFB74D')) # marron #descuento_1
-   
+
     descuento = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                             pad=(0, 0), button_color=('black', '#000000')) # negro
 
     premio_2 = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde 
+                                            pad=(0, 0), button_color=('black', '#8BC34A')) # verde
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#FFFFFF')) # blanco
@@ -245,7 +208,7 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
     frame_colum = [
         [sg.Frame("Info del juego",layout=colum)]
     ]
-   
+
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 1),
                              button_color=('white', '#CE5A57'),border_width=0) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 1),border_width=0,
@@ -275,7 +238,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
 
 def pocas_fichas(fichas):
     if len("".join(fichas.values())) < len(fichas.keys()):
-        return True 
+        return True
     else:
         return False
 
@@ -302,7 +265,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
             turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
     else:
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
-    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego  
+    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego
 
 
 def cambiar_turno(turnoj, turnopc, window):#
@@ -318,7 +281,7 @@ def cambiar_turno(turnoj, turnopc, window):#
     return turnoj,turnopc
 
 def cargar_puntuaciones():
-    if ("win" in sys.platform):        
+    if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\top_10.json","r")
     else:
         arch = open(absolute_path + "/Datos/info/top_10.json","r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
@@ -326,12 +289,12 @@ def cargar_puntuaciones():
     return top_10
 
 def guardar_puntuaciones(datos):
-    if ("win" in sys.platform):        
+    if ("win" in sys.platform):
         arch = open(absolute_path + "\\Datos\\info\\top_10.json","w")
     else:
         arch = open(absolute_path + "/Datos/info/top_10.json","w")
     json.dump(datos,arch)
-    
+
 
 def main(guardado):
     import random
@@ -447,7 +410,7 @@ def main(guardado):
                 restar_tiempo = int(time.time())
                 event, values = window.read()
                 window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
-    
+
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
@@ -533,7 +496,7 @@ def main(guardado):
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
 
                 break
-                
+
 
             # boton de confirmar palabra
             elif event == "-c":
