@@ -135,7 +135,7 @@ class PC(Jugadores):
                                                                                                            "#A4E6FD"))  # agregamos las letras al tablero
                     # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
                     palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i - inicio]
-
+                    self._botones[long_y_posiciones[long_max_tablero][posiciones_random][i]] = "" + "*"
             else:  ## primer turno de la compu: ubicamos la palabra en el centro del tablero
                 primer_turno = False
                 palabra_nueva = dict()
@@ -151,10 +151,12 @@ class PC(Jugadores):
                     print(mejor_palabra[indice_letra_centro - (centro - i)])
                     window[pos].update(mejor_palabra[indice_letra_centro - (centro - i)], disabled=True,
                                        button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
+                    self._botones[pos] = "" + "*"
                     palabra_nueva[pos] = mejor_palabra[indice_letra_centro - (centro - i)]
                 posiciones_ocupadas_tablero.append((centro, centro))  # agregamos el centro
                 window[(centro, centro)].update(mejor_palabra[indice_letra_centro], disabled=True,
                                                 button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
+                self._botones[(centro,centro)] = "" + "*"
                 palabra_nueva[(centro, centro)] = mejor_palabra[indice_letra_centro]
                 print((centro, centro))
                 print(mejor_palabra[indice_letra_centro])
@@ -165,7 +167,7 @@ class PC(Jugadores):
                     posiciones_ocupadas_tablero.append(pos)
                     window[pos].update(mejor_palabra[indice_letra_centro + i - centro], disabled=True,
                                        button_color = ("black", "#A4E6FD"))  # agregamos las letras al tablero
-                    
+                    self._botones[pos] = "" + "*"
                     palabra_nueva[pos] = mejor_palabra[indice_letra_centro + i - centro]
                     
 
@@ -184,6 +186,4 @@ class PC(Jugadores):
         return primer_turno
     
     def getBotones(self):
-        for pos in self._pos_usadas_tablero:
-            self._botones[pos] = "*"
         return self._botones

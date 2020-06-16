@@ -182,8 +182,11 @@ def crear_layout(bolsa,csvreader):  # Creacion del Layout, interpretando los car
                 fichas.append(descuento_3('', key))
                 botones[key] = "---"
             elif (boton[0] in string.ascii_uppercase) and (boton != " "):
-                if boton[1] == "*":
-                    fichas.append(ficha_pc(boton[0],key))
+                if (len(boton)> 1):                    
+                    if boton[1] == "*":
+                        fichas.append(ficha_pc(boton[0],key))
+                    else:
+                        fichas.append(blanco(boton,key))
                 botones[key] = ""
             j += 1
         layout.append(fichas)
