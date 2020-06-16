@@ -337,7 +337,7 @@ def main(guardado):
             if(dificultad == "facil"):
                 arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
             elif (dificultad == "medio"):
-                arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-2.csv', "r")
+                arch = open(absolute_path + '\\Datos\\info\\tablero-cohete.csv', "r")
             else:
                 arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-3.csv', "r")
 
@@ -348,7 +348,7 @@ def main(guardado):
             if(dificultad == "facil"):
                 arch = open(absolute_path + '/Datos/info/tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
             elif (dificultad == "medio"):
-                arch = open(absolute_path + '/Datos/info/tablero-nivel-2.csv', "r")
+                arch = open(absolute_path + '/Datos/info/tablero-cohete.csv', "r")
             else:
                 arch = open(absolute_path + '/Datos/info/tablero-nivel-3.csv', "r")
 
