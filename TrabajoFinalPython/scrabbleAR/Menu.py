@@ -6,16 +6,10 @@ import json
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
 
-if ("win" in sys.platform):
-    logo = absolute_path + "\\Datos\\media\\Logo.png"
-else:
-    logo = absolute_path + "/Datos/media/Logo.png"
+logo = os.path.join(absolute_path, "Datos","media","Logo.png")
 
 def cargar_top_10():
-    if ("win" in sys.platform):
-        arch = open( absolute_path + "\\Datos\\info\\top_10.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/top_10.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
     list_aux = []
     top_10 = json.load(arch)
     for key in top_10.keys():
@@ -53,7 +47,7 @@ def crear_layout():
     frame_col = [
         [sg.Frame("Cantidad de letras",layout=colum)]
     ]
-    
+
     frame_1 = [
         [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=1,key="grupo_1")],
         [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=2,key="grupo_2")],
@@ -71,7 +65,7 @@ def crear_layout():
 
     tab2_layout = [
         [sg.Frame("Dificultad",layout=frame_0),sg.Column(frame_2)],
-        [sg.Frame("Puntos por letra",layout=frame_1),sg.Column(frame_col)],                  
+        [sg.Frame("Puntos por letra",layout=frame_1),sg.Column(frame_col)],
         [sg.Button("Guardar", key="-guardar-"),sg.Button("Config predeterminada",key="-pred-")]
                    ]
 
@@ -95,12 +89,9 @@ def crear_layout():
 
 def guardar_configuracion(config):
     """
-    Guarda la configuracion que hizo el usuario en un .json 
+    Guarda la configuracion que hizo el usuario en un .json
     """
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","w")
-    else:
-        arch = open(absolute_path + "/Datos/info/configUsuario.json","w")
+    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "w")
     json.dump(config,arch,indent=2)
     arch.close()
 
@@ -108,10 +99,7 @@ def cargar_config_pred():
     """
     Carga la configuracion predeterminada del juego
     """
-    if ("win" in sys.platform):        
-        arch = open(absolute_path + "\\Datos\\info\\configPred.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/configPred.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r")
     config = dict()
     config = json.load(arch)
     arch.close()
@@ -122,80 +110,50 @@ def cargar_config_usr():
     Carga el archivo json con las configuraciones que hizo el usuario
     en la pestaña de configuracion
     """
-    if ("win" in sys.platform):        
-        arch = open(absolute_path + "\\Datos\\info\\configUsuario.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/configUsuario.json","r")
+    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
     config = dict()
     config = json.load(arch)
     arch.close()
     return config
-
-
 
 def main():
     sg.theme("lightblue")
     layout = crear_layout()
     window = sg.Window("ScrabbleAR", layout,size=(550,400),resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
     #Me fijo si hay partida guardada para mostrar el boton de continuar partida
-    if ("win" in sys.platform):
-        if ("guardado.csv" in os.listdir(absolute_path+"\\Datos\\info")):
-            window["-continuar-"].update(visible=True)
-    else:
-        if "guardado.csv" in os.listdir(absolute_path+"/Datos/info"):
-            window["-continuar-"].update(visible=True)
+    if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "Datos","info"))):
+        window["-continuar-"].update(visible=True)
 
     while True:
         event, values = window.read()
         if (event == None or event == "-salir-"):
             break
         if (event == "-pred-"):
-            if ("win" in sys.platform):
-                os.remove(absolute_path + "\\Datos\\info\\configUsuario.json")
-            else:
-                os.remove(absolute_path + "/Datos/info/configUsuario.json")
-            
+            os.remove(os.path.join(absolute_path, "Datos","info","configUsuario.json"))
         if (event == "-jugar-"):
-
-            if ("win" in sys.platform):
-                if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
-                    print("HAY CONFIG")
-                    config = cargar_config_usr()
-
-                else:
-                    print("NO HAY CONFIG")
-                    config = cargar_config_pred()
+            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+                print("HAY CONFIG")
+                config = cargar_config_usr()
             else:
-                if "configUsuario.json" in os.listdir(absolute_path+"/Datos/info"):
-                    print("HAY CONFIG")
-                    config = cargar_config_usr()
-                else:
-                    print("NO HAY CONFIG")  
-                    config = cargar_config_pred()             
+                print("NO HAY CONFIG")
+                config = cargar_config_pred()
             nivel_1.main(False) #Despues hay que cambiarle el nombre a nose.. juego?
-            
             break
 
         if (event == "-continuar-"):
             nivel_1.main(True)
 
-
         if (event == "-guardar-"):
-            if ("win" in sys.platform):
-                if "configUsuario.json" in os.listdir(absolute_path+"\\Datos\\info"):
-                    config = cargar_config_usr()
-                else:
-                    config = cargar_config_pred()
+            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+                config = cargar_config_usr()
             else:
-                if "configUsuario.json" in os.listdir(absolute_path+"/Datos/info"):
-                    config = cargar_config_usr()
-                else:
-                    config = cargar_config_pred()    
+                config = cargar_config_pred()
+
             config["tiempo"] = values["-tiempo-"]*60
             if (window["facil"].get()):
                 config["dificultad"] = "facil"
             elif (window["medio"].get()):
-                config["dificultad"] = "medio"            
+                config["dificultad"] = "medio"
             elif (window["dificil"].get()):
                 config["dificultad"] = "dificil"
             config["grupo_1"] = int(window.FindElement("grupo_1").get())
@@ -214,12 +172,8 @@ def main():
             config["grupo_7_cant"] = int(window.FindElement("grupo_7_cant").get())
 
             guardar_configuracion(config)
- 
-
 
     window.close()
-#ay
 
 if __name__ == "__main__":
     main()
-

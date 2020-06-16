@@ -200,7 +200,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, in
                 fichas.append(descuento_3('---', key))
                 botones[key] = "---"
             elif (boton[0] in string.ascii_uppercase) and (boton != " "):
-                if (len(boton)> 1):                    
+                if (len(boton)> 1):
                     if boton[1] == "*":
                         fichas.append(ficha_pc(boton[0],key)) # casillas ocupadas por la maquina en una partida previa
                     else:
@@ -302,20 +302,13 @@ def cambiar_turno(turnoj, turnopc, window):#
     return turnoj,turnopc
 
 def cargar_puntuaciones():
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\top_10.json","r")
-    else:
-        arch = open(absolute_path + "/Datos/info/top_10.json","r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
+    arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
     top_10 = json.load(arch)
     return top_10
 
 def guardar_puntuaciones(datos):
-    if ("win" in sys.platform):
-        arch = open(absolute_path + "\\Datos\\info\\top_10.json","w")
-    else:
-        arch = open(absolute_path + "/Datos/info/top_10.json","w")
+    arch= open(os.path.join(absolute_path, "Datos","info","top_10.json"), "w")
     json.dump(datos,arch)
-
 
 def main(guardado):
     import random
@@ -329,28 +322,16 @@ def main(guardado):
 
     #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
     #Abro el tablero correspondiente a la dificultad seleccionada
-
-    if "win" in sys.platform: #Abre para windows
-        if (guardado): #Si hay partida guardada carga el tablero guardado
-            arch = open(absolute_path + "\\Datos\\info\\guardado.csv")
+    #Abre para windows y linux
+    if (guardado): #Si hay partida guardada carga el tablero guardado
+        arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"))
+    else:
+        if(dificultad == "facil"):
+            arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-1.csv"), "r")
+        elif (dificultad == "medio"):
+            arch = open(os.path.join(absolute_path, "Datos","info","tablero-cohete.csv"), "r")
         else:
-            if(dificultad == "facil"):
-                arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
-            elif (dificultad == "medio"):
-                arch = open(absolute_path + '\\Datos\\info\\tablero-cohete.csv', "r")
-            else:
-                arch = open(absolute_path + '\\Datos\\info\\tablero-nivel-3.csv', "r")
-
-    else: #Abre para linux
-        if (guardado): #Si hay partida guardada carga el tablero guardado
-            arch = open(absolute_path + "/Datos/info/guardado.csv")
-        else:
-            if(dificultad == "facil"):
-                arch = open(absolute_path + '/Datos/info/tablero-nivel-1.csv', "r")  # esto lo agregue porque no me encontraba el archivo
-            elif (dificultad == "medio"):
-                arch = open(absolute_path + '/Datos/info/tablero-cohete.csv', "r")
-            else:
-                arch = open(absolute_path + '/Datos/info/tablero-nivel-3.csv', "r")
+            arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-3.csv"), "r")
 
     csvreader = csv.reader(arch)
 
