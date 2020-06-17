@@ -147,30 +147,25 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
                'medio' : {'': ['#82b1ff', 'celeste'], '+': ['white', 'blanco'], '++': ['#d50000', 'rojo'], '-': ['#c5cae9', 'violeta'], '--': ['#ffeb3b', 'amarillo'], '---': ['#ff5722', 'naranja']},
                'dificil' : {'' : ['#FFFFFF', 'blanco'], '+' : ['#DE7E7F', 'rojo'], '++' : ['#EDA791', 'naranja'], '-' : ['#EFC392', 'amarillo'], '--' : ['#BDD1D6', 'celeste'], '---' : ['#B2C6B8', 'verde']}
               }
+
     ################ Tipos de casilleros #########################
 
-    descuento_3 = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo --- : restan 3 ptos
+    # casilleros de name = --- : restan 3 ptos
+    # casilleros de name =  -- : restan 2 ptos
+    # casilleros de name =  - : restan 1 ptos
+    # casilleros de name =  ++ : triplican ptos
+    # casilleros de name = '' : no suman ni restan ptos
+    # casilleros de name =  + : duplican ptos
 
-    descuento_2 = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo -- : restan 2 ptos
+    casillero = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) 
 
-    descuento = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo - : restan 1 ptos
-
-    premio_2 = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo ++ : triplican ptos
-
-    simple = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros '' : no suman ni restan ptos
-
-    premio = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo + : duplican ptos
+    # casilleros con letras de una partida anterior:
 
     ficha_pc = lambda name,key: sg.Button(name, border_width = 1, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', 'white')) # blanco
+                                         pad=(0, 0), button_color=('black', 'white')) 
 
     sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
@@ -184,6 +179,8 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
     # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
     
+    columna_casilleros = []  
+
     i = 0  # i lleva la posicion de fila
     for fila in csvreader:
         fichas = []
@@ -191,22 +188,22 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
         for boton in fila:
             key = (i, j)  # por lo tanto las key ahora son elementos de una matriz
             if boton == "": 
-                fichas.append(simple('', key))
+                fichas.append(casillero('', key))
                 botones[key] = ""
             elif boton == "+":
-                fichas.append(premio('+', key))
+                fichas.append(casillero('+', key))
                 botones[key] = "+"
             elif boton == "++":
-                fichas.append(premio_2('++', key))
+                fichas.append(casillero('++', key))
                 botones[key] = "++"
             elif boton == "-":
-                fichas.append(descuento('-', key))
+                fichas.append(casillero('-', key))
                 botones[key] = "-"
             elif boton == "--":
-                fichas.append(descuento_2('--', key))
+                fichas.append(casillero('--', key))
                 botones[key] = "--"
             elif boton == "---":
-                fichas.append(descuento_3('---', key))
+                fichas.append(casillero('---', key))
                 botones[key] = "---"
             # casilleros que ya están ocupados por letras (caso de partida previamente guardada)
             elif (boton[0] in string.ascii_uppercase) and (boton != " "):
@@ -217,10 +214,10 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
                         fichas.append(blanco(boton,key))  # casillas ocupadas por el jugador en una partida previa
                 botones[key] = ""
             j += 1
-        layout.append(fichas)
+        columna_casilleros.append(fichas)
         i += 1
 
-    long_tablero  = len(layout) #Esto lo necesita la clase PC para las palabras
+    long_tablero  = len(columna_casilleros) #Esto lo necesita la clase PC para las palabras
     fichas_por_jugador = 7
 
     ######### entrega de fichas al jugador y a la maquina ##############
@@ -237,15 +234,33 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
 
     ############## Creacion del tablero y datos a mostrar #####################
 
+    premio_y_descuento = {'': 'Simple', '+': 'duplica puntaje', '++': 'triplica puntaje', '-': 'resta 1 pto', '--': 'resta 2 ptos', '---': 'resta 3 ptos'}
+
+    columna_datos = [[sg.Text('Nivel: '+dificultad)],
+                     [sg.Text('Tipos de palabras a formar: '+tipo)],
+                    ] 
+
+    info_colores = list(map(lambda x: [sg.Text('Casillero {}: {}'.format(colores[dificultad][x][1], premio_y_descuento[x]))], colores[dificultad].keys()))
+
+    for i in range(len(info_colores)):
+        columna_datos.append(info_colores[i])
+
     colum = [
         [sg.T("Tiempo: "),sg.Text('00:00', key='tiempo')],
        [sg.Text("Puntos jugador:"),sg.T("",key="p_j",size=(0,1))], #Puse (0,1) porque sino no entraban numeros de 2 digitos
        [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual: ",size=(13,1)),sg.Text("",key="turno",size=(15,1))]
     ]
+
+    columna_datos.extend(colum)
+
     frame_colum = [
-        [sg.Frame("Info del juego",layout=colum)]
+        [sg.Frame("Info del juego",layout=columna_datos, element_justification='left')]
     ]
+
+    columna_principal = [sg.Column(columna_casilleros, background_color='grey'), sg.Column(frame_colum)]
+
+    layout.append(columna_principal)
 
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 1),
                              button_color=('white', '#CE5A57'),border_width=0) for i in range(fichas_por_jugador)]]
@@ -255,7 +270,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
-                    sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]+[sg.Column(frame_colum)]
+                    sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
