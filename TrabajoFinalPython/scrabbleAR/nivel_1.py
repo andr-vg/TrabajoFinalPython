@@ -127,8 +127,12 @@ def devolver_fichas(dic,keys,bolsa):
         dic[nro]=""
     return dic
 
-def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
-    tipo_palabra = {"NN" : 'Solo sustantivos' ,"JJ" : 'Solo adjetivos',"VB" : 'Solo verbos'}
+def crear_layout(bolsa, csvreader, dificultad, tipo):  
+    """
+    Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
+    """
+    ################ Texto a mostrar en pantalla según dificultad ###################
+    tipo_palabra = {"sust" : 'Solo sustantivos' , "adj" : 'Solo adjetivos', "verbo" : 'Solo verbos'}
 
     if dificultad == 'dificil':
         tipo = tipo_palabra[tipo]
@@ -137,30 +141,31 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, in
     else:
         tipo = 'Adjetivos y sustantivos'
 
-    # colores segun el nivel:
+    ################ Colores segun el nivel ######################
 
     colores = {'facil' : {'' : ['#FFFFFF', 'blanco'], '+' : ['#F89D89', 'salmon'], '++' : ['#F2A172', 'naranja'], '-' : ['#F3DF88', 'amarillo'], '--' : ['#5386A6', 'azul'], '---' : ['#4FADAC', 'verde']},
                'medio' : {'': ['#82b1ff', 'celeste'], '+': ['white', 'blanco'], '++': ['#d50000', 'rojo'], '-': ['#c5cae9', 'violeta'], '--': ['#ffeb3b', 'amarillo'], '---': ['#ff5722', 'naranja']},
                'dificil' : {'' : ['#FFFFFF', 'blanco'], '+' : ['#DE7E7F', 'rojo'], '++' : ['#EDA791', 'naranja'], '-' : ['#EFC392', 'amarillo'], '--' : ['#BDD1D6', 'celeste'], '---' : ['#B2C6B8', 'verde']}
               }
+    ################ Tipos de casilleros #########################
 
     descuento_3 = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # rojo #Descuento_3
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo --- : restan 3 ptos
 
     descuento_2 = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # marron #descuento_1
+                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo -- : restan 2 ptos
 
     descuento = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # negro
+                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo - : restan 1 ptos
 
     premio_2 = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # verde
+                                            pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo ++ : triplican ptos
 
     simple = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # blanco
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros '' : no suman ni restan ptos
 
     premio = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # celeste
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) # casilleros de tipo + : duplican ptos
 
     ficha_pc = lambda name,key: sg.Button(name, border_width = 1, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
@@ -170,18 +175,22 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, in
     sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
 
+    ############### Lectura del archivo del tablero .csv ###############
+
     layout = []
     botones = {}
     key = 0
+
     # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
+    
     i = 0  # i lleva la posicion de fila
     for fila in csvreader:
         fichas = []
         j = 0  # j lleva la posicion de columna
         for boton in fila:
             key = (i, j)  # por lo tanto las key ahora son elementos de una matriz
-            if boton == "":  # esto antes eran 4 if, los cambie por un if y 3 elif
+            if boton == "": 
                 fichas.append(simple('', key))
                 botones[key] = ""
             elif boton == "+":
@@ -199,18 +208,23 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, in
             elif boton == "---":
                 fichas.append(descuento_3('---', key))
                 botones[key] = "---"
+            # casilleros que ya están ocupados por letras (caso de partida previamente guardada)
             elif (boton[0] in string.ascii_uppercase) and (boton != " "):
                 if (len(boton)> 1):
                     if boton[1] == "*":
-                        fichas.append(ficha_pc(boton[0],key)) # casillas ocupadas por la maquina en una partida previa
+                        fichas.append(ficha_pc(boton[0],key)) # casillas ocupadas por la maquina en una partida previa fueron guardadas con *
                     else:
                         fichas.append(blanco(boton,key))  # casillas ocupadas por el jugador en una partida previa
                 botones[key] = ""
             j += 1
         layout.append(fichas)
         i += 1
+
     long_tablero  = len(layout) #Esto lo necesita la clase PC para las palabras
     fichas_por_jugador = 7
+
+    ######### entrega de fichas al jugador y a la maquina ##############
+
     letras_jugador= {0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}
     letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
     if hay_fichas(fichas_por_jugador, bolsa):
@@ -220,8 +234,11 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, in
     if hay_fichas(fichas_por_jugador, bolsa):
         dar_fichas(letras_jugador, bolsa)
         print("se entregaron las fichas al jugador: ", letras_jugador)
+
+    ############## Creacion del tablero y datos a mostrar #####################
+
     colum = [
-        [sg.T("Tiempo: "),sg.Text(str(time.process_time() * 10), key='tiempo')],
+        [sg.T("Tiempo: "),sg.Text('00:00', key='tiempo')],
        [sg.Text("Puntos jugador:"),sg.T("",key="p_j",size=(0,1))], #Puse (0,1) porque sino no entraban numeros de 2 digitos
        [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual: ",size=(13,1)),sg.Text("",key="turno",size=(15,1))]
@@ -242,6 +259,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):  # Creacion del Layout, in
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
+
     return layout, letras_jugador, letras_maquina, botones , long_tablero
 
 def sacar_del_tablero(window, keys, palabra_nueva, botones):
@@ -335,15 +353,25 @@ def main(guardado):
 
     csvreader = csv.reader(arch)
 
-    #Opciones de dificultad
-    dificultad_random = ["NN","JJ","VB"]
-    if (dificultad == "dificil"):
-        import random
-        tipo = dificultad_random[random.randint(0,2)]
+    #Opciones de dificultad --> lista de tags  
+    dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"], # indice 0: sustantivos 
+                         'adj': ["JJ", "AO", "AQ", "DI", "DT"], # indice 1: adjetivo
+                         'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI", # indice 2: verbo
+                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]
+                        } 
+    if dificultad == "dificil":
+        tipo_palabra = random.choice(dificultad_random.keys())
+        tipo = dificultad_random[tipo_palabra]
+    elif dificultad == 'facil':
+        tipo_palabra = ""
+        tipo = dificultad_random['sust'] + dificultad_random['adj'] + dificultad_random['verbo']
     else:
-        tipo = ""
+        tipo_palabra = ""
+        tipo = dificultad_random['adj'] + dificultad_random['verbo']
 
-    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo)  # botones es un diccionario de pares (tupla, valor)
+    print(tipo)
+
+    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
 

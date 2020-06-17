@@ -6,7 +6,7 @@ class Jugadores:
         self._botones = botones
         self.puntos_por_letra = puntos_por_letra
         self._dificultad = dificultad
-        self._tipo = tipo
+        self._tipo = tipo  # tipo es una lista de tags en los que se pueden clasificar a los verbos, sustantivos y adjetivos
 
     def setFichas(self, fichas_nuevas):
         self.fichas = fichas_nuevas
@@ -23,20 +23,16 @@ class Jugadores:
 
     def es_palabra_valida(self, palabra):
         """
-        Verifica si la palabra formada existe y devuelve true y es un Sustantivo, Adjetivo o Verbo
+        Verifica si la palabra formada existe y devuelve true y es un Sustantivo, Adjetivo o Verbo segun a dificultad
         """
         from pattern.text.es import verbs, spelling, lexicon, parse
         import string
         if (palabra.lower() in verbs) or (palabra.lower() in spelling) or (palabra.lower() in lexicon) or (
                 palabra.upper() in lexicon) or (palabra.capitalize() in lexicon):
-            tipo_palabra = parse(palabra)
-            if (self._dificultad == "facil"):
-                return True  # Valido es verdadero, porque ya se comprobo si la palabra existe y es dificultad facil
-            elif (self._dificultad == "medio"):
-                return ("VB" in tipo_palabra) or ("JJ" in tipo_palabra)
-            else:
-                if self._tipo in tipo_palabra:  # Tipo seria un string que le se asigna aleatoreamente el tipo de una lista donde esta "NN" "JJ" y "VB"
-                    return True
+            tipo_palabra = parse(palabra).split('/')[1] # devuelve un string de tipo 'mario/NN/B-NP/O', nos quedamos con el elem 'NN'
+            print(tipo_palabra)
+            print(tipo_palabra in self._tipo)
+            return (tipo_palabra in self._tipo)
         else:
             return False
 
