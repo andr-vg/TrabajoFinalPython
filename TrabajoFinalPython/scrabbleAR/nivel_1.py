@@ -145,7 +145,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
 
     colores = {'facil' : {'' : ['#FFFFFF', 'blanco'], '+' : ['#F89D89', 'salmon'], '++' : ['#F2A172', 'naranja'], '-' : ['#F3DF88', 'amarillo'], '--' : ['#5386A6', 'azul'], '---' : ['#4FADAC', 'verde']},
                'medio' : {'': ['#82b1ff', 'celeste'], '+': ['white', 'blanco'], '++': ['#d50000', 'rojo'], '-': ['#c5cae9', 'violeta'], '--': ['#ffeb3b', 'amarillo'], '---': ['#ff5722', 'naranja']},
-               'dificil' : {'' : ['#FFFFFF', 'blanco'], '+' : ['#DE7E7F', 'rojo'], '++' : ['#EDA791', 'naranja'], '-' : ['#EFC392', 'amarillo'], '--' : ['#BDD1D6', 'celeste'], '---' : ['#B2C6B8', 'verde']}
+               'dificil' : {'' : ['#00102e', 'azul'], '+' : ['#b7c2cc', 'gris'], '++' : ['#57024d', 'violeta oscuro'], '-' : ['#9c037d', 'violeta claro'], '--' : ['#8a88b3', 'lila'], '---' : ['#ffc27d', 'dorado']}
               }
 
     ################ Tipos de casilleros #########################
@@ -364,18 +364,19 @@ def main(guardado):
         elif (dificultad == "medio"):
             arch = open(os.path.join(absolute_path, "Datos","info","tablero-cohete.csv"), "r")
         else:
-            arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-3.csv"), "r")
+            arch = open(os.path.join(absolute_path, "Datos","info","tablero-21x21.csv"), "r")
 
     csvreader = csv.reader(arch)
 
     #Opciones de dificultad --> lista de tags  
-    dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"], # indice 0: sustantivos 
-                         'adj': ["JJ", "AO", "AQ", "DI", "DT"], # indice 1: adjetivo
-                         'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI", # indice 2: verbo
+    dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"], 
+                         'adj': ["JJ", "AO", "AQ", "DI", "DT"], 
+                         'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
                           "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]
                         } 
+    
     if dificultad == "dificil":
-        tipo_palabra = random.choice(dificultad_random.keys())
+        tipo_palabra = random.choice(list(dificultad_random.keys()))
         tipo = dificultad_random[tipo_palabra]
     elif dificultad == 'facil':
         tipo_palabra = ""
