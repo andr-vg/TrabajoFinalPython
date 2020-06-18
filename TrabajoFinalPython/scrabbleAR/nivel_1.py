@@ -139,13 +139,13 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
     elif dificultad == 'facil':
         tipo = 'Sustantivos, adjetivos y verbos'
     else:
-        tipo = 'Adjetivos y sustantivos'
+        tipo = 'Adjetivos y verbos'
 
     ################ Colores segun el nivel ######################
 
-    colores = {'facil' : {'' : ['#FFFFFF', 'blanco'], '+' : ['#F89D89', 'salmon'], '++' : ['#F2A172', 'naranja'], '-' : ['#F3DF88', 'amarillo'], '--' : ['#5386A6', 'azul'], '---' : ['#4FADAC', 'verde']},
-               'medio' : {'': ['#82b1ff', 'celeste'], '+': ['white', 'blanco'], '++': ['#d50000', 'rojo'], '-': ['#c5cae9', 'violeta'], '--': ['#ffeb3b', 'amarillo'], '---': ['#ff5722', 'naranja']},
-               'dificil' : {'' : ['#00102e', 'azul'], '+' : ['#b7c2cc', 'gris'], '++' : ['#57024d', 'violeta oscuro'], '-' : ['#9c037d', 'violeta claro'], '--' : ['#8a88b3', 'lila'], '---' : ['#ffc27d', 'dorado']}
+    colores = {'facil' : {'' : '#FFFFFF', '+' : '#F89D89', '++' : '#F2A172', '-' : '#F3DF88', '--' : '#5386A6', '---' : '#4FADAC'},
+               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
+               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
               }
 
     ################ Tipos de casilleros #########################
@@ -157,14 +157,14 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
     # casilleros de name = '' : no suman ni restan ptos
     # casilleros de name =  + : duplican ptos
 
-    casillero = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name][0])) 
+    casillero = lambda name, key: sg.Button('', border_width=0, size=(3, 1), key=key,
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name])) 
 
     # casilleros con letras de una partida anterior:
 
-    ficha_pc = lambda name,key: sg.Button(name, border_width = 1, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
+    ficha_pc = lambda name,key: sg.Button(name, border_width = 0, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
-    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    blanco = lambda name, key: sg.Button(name, border_width=0, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', 'white')) 
 
     sg.theme("lightblue")
@@ -234,13 +234,13 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
 
     ############## Creacion del tablero y datos a mostrar #####################
 
-    premio_y_descuento = {'': 'Simple', '+': 'duplica puntaje', '++': 'triplica puntaje', '-': 'resta 1 pto', '--': 'resta 2 ptos', '---': 'resta 3 ptos'}
+    premio_y_descuento = {'': 'Simple', '+': 'Duplica puntaje', '++': 'Triplica puntaje', '-': 'Resta 1 pto', '--': 'Resta 2 ptos', '---': 'Resta 3 ptos'}
 
     columna_datos = [[sg.Text('Nivel: '+dificultad)],
                      [sg.Text('Tipos de palabras a formar: '+tipo)],
                     ] 
 
-    info_colores = list(map(lambda x: [sg.Text('Casillero {}: {}'.format(colores[dificultad][x][1], premio_y_descuento[x]))], colores[dificultad].keys()))
+    info_colores = list(map(lambda x: [sg.Button(button_color=('white',colores[dificultad][x]), size=(3,1), disabled=True), sg.Text(premio_y_descuento[x])], colores[dificultad].keys()))
 
     for i in range(len(info_colores)):
         columna_datos.append(info_colores[i])
