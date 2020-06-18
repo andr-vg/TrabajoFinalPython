@@ -26,7 +26,7 @@ def crear_layout():
     tab1_layout = [
         [sg.Text("")],
         [sg.Button("CONTINUAR",visible=False,key="-continuar-",size=(50,4))],
-        [sg.Button("JUGAR", key="-jugar-",size=(50,4))],
+        [sg.Button("NUEVO JUEGO", key="-jugar-",size=(50,4))],
         [sg.Button("SALIR", key="-salir-",size=(50,4))]
     ]
     frame_0 = [
@@ -81,7 +81,7 @@ def crear_layout():
          sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
     ]
 
-    layout = [[sg.Image(logo, background_color=("#E3F2FD"))],
+    layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(20,None))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 
@@ -119,7 +119,7 @@ def cargar_config_usr():
 def main():
     sg.theme("lightblue")
     layout = crear_layout()
-    window = sg.Window("ScrabbleAR", layout,size=(550,400),resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
+    window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
     #Me fijo si hay partida guardada para mostrar el boton de continuar partida
     if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "Datos","info"))):
         window["-continuar-"].update(visible=True)
