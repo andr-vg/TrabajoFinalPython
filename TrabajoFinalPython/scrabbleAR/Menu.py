@@ -25,9 +25,9 @@ def crear_layout():
 
     tab1_layout = [
         [sg.Text("")],
-        [sg.Button("CONTINUAR",visible=False,key="-continuar-",size=(50,4))],
-        [sg.Button("NUEVO JUEGO", key="-jugar-",size=(50,4))],
-        [sg.Button("SALIR", key="-salir-",size=(50,4))]
+        [sg.Button("Nueva partida", key="-jugar-",size=(50,4))],
+        [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4))],
+        [sg.Button("Salir", key="-salir-",size=(50,4))]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default=True),
@@ -36,13 +36,13 @@ def crear_layout():
     ]
 
     colum = [
-        [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=1,key="grupo_1_cant")],
-        [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=2,key="grupo_2_cant")],
-        [sg.Text("M, B, P"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=3,key="grupo_3_cant")],
+        [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=10,key="grupo_1_cant")],
+        [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=8,key="grupo_2_cant")],
+        [sg.Text("M, B, P"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=6,key="grupo_3_cant")],
         [sg.Text("F,H,V,Y"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=4,key="grupo_4_cant")],
-        [sg.Text("J"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=6,key="grupo_5_cant")],
-        [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=8,key="grupo_6_cant")],
-        [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=10,key="grupo_7_cant")]
+        [sg.Text("J"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=3,key="grupo_5_cant")],
+        [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=2,key="grupo_6_cant")],
+        [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=1,key="grupo_7_cant")]
     ]
     frame_col = [
         [sg.Frame("Cantidad de letras",layout=colum)]
@@ -170,10 +170,8 @@ def main():
             config["grupo_5_cant"] = int(window.FindElement("grupo_5_cant").get())
             config["grupo_6_cant"] = int(window.FindElement("grupo_6_cant").get())
             config["grupo_7_cant"] = int(window.FindElement("grupo_7_cant").get())
-
             guardar_configuracion(config)
 
     window.close()
-
 if __name__ == "__main__":
     main()
