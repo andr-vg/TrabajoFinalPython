@@ -19,20 +19,21 @@ def guardar_info_partida(datos):
     json.dump(datos,arch,indent = 2)
     arch.close()
 
-def guardar_partida(lista,botones):
+def guardar_partida(window,botones):
     """
     recibe el layout saca los botones que no son del tablero y los exporta a un csv
 
     """
-    guardar = lista[1:16] #Aislo el tablero del layout
-    arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w")
+    # guardar = lista[1:16] #Aislo el tablero del layout
+    # print(guardar)
+    arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w",newline='')
     escritor = csv.writer(arch)
     x = 0 #Pos de la lista
-    for aux in guardar:
-        escritor.writerow(aux[i].get_text()+botones[x,i] for i in range(len(aux)))
-        x += 1
-    arch.close()
+    for aux in range(15):
+         escritor.writerow(window[(x,i)].get_text()+botones[x,i] for i in range(15))
+         x+=1
 
+    arch.close()
 def cargar_config_pred():
     """
     carga la configuracion del usuario
@@ -74,10 +75,10 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     config = dict()
     if not(guardado):
         if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
-            print("HAY CONFIG")
+            # print("HAY CONFIG")
             config = cargar_config_usr()
         else:
-            print("NO HAY CONFIG")
+            # print("NO HAY CONFIG")
             config = cargar_config_pred()
     else:
         config = cargar_config_guardada()
@@ -105,7 +106,7 @@ def hay_fichas(necesito, bolsa):
     return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
 
 def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
-    print("bolsa = ",bolsa)
+    # print("bolsa = ",bolsa)
     #letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
     #letras_juntas = list(map(lambda x: x[0] for k in range(x[1]), bolsa.items()))
     letras_juntas = [] # armamos una lista con todas las letras posibles
@@ -226,11 +227,11 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
     letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
     if hay_fichas(fichas_por_jugador, bolsa):
         dar_fichas(letras_maquina, bolsa)
-        print("se entregaron las fichas a la maquina: ", letras_maquina)
+        # print("se entregaron las fichas a la maquina: ", letras_maquina)
 
     if hay_fichas(fichas_por_jugador, bolsa):
         dar_fichas(letras_jugador, bolsa)
-        print("se entregaron las fichas al jugador: ", letras_jugador)
+        # print("se entregaron las fichas al jugador: ", letras_jugador)
 
     ############## Creacion del tablero y datos a mostrar #####################
 
@@ -357,7 +358,7 @@ def main(guardado):
     #Abro el tablero correspondiente a la dificultad seleccionada
     #Abre para windows y linux
     if (guardado): #Si hay partida guardada carga el tablero guardado
-        arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"))
+        arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"),newline = '')
     else:
         if(dificultad == "facil"):
             arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-1.csv"), "r")
@@ -385,14 +386,18 @@ def main(guardado):
         tipo_palabra = ""
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
 
-    print(tipo)
+    # print(tipo)
 
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
 
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
-    pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo)
+    pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
+    ###################puntos##################
+    if (guardado):
+            pj.puntos = config["puntos_j"]
+            pc.puntos = config["puntos_pc"]
 
     window = sg.Window("Ventana de juego", layout)
 
@@ -431,11 +436,14 @@ def main(guardado):
     else:  # empieza la compu
         turno_jugador = False
         turno_pc = True
+    print(config)
 
     while True:  # Event Loop
         # Actualizamos el tiempo en pantalla
         restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
+        print(event,values)
+        # print(event)
         window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
         if restar_tiempo > cuenta_regresiva:
             sg.popup("Se termino el tiempo")
@@ -498,11 +506,11 @@ def main(guardado):
                         window[event].update(disabled=True)
                     elif event == "-cf":
                         if letras_a_cambiar:
-                            print(letras)
+                            # print(letras)
                             letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
                             dar_fichas(letras,bolsa)
                             pj.setFichas(letras)
-                            print(letras)
+                            # print(letras)
                             for f in letras_a_cambiar:
                                 window[f].update(letras[f], disabled=False)
                             cambios_de_fichas+=1
@@ -520,14 +528,14 @@ def main(guardado):
             # boton de guardar partida
             elif event == "-p":
                 boton = pc.getBotones()
-                guardar_partida(layout,boton)
+                guardar_partida(window,boton)
                 datos = dict()
                 datos = config
                 datos["tiempo"] = round(cuenta_regresiva - restar_tiempo)
                 datos["puntos_j"] = pj.puntos
                 datos["puntos_pc"] = pc.puntos
+                pc.guardar_estado()
                 guardar_info_partida(datos)
-                # sg.popup("No esta bien implementado todavia")
                 break
             # boton de terminar partida
             elif event == "-t" or fin_fichas or fin_juego:  # Y no se termino el tiempo..
@@ -560,9 +568,9 @@ def main(guardado):
             time.sleep(2)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
             fichas_pc = pc.getFichas()
-            print("FICHAS de la pc antes:",fichas_pc)
+            # print("FICHAS de la pc antes:",fichas_pc)
             dar_fichas(fichas_pc, bolsa)
-            print("Fichas de la pc despues:",fichas_pc)
+            # print("Fichas de la pc despues:",fichas_pc)
             pc.setFichas(fichas_pc)
             fin_fichas = pocas_fichas(pc.getFichas())
             # aca tendriamos que llamar al modulo de jugadorPC
