@@ -1,13 +1,19 @@
 import PySimpleGUI as sg
 import random
+import json
 from Jugadores import Jugadores
+import os
 
+absolute_path = os.path.dirname(os.path.abspath(__file__))
 
 class PC(Jugadores):
-    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):
+    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         self._palabras_usadas = []
         self._pos_usadas_tablero = []
+        self._partida_guardada = guardada
+        if (guardada):
+            self._cargar_estado()
 
     def reinicioFichas(self, palabra):
         cant = len(palabra)
@@ -18,7 +24,53 @@ class PC(Jugadores):
                     cant += -1
             else:
                 break
+    
+    def _convertirJson(self):
+        """
+        Parsea el Json para poder guardarlo
+        """
+        # import pprint
+        # p = pprint.PrettyPrinter(indent=4)
+        # p.pprint(self._botones)
+        dic_aux = {}
+        for clave,valor in self._botones.items():
+            dic_aux[str(clave[0])+","+str(clave[1])] = valor        
+        return dic_aux
+    
+    def _convertirDic(self,botones):
+        """
+        Vuelve a darle formato al diccionario de botones
+        """
+        dic_aux = {}
+        for clave,valor in botones.items():
+            dic_aux[tuple(map(int,clave.split(",")))] = valor  
+        import pprint
+        # p = pprint.PrettyPrinter(indent=4)
+        # p.pprint(dic_aux)
+        return dic_aux
 
+            
+
+    def guardar_estado(self):
+        """
+        Guarda el estado interno del jugador PC
+        """
+
+        arch = open(os.path.join(absolute_path, "Datos","info","datos_pc.json"), "w")
+        datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._pos_usadas_tablero}
+        json.dump(datos,arch,indent = 4)
+        arch.close()
+    def _cargar_estado(self):
+        """
+        Si la partida esta guardada carga el estado guardado en un json
+        """
+        datos = open(os.path.join(absolute_path, "Datos","info","datos_pc.json"), "r")
+        data = {}
+        data = json.load(datos)
+        self._fichas = data["fichas"]
+        self._botones = self._convertirDic(data["botones"])
+        self._palabras_usadas = data["palabras_usadas"]
+        self._pos_usadas_tablero = data["pos_usadas"]
     def _obtenerPalabra(self, long_max):
 
         import itertools as it
@@ -128,11 +180,10 @@ class PC(Jugadores):
                 palabra_nueva = dict()
                 for i in range(inicio, fin):  # agregamos las posiciones a la lista de posiciones ocupadas
                     posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
-                    print(long_y_posiciones[long_max_tablero][posiciones_random][i])
-                    window[long_y_posiciones[long_max_tablero][posiciones_random][i]].update(mejor_palabra[i - inicio],
-                                                                                             disabled=True,
-                                                                                             button_color=("black",
-                                                                                                           "#A4E6FD"))  # agregamos las letras al tablero
+                    # print(long_y_posiciones[long_max_tablero][posiciones_random][i])
+                    pos_aux =long_y_posiciones[long_max_tablero][posiciones_random][i]
+                    print("MAX: ",long_max_tablero,"Pos random: ",posiciones_random,"Pos de palabra: ",pos_aux)
+                    window[pos_aux].update(mejor_palabra[i - inicio], disabled=True,button_color=("black","#A4E6FD"))  # agregamos las letras al tablero
                     # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
                     palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i - inicio]
                     self._botones[long_y_posiciones[long_max_tablero][posiciones_random][i]] = "" + "*"
