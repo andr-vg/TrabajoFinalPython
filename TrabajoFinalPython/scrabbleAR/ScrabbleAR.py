@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-import nivel_1 #Hay que cambiar el nombre
+import Juego #Programa Principal
 import os
 import sys
 import json
@@ -137,11 +137,11 @@ def main():
             else:
                 print("NO HAY CONFIG")
                 config = cargar_config_pred()
-            nivel_1.main(False) #Despues hay que cambiarle el nombre a nose.. juego?
+            Juego.main(False)
             break
 
         if (event == "-continuar-"):
-            nivel_1.main(True)
+            Juego.main(True)
 
         if (event == "-guardar-"):
             if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):

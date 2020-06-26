@@ -7,7 +7,7 @@ import time
 from functools import reduce
 import os
 import json
-import Menu
+import ScrabbleAR   #Menu del juego
 absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
 
 def guardar_info_partida(datos):
@@ -128,7 +128,7 @@ def devolver_fichas(dic,keys,bolsa):
         dic[nro]=""
     return dic
 
-def crear_layout(bolsa, csvreader, dificultad, tipo):  
+def crear_layout(bolsa, csvreader, dificultad, tipo):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -159,14 +159,14 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
     # casilleros de name =  + : duplican ptos
 
     casillero = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name])) 
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name]))
 
     # casilleros con letras de una partida anterior:
 
     ficha_pc = lambda name,key: sg.Button(name, border_width = 1, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
     blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', 'white')) 
+                                         pad=(0, 0), button_color=('black', 'white'))
 
     sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
@@ -179,8 +179,8 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
 
     # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
-    
-    columna_casilleros = []  
+
+    columna_casilleros = []
 
     i = 0  # i lleva la posicion de fila
     for fila in csvreader:
@@ -188,7 +188,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
         j = 0  # j lleva la posicion de columna
         for boton in fila:
             key = (i, j)  # por lo tanto las key ahora son elementos de una matriz
-            if boton == "": 
+            if boton == "":
                 fichas.append(casillero('', key))
                 botones[key] = ""
             elif boton == "+":
@@ -239,7 +239,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
 
     columna_datos = [[sg.Text('Nivel: '+dificultad)],
                      [sg.Text('Tipos de palabras a formar: '+tipo)],
-                    ] 
+                    ]
 
     info_colores = list(map(lambda x: [sg.Button(button_color=('white',colores[dificultad][x]), size=(3,1), disabled=True), sg.Text(premio_y_descuento[x])], colores[dificultad].keys()))
 
@@ -369,13 +369,13 @@ def main(guardado):
 
     csvreader = csv.reader(arch)
 
-    #Opciones de dificultad --> lista de tags  
-    dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"], 
-                         'adj': ["JJ", "AO", "AQ", "DI", "DT"], 
+    #Opciones de dificultad --> lista de tags
+    dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
+                         'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
                           "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]
-                        } 
-    
+                        }
+
     if dificultad == "dificil":
         tipo_palabra = random.choice(list(dificultad_random.keys()))
         tipo = dificultad_random[tipo_palabra]
