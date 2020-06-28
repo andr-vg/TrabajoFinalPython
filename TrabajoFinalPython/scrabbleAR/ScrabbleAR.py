@@ -9,6 +9,9 @@ absolute_path = os.path.dirname(os.path.abspath(__file__))
 logo = os.path.join(absolute_path, "Datos","media","Logo.png")
 
 def cargar_top_10():
+    """
+    Cargamos los puntajes del top 10
+    """
     arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
     list_aux = []
     top_10 = json.load(arch)
@@ -85,8 +88,6 @@ def crear_layout():
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 
-
-
 def guardar_configuracion(config):
     """
     Guarda la configuracion que hizo el usuario en un .json
@@ -117,6 +118,9 @@ def cargar_config_usr():
     return config
 
 def main():
+    """
+    Visualización principal antes de iniciar el juego
+    """
     sg.theme("lightblue")
     layout = crear_layout()
     window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
@@ -132,13 +136,13 @@ def main():
             os.remove(os.path.join(absolute_path, "Datos","info","configUsuario.json"))
         if (event == "-jugar-"):
             if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
-                print("HAY CONFIG")
+                #print("HAY CONFIG")
                 config = cargar_config_usr()
             else:
-                print("NO HAY CONFIG")
+                #print("NO HAY CONFIG")
                 config = cargar_config_pred()
             Juego.main(False)
-            break
+            #break
 
         if (event == "-continuar-"):
             Juego.main(True)
@@ -173,5 +177,6 @@ def main():
             guardar_configuracion(config)
 
     window.close()
+
 if __name__ == "__main__":
     main()

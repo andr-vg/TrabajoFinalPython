@@ -37,6 +37,9 @@ class Jugadores:
             return False
 
     def sumar_puntos(self, palabra_nueva):
+        """
+        Calculamos y actualizamos los puntos del jugador 
+        """
         duplicar = False
         triplicar = False
         puntos = 0

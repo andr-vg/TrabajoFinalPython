@@ -6,6 +6,8 @@ import os
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
 
+###################### Clase Jugador PC ##############################
+
 class PC(Jugadores):
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
@@ -16,6 +18,9 @@ class PC(Jugadores):
             self._cargar_estado()
 
     def reinicioFichas(self, palabra):
+        """
+        Reinicia los valores de las fichas usadas en "" para luego ser actualizadas por nuevos valores de la bolsa
+        """
         cant = len(palabra)
         for clave in self.fichas.keys():
             if cant > 0:
@@ -49,8 +54,6 @@ class PC(Jugadores):
         # p.pprint(dic_aux)
         return dic_aux
 
-            
-
     def guardar_estado(self):
         """
         Guarda el estado interno del jugador PC
@@ -60,6 +63,7 @@ class PC(Jugadores):
         datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._pos_usadas_tablero}
         json.dump(datos,arch,indent = 4)
         arch.close()
+
     def _cargar_estado(self):
         """
         Si la partida esta guardada carga el estado guardado en un json
@@ -72,12 +76,12 @@ class PC(Jugadores):
         self._palabras_usadas = data["palabras_usadas"]
         self._pos_usadas_tablero = data["pos_usadas"]
     def _obtenerPalabra(self, long_max):
-
-        import itertools as it
-        from pattern.text.es import verbs, spelling, lexicon, parse
         """
         obtiene una palabra a partir de las _fichas
         """
+        import itertools as it
+        from pattern.text.es import verbs, spelling, lexicon, parse
+        
         letras = ""
         for letra in self.fichas.values():
             print("LETRA;", letra)
@@ -111,6 +115,9 @@ class PC(Jugadores):
         return palabra.upper() if valido else ""
 
     def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
+        """
+        Mapeamos el tablero fila por fila y agregamos las posiciones libres encontradas
+        """
         cant = 0
         posiciones = []
         while not (i, j) in posiciones_ocupadas_tablero and j < self.long_tablero:
@@ -120,6 +127,9 @@ class PC(Jugadores):
         return cant, posiciones
 
     def _mapeoVertical(self, i, j, posiciones_ocupadas_tablero):
+        """
+        Mapeamos el tablero columna por columna y agregamos las posiciones libres encontradas
+        """
         cant = 0
         posiciones = []
         while not (j, i) in posiciones_ocupadas_tablero and j < self.long_tablero:
@@ -129,6 +139,9 @@ class PC(Jugadores):
         return cant, posiciones
 
     def _agrego_posiciones(self, cant, posiciones, long_y_posiciones):
+        """
+        Agregamos a long_y_posiciones las posiciones libres encontradas de longitud >=2
+        """
         if cant >= 2:
             if not cant in long_y_posiciones.keys():
                 long_y_posiciones[cant] = [posiciones]
@@ -136,9 +149,10 @@ class PC(Jugadores):
                 long_y_posiciones[cant].append(posiciones)
 
     def _mapear_tablero(self, posiciones_ocupadas_tablero):
-        """ Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
-            en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
-            listas con listas de las posiciones disponibles para esas longitudes 
+        """ 
+        Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
+        en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
+        listas con listas de las posiciones disponibles para esas longitudes 
         """
         long_y_posiciones = dict()
         for i in range(self.long_tablero):
@@ -152,12 +166,13 @@ class PC(Jugadores):
         return long_y_posiciones
 
     def _calcular_long_maxima(self, long_max_tablero, cant_fichas):
-        """Esta funcion retorna la longitud maxima segun dos cosas: la cantidad de fichas disponibles
-         y el mayor numero de casilleros contiguos libres en el tablero. Tenemos dos casos:
+        """
+        Esta funcion retorna la longitud maxima segun dos cosas: la cantidad de fichas disponibles
+        y el mayor numero de casilleros contiguos libres en el tablero. Tenemos dos casos:
          - si el nro de casilleros supera o es igual a la cant de fichas, con mandarle la cant de fichas
-        que tengo le basta.
-        - si el nro de casilleros es menor que la cantidad de fichas: ahi la palabra a formar tiene que ocupar
-        como maximo esos casilleros, asique le mando ese valor
+           que tengo le basta.
+         - si el nro de casilleros es menor que la cantidad de fichas: ahi la palabra a formar tiene que ocupar
+           como maximo esos casilleros, asique le mando ese valor
         """
         if long_max_tablero >= cant_fichas:
             return cant_fichas
@@ -165,6 +180,18 @@ class PC(Jugadores):
             return long_max_tablero
 
     def jugar(self, window, posiciones_ocupadas_tablero, primer_turno):
+        """
+        Jugada del usuario: se forma la palabra más larga posible según la dificultad.
+        Se mapea el tablero para obtener las posiciones libres donde puede ubicarse la palabra obtenida.
+        Dificultad facil: Se obtiene una lista de posiciones aleatoria en la que entre en la palabra.
+                          -- > Por el momento implementamos esta dificultad para los tres niveles.
+        Dificultad media: Se obtiene una lista de posiciones con al menos un casillero premio (de ser posible)
+                          y la palabra más larga que quepe en esas posiciones. --> falta implementar 
+        Dificultad dificil: Se obtiene una lista con las posiciones que sumen más puntos, la palabra que sume 
+                            más puntos y quepa ahí, y se ubica la letra de mayor puntaje en alguna casillero 
+                            premio (de ser posible) --> falta implementar
+        """
+
         long_y_posiciones = self._mapear_tablero(
             posiciones_ocupadas_tablero)  # obtenemos las posiciones libres en el tablero
         long_max_tablero = max(long_y_posiciones.keys())  # calculamos la long maxima entre todas esas posiciones libres

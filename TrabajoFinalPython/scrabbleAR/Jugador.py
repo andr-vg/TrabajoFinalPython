@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 from Jugadores import Jugadores
 
+##################### Clase Jugador ##############################
 
 class Jugador(Jugadores):
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):
@@ -8,6 +9,9 @@ class Jugador(Jugadores):
 
     def _analizo(self, keys_ordenados, menor_1, menor_2, j,
                  k):  # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical)
+        """
+        Retorna si las posiciones ocupadas fueron contiguas y sobre la misma columna/fila o no
+        """
         for i in range(1,
                        len(keys_ordenados)):  # menor_2 = columna_menor (caso horizontal) o fila_menor (caso vertical)
             if keys_ordenados[i][j] != menor_1:  # j = 0 si es la fila (horizontal) o 1 si es columna (vertical)
@@ -17,6 +21,9 @@ class Jugador(Jugadores):
         return True
 
     def _estan_en_el_centro(self, keys_ordenados):
+        """
+        Retorna si la posicion del centro fue ocupada en el primer turno del usuario
+        """
         centro = self.long_tablero // 2
         if (centro, centro) in keys_ordenados:
             return True
@@ -24,7 +31,11 @@ class Jugador(Jugadores):
             return False
 
     def jugar(self, palabra_nueva, letras_usadas, posiciones_ocupadas_tablero,
-              primer_turno):  # ex confirmar palabra de nivel1
+              primer_turno):  
+        """
+        Jugada del usuario: se analiza si la palabra fue puesta de forma correcta y si 
+        está incluida en pattern, según la dificultad.
+        """
         keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
         columna_menor = keys_ordenados[0][1]  # me guarda la columna mas chica con la cual voy a hacer una comparacion
         fila_menor = keys_ordenados[0][0]  # me guardo la primer fila para compararla con las otras a ver si son iguales

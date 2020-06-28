@@ -8,7 +8,7 @@ from functools import reduce
 import os
 import json
 import ScrabbleAR   #Menu del juego
-absolute_path = os.path.dirname(os.path.abspath(__file__))  # Look for your absolute directory path
+absolute_path = os.path.dirname(os.path.abspath(__file__)) 
 
 def guardar_info_partida(datos):
     """
@@ -34,6 +34,7 @@ def guardar_partida(window,botones):
          x+=1
 
     arch.close()
+
 def cargar_config_pred():
     """
     carga la configuracion del usuario
@@ -103,12 +104,16 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     return bolsa,puntos_por_letra,tiempo,dificultad,config
 
 def hay_fichas(necesito, bolsa):
-    return necesito <= (sum(list(bolsa.values())))  # devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
+    """
+    Devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
+    """
+    return necesito <= (sum(list(bolsa.values())))  
 
-def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
-    # print("bolsa = ",bolsa)
-    #letras_juntas= reduce(lambda a,b: a+b , [k*bolsa[k] for k in list(bolsa.keys()) if bolsa[k] != 0]) #cada letra de bolsa y lo multiplico por su cantidad y las sumo A+A= AA, AA+BBB= AABBB
-    #letras_juntas = list(map(lambda x: x[0] for k in range(x[1]), bolsa.items()))
+def dar_fichas(dic, bolsa): 
+    """
+    se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
+    """
+
     letras_juntas = [] # armamos una lista con todas las letras posibles
     for letra, cant in bolsa.items():
         for i in range(cant):
@@ -123,6 +128,9 @@ def dar_fichas(dic, bolsa):  # se ingresa un diccionario, y a las keys vacias se
         sg.popup('Se acabaron las fichas')
 
 def devolver_fichas(dic,keys,bolsa):
+    """
+    Devuelve las fichas a la bolsa
+    """
     for nro in keys:
         bolsa[dic[nro]]+=1
         dic[nro]=""
@@ -132,6 +140,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
+
     ################ Texto a mostrar en pantalla según dificultad ###################
     tipo_palabra = {"sust" : 'Solo sustantivos' , "adj" : 'Solo adjetivos', "verbo" : 'Solo verbos'}
 
@@ -227,11 +236,9 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
     if hay_fichas(fichas_por_jugador, bolsa):
         dar_fichas(letras_maquina, bolsa)
-        # print("se entregaron las fichas a la maquina: ", letras_maquina)
 
     if hay_fichas(fichas_por_jugador, bolsa):
         dar_fichas(letras_jugador, bolsa)
-        # print("se entregaron las fichas al jugador: ", letras_jugador)
 
     ############## Creacion del tablero y datos a mostrar #####################
 
@@ -248,7 +255,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
 
     colum = [
         [sg.T("Tiempo: "),sg.Text('00:00', key='tiempo')],
-       [sg.Text("Tus Puntos:"),sg.T("",key="p_j",size=(0,1))], #Puse (0,1) porque sino no entraban numeros de 2 digitos
+       [sg.Text("Tus Puntos:"),sg.T("",key="p_j",size=(0,1))], 
        [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))]
     ]
@@ -322,8 +329,10 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego
 
-
-def cambiar_turno(turnoj, turnopc, window):#
+def cambiar_turno(turnoj, turnopc, window):
+    """
+    Cambio de turno del Usuario --> PC / PC --> Usuario
+    """
     turnoj= not(turnoj)
     turnopc= not(turnopc)
     if turnoj:
@@ -336,15 +345,24 @@ def cambiar_turno(turnoj, turnopc, window):#
     return turnoj,turnopc
 
 def cargar_puntuaciones():
+    """
+    Cargamos las puntuaciones de la partida en un archivo .json
+    """
     arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
     top_10 = json.load(arch)
     return top_10
 
 def guardar_puntuaciones(datos):
+    """
+    Guardamos las puntuaciones de la partida
+    """
     arch= open(os.path.join(absolute_path, "Datos","info","top_10.json"), "w")
     json.dump(datos,arch)
 
 def main(guardado):
+    """
+    Desarrollo del juego y tablero principal
+    """
     import random
 
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
@@ -380,7 +398,7 @@ def main(guardado):
 
     csvreader = csv.reader(arch)
 
-    #Opciones de dificultad --> lista de tags
+    # Opciones de dificultad --> lista de tags
     dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
                          'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
@@ -397,7 +415,6 @@ def main(guardado):
         tipo_palabra = ""
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
 
-    # print(tipo)
 
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
@@ -405,7 +422,8 @@ def main(guardado):
 
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
-    ###################puntos##################
+
+    ################### Puntos ##################
     if (guardado):
             pj.puntos = config["puntos_j"]
             pc.puntos = config["puntos_pc"]
@@ -447,23 +465,23 @@ def main(guardado):
     else:  # empieza la compu
         turno_jugador = False
         turno_pc = True
-    print(config)
 
     while True:  # Event Loop
-        # Actualizamos el tiempo en pantalla
+        # Actualizamos el tiempo en pantalla (por el momento en segundos --> modificar la visualización a min:seg)
         restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
-        print(event,values)
-        # print(event)
+
         window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
+
         if restar_tiempo > cuenta_regresiva:
             sg.popup("Se termino el tiempo")
-            # Implementar final de partida
             fin_juego = True
+
         # mientras sea el turno del jugador, podrá realizar todos los eventos del tablero
         if turno_jugador:
             if event is None:
                 break
+
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
@@ -479,10 +497,6 @@ def main(guardado):
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
-                    if botones[ind] == "+":
-                        print("boton mas")
-                    elif botones[ind] == "-":
-                        print("boton menos")
                     palabra_nueva[ind] = letras[box]
                     if len(palabra_nueva.keys()) > 1:
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
@@ -490,13 +504,16 @@ def main(guardado):
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B
+
             # boton de deshacer las palabras puestas en el tablero
             elif event == "-d":
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+
             # boton de pasar el turno a la pc
             elif event == "-paso":
                 turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+
             #boton cambio de fichas
             elif (event == "-cf") and (cambios_de_fichas < 3):
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones) #si ya hay fichas jugadas en el tablero volveran al atril
@@ -507,7 +524,9 @@ def main(guardado):
                 window["-p"].update(disabled=True)
                 window["-t"].update(disabled=True)
                 sg.Popup('Cambio de fichas:',
-                             'Seleccione clickeando las letras que quiere cambiar y vuelva a clickear en \"Cambiar fichas\" para confirmar el cambio')
+                             'Seleccione clickeando las letras que quiere cambiar y ',
+                             'vuelva a clickear en \"Cambiar fichas\" para confirmar ',
+                             'el cambio')
                 while True:
                     event = window.read()[0]
                     if event is None:
@@ -534,6 +553,7 @@ def main(guardado):
                 window["-paso"].update(disabled=False)
                 window["-p"].update(disabled=False)
                 window["-t"].update(disabled=False)
+
             # boton de guardar partida
             elif event == "-p":
                 boton = pc.getBotones()
@@ -546,8 +566,9 @@ def main(guardado):
                 pc.guardar_estado()
                 guardar_info_partida(datos)
                 break
+
             # boton de terminar partida
-            elif event == "-t" or fin_fichas or fin_juego:  # Y no se termino el tiempo..
+            elif event == "-t" or fin_fichas or fin_juego:  
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
                 else:
@@ -557,40 +578,26 @@ def main(guardado):
                 puntos_jugador[fecha] = pj.puntos
                 guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
-
                 break
-
 
             # boton de confirmar palabra
             elif event == "-c":
                 window["-c"].update(disabled=True)
-                print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros)
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
-                # botones del atril del jugador
-        # turno de la pc: implementar
+
+        # turno de la pc: 
         if turno_pc:
-           #aca va un if o un elif??
             time.sleep(2)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
             fichas_pc = pc.getFichas()
-            # print("FICHAS de la pc antes:",fichas_pc)
             dar_fichas(fichas_pc, bolsa)
-            # print("Fichas de la pc despues:",fichas_pc)
             pc.setFichas(fichas_pc)
             fin_fichas = pocas_fichas(pc.getFichas())
-            # aca tendriamos que llamar al modulo de jugadorPC
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
-
-if __name__ == "__main__":
-    main(False) #Para testear le puse un True al parametro cuando el juego se ejecute desde el menu
-    #si se hace nuevo juego el main se ejecutaria con un True y si es continuar con un False
-#Tambien cuando este finalizado el juego se ejecutaria del menu.. entonces este if se iria
-#False no hay guardada
-#True hay guardada
