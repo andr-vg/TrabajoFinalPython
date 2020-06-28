@@ -29,8 +29,11 @@ def guardar_partida(window,botones):
     arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w",newline='')
     escritor = csv.writer(arch)
     x = 0 #Pos de la lista
+    import pprint
     for aux in range(15):
-         escritor.writerow(window[(x,i)].get_text()+botones[x,i] for i in range(15))
+         escritor.writerow(window[(x,i)].get_text()+botones[x,i] for i in range(15))        
+         p = pprint.PrettyPrinter(indent=4)
+         p.pprint(window[(x,x)].get_text())
          x+=1
 
     arch.close()
@@ -174,9 +177,12 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
 
     ficha_pc = lambda name,key: sg.Button(name, border_width = 1, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
-    blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', 'white'))
+    # blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    #                                      pad=(0, 0), button_color=('black', 'white'))
 
+    ficha_jugador = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+                                         pad=(0, 0), button_color=('black', '#649E52'))
+    
     sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
 
@@ -221,8 +227,9 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
                     if boton[1] == "*":
                         fichas.append(ficha_pc(boton[0],key)) # casillas ocupadas por la maquina en una partida previa fueron guardadas con *
                     else:
-                        fichas.append(blanco(boton,key))  # casillas ocupadas por el jugador en una partida previa
+                        fichas.append(ficha_jugador(boton[0],key))  # casillas ocupadas por el jugador en una partida previa
                 botones[key] = ""
+
             j += 1
         columna_casilleros.append(fichas)
         i += 1
@@ -425,6 +432,7 @@ def main(guardado):
 
     ################### Puntos ##################
     if (guardado):
+        #Si hay partida guardada setea los puntos de los jugadores 
             pj.puntos = config["puntos_j"]
             pc.puntos = config["puntos_pc"]
 
@@ -501,6 +509,9 @@ def main(guardado):
                     if len(palabra_nueva.keys()) > 1:
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
                     window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
+                    botones = pc.get_botones().copy()
+                    botones[ind] = "" + "/"
+                    pc.actualiza_botones(botones)
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B
@@ -556,7 +567,7 @@ def main(guardado):
 
             # boton de guardar partida
             elif event == "-p":
-                boton = pc.getBotones()
+                boton = pc.get_botones()
                 guardar_partida(window,boton)
                 datos = dict()
                 datos = config

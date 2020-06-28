@@ -30,13 +30,20 @@ class PC(Jugadores):
             else:
                 break
     
+    def actualiza_botones(self,botones):
+        """
+        Actualiza el diccionario botones con las pos usadas por el usuario
+        """
+
+        self._botones = botones
+
     def _convertirJson(self):
         """
         Parsea el Json para poder guardarlo
         """
-        # import pprint
-        # p = pprint.PrettyPrinter(indent=4)
-        # p.pprint(self._botones)
+        import pprint
+        p = pprint.PrettyPrinter(indent = 2)
+        p.pprint(self._botones)
         dic_aux = {}
         for clave,valor in self._botones.items():
             dic_aux[str(clave[0])+","+str(clave[1])] = valor        
@@ -263,5 +270,8 @@ class PC(Jugadores):
             self.reinicioFichas(letras.join(self.fichas.values()))
         return primer_turno
     
-    def getBotones(self):
+    def get_botones(self):
+        """
+        Devuelve el diccionario botones para el guardado de la partida
+        """
         return self._botones
