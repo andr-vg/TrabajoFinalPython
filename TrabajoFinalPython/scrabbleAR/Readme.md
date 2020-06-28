@@ -1,4 +1,4 @@
-# ScrableAR
+# ScrabbleAR
 
 #### Alumnos: 
 *  Andrea Verónica Goyechea
