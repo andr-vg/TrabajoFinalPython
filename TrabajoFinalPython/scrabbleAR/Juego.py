@@ -517,13 +517,11 @@ def main(guardado):
                         window[event].update(disabled=True)
                     elif event == "-cf":
                         if letras_a_cambiar:
-                            # print(letras)
                             letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
                             dar_fichas(letras,bolsa)
                             pj.setFichas(letras)
-                            # print(letras)
                             for f in letras_a_cambiar:
-                                window[f].update(letras[f], disabled=False)
+                                window[f].update(letras[f], image_size=(50, 50), image_subsample=21, image_filename=img_nros[puntos_por_letra[letras[f]]], disabled=False)
                             cambios_de_fichas+=1
                             if cambios_de_fichas == 3:
                                 window["-cf"].update(disabled=True)
