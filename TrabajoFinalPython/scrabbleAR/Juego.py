@@ -128,7 +128,7 @@ def devolver_fichas(dic,keys,bolsa):
         dic[nro]=""
     return dic
 
-def crear_layout(bolsa, csvreader, dificultad, tipo):
+def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -263,9 +263,9 @@ def crear_layout(bolsa, csvreader, dificultad, tipo):
 
     layout.append(columna_principal)
 
-    frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], size=(4, 1),
-                             button_color=('white', '#CE5A57'),border_width=0) for i in range(fichas_por_jugador)]]
-    frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(4, 1),border_width=0,
+    frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
+                             button_color=('white', '#CE5A57'),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
+    frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(6, 3),border_width=0,
                              button_color=('white', '#CE5A57'),disabled=True) for i in range(fichas_por_jugador)]]
     fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
@@ -297,7 +297,7 @@ def pocas_fichas(fichas):
     else:
         return False
 
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
     actualiza el tablero y los parametros
@@ -314,7 +314,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
         fin_juego = pocas_fichas(pj.getFichas())
         if not fin_juego:
             for f in letras_usadas.keys():  #en el lugar de las fichas que se usaron pongo las letras nuevas en el tablero
-                window[f].update(letras[f], disabled=False)
+                window[f].update(letras[f], image_size=(50, 50), image_subsample=21, image_filename=img_nros[puntos_por_letra[letras[f]]], disabled=False)
             letras_usadas = dict()
             palabra_nueva = dict()
             turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
@@ -351,6 +351,17 @@ def main(guardado):
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
+    img_nros = {1: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'uno.png'),
+                2: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'dos.png'),
+                3: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'tres.png'),
+                4: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'cuatro.png'),
+                5: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'cinco.png'),
+                6: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'seis.png'),
+                7: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'siete.png'),
+                8: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'ocho.png'),
+                9: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'nueve.png'),
+                10: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'diez.png')}
+
     # Config del tablero:
     bolsa , puntos_por_letra, tiempo ,dificultad, config = cargar_configuraciones(bolsa,puntos_por_letra,guardado)
 
@@ -388,7 +399,7 @@ def main(guardado):
 
     # print(tipo)
 
-    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra)  # botones es un diccionario de pares (tupla, valor)
+    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
 
@@ -557,7 +568,7 @@ def main(guardado):
                 window["-c"].update(disabled=True)
                 print(palabra_nueva)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros)
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
