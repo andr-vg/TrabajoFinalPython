@@ -1,7 +1,9 @@
 import PySimpleGUI as sg
 from Jugadores import Jugadores
 
-##################### Clase Jugador ##############################
+# ----------------------------------------------------------------------
+#Clase Jugador
+# ----------------------------------------------------------------------
 
 class Jugador(Jugadores):
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):

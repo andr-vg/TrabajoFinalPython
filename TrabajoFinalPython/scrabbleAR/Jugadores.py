@@ -1,3 +1,6 @@
+# ----------------------------------------------------------------------
+#Clase padre de Jugador y JugadorPC
+# ----------------------------------------------------------------------
 class Jugadores:
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):
         self.fichas = fichas

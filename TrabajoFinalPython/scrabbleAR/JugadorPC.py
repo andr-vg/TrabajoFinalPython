@@ -6,7 +6,9 @@ import os
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
 
-###################### Clase Jugador PC ##############################
+# ----------------------------------------------------------------------
+#Clase Jugador PC
+# ----------------------------------------------------------------------
 
 class PC(Jugadores):
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada):
@@ -65,12 +67,11 @@ class PC(Jugadores):
         """
         Guarda el estado interno del jugador PC
         """
-
         arch = open(os.path.join(absolute_path, "Datos","info","datos_pc.json"), "w")
         datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._pos_usadas_tablero}
         json.dump(datos,arch,indent = 4)
         arch.close()
-
+# ----------------------------------------------------------------------
     def _cargar_estado(self):
         """
         Si la partida esta guardada carga el estado guardado en un json
@@ -82,6 +83,8 @@ class PC(Jugadores):
         self._botones = self._convertirDic(data["botones"])
         self._palabras_usadas = data["palabras_usadas"]
         self._pos_usadas_tablero = data["pos_usadas"]
+
+# ----------------------------------------------------------------------
     def _obtenerPalabra(self, long_max):
         """
         obtiene una palabra a partir de las _fichas
@@ -120,7 +123,7 @@ class PC(Jugadores):
             if valido:
                 self._palabras_usadas.append(palabra)
         return palabra.upper() if valido else ""
-
+# ----------------------------------------------------------------------
     def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
         """
         Mapeamos el tablero fila por fila y agregamos las posiciones libres encontradas
@@ -132,7 +135,7 @@ class PC(Jugadores):
             posiciones.append((i, j))
             j += 1
         return cant, posiciones
-
+# ----------------------------------------------------------------------
     def _mapeoVertical(self, i, j, posiciones_ocupadas_tablero):
         """
         Mapeamos el tablero columna por columna y agregamos las posiciones libres encontradas
@@ -144,7 +147,7 @@ class PC(Jugadores):
             posiciones.append((j, i))
             j += 1
         return cant, posiciones
-
+# ----------------------------------------------------------------------
     def _agrego_posiciones(self, cant, posiciones, long_y_posiciones):
         """
         Agregamos a long_y_posiciones las posiciones libres encontradas de longitud >=2
@@ -154,7 +157,7 @@ class PC(Jugadores):
                 long_y_posiciones[cant] = [posiciones]
             else:
                 long_y_posiciones[cant].append(posiciones)
-
+# ----------------------------------------------------------------------
     def _mapear_tablero(self, posiciones_ocupadas_tablero):
         """ 
         Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
@@ -185,7 +188,7 @@ class PC(Jugadores):
             return cant_fichas
         else:
             return long_max_tablero
-
+# ----------------------------------------------------------------------
     def jugar(self, window, posiciones_ocupadas_tablero, primer_turno):
         """
         Jugada del usuario: se forma la palabra más larga posible según la dificultad.

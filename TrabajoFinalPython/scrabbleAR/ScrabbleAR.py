@@ -3,23 +3,29 @@ import Juego #Programa Principal
 import os
 import sys
 import json
-
+import ScrabbleAR
+# ----------------------------------------------------------------------
+#Path making
 absolute_path = os.path.dirname(os.path.abspath(__file__))
 
 logo = os.path.join(absolute_path, "Datos","media","Logo.png")
-
+# ----------------------------------------------------------------------
 def cargar_top_10():
     """
     Cargamos los puntajes del top 10
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
-    list_aux = []
-    top_10 = json.load(arch)
-    for key in top_10.keys():
-        str_aux = "Fecha: " + key +" Puntos: "+ str(top_10[key])
-        list_aux.append(str_aux)
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
+        list_aux = []
+        top_10 = json.load(arch)
+        for key in top_10.keys():
+            str_aux = "Fecha: " + key +" Puntos: "+ str(top_10[key])
+            list_aux.append(str_aux)
+    except (FileNotFoundError):
+        sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio")
+        list_aux = []
     return list_aux
-
+# ----------------------------------------------------------------------
 def crear_layout():
     """
     Crea el layout de la ventana menu
@@ -87,7 +93,7 @@ def crear_layout():
     layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(20,None))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
-
+# ----------------------------------------------------------------------
 def guardar_configuracion(config):
     """
     Guarda la configuracion que hizo el usuario en un .json
@@ -95,28 +101,37 @@ def guardar_configuracion(config):
     arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "w")
     json.dump(config,arch,indent=2)
     arch.close()
-
+# ----------------------------------------------------------------------
 def cargar_config_pred():
     """
     Carga la configuracion predeterminada del juego
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r")
-    config = dict()
-    config = json.load(arch)
-    arch.close()
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r")
+        config = dict()
+        config = json.load(arch)
+        arch.close()
+    except (ZeroDivisionError):
+        sg.popup("Algo salio mal! no hay config predeterminada :(")
+        exit()
     return config
-
+# ----------------------------------------------------------------------
 def cargar_config_usr():
     """
     Carga el archivo json con las configuraciones que hizo el usuario
     en la pestaña de configuracion
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
-    config = dict()
-    config = json.load(arch)
-    arch.close()
-    return config
-
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
+        config = dict()
+        config = json.load(arch)
+        arch.close()
+    except (FileNotFoundError):
+        sg.popup("No se encontro configuracion de usuario, se usara la predeterminada")
+        config = cargar_config_pred()
+    finally:
+        return config
+# ----------------------------------------------------------------------
 def main():
     """
     Visualización principal antes de iniciar el juego
@@ -124,26 +139,28 @@ def main():
     sg.theme("lightblue")
     layout = crear_layout()
     window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
-    #Me fijo si hay partida guardada para mostrar el boton de continuar partida
+# ----------------------------------------------------------------------
+#Chekeo exitencia de tablero guardado y muestro o no el boton continuar
     if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "Datos","info"))):
         window["-continuar-"].update(visible=True)
-
+# ----------------------------------------------------------------------
     while True:
         event, values = window.read()
         if (event == None or event == "-salir-"):
             break
         if (event == "-pred-"):
-            os.remove(os.path.join(absolute_path, "Datos","info","configUsuario.json"))
+            try: 
+                os.remove(os.path.join(absolute_path, "Datos","info","configUsuario.json"))
+                window["-pred-"].update(disabled=True)
+            except (FileNotFoundError):
+                window["-pred-"].update(disabled=True)
+                sg.popup("Configuraciones reiniciadas")            
         if (event == "-jugar-"):
             if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
-                #print("HAY CONFIG")
                 config = cargar_config_usr()
             else:
-                #print("NO HAY CONFIG")
                 config = cargar_config_pred()
             Juego.main(False)
-            #break
-
         if (event == "-continuar-"):
             Juego.main(True)
 

@@ -7,8 +7,10 @@ import time
 from functools import reduce
 import os
 import json
-import ScrabbleAR   #Menu del juego
+import ScrabbleAR   #-----------------> Menu del juego
 absolute_path = os.path.dirname(os.path.abspath(__file__)) 
+
+# ----------------------------------------------------------------------
 
 def guardar_info_partida(datos):
     """
@@ -18,60 +20,69 @@ def guardar_info_partida(datos):
     arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "w")
     json.dump(datos,arch,indent = 2)
     arch.close()
-
+# ----------------------------------------------------------------------
 def guardar_partida(window,botones):
     """
     recibe el layout saca los botones que no son del tablero y los exporta a un csv
 
     """
-    # guardar = lista[1:16] #Aislo el tablero del layout
-    # print(guardar)
     arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w",newline='')
     escritor = csv.writer(arch)
     x = 0 #Pos de la lista
     import pprint
     for aux in range(15):
          escritor.writerow(window[(x,i)].get_text()+botones[x,i] for i in range(15))        
-         p = pprint.PrettyPrinter(indent=4)
-         p.pprint(window[(x,x)].get_text())
          x+=1
-
     arch.close()
-
+# ----------------------------------------------------------------------
 def cargar_config_pred():
     """
-    carga la configuracion del usuario
+    carga la configuracion predeterminada
     devuelve un diccionario
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
-    config = dict()
-    config = json.load(arch)
-    arch.close()
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
+        config = dict()
+        config = json.load(arch)
+        arch.close()
+    except (FileNotFoundError):
+        sg.popup("No se encontro el archivo de configuraciones predetermiadas \n el juego se cerrara")
+        exit()
     return config
-
+# ----------------------------------------------------------------------
 def cargar_config_usr():
     """
     carga la configuracion del usuario
     devuelve un diccionario
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
-    config = dict()
-    config = json.load(arch)
-    arch.close()
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
+        config = dict()
+        config = json.load(arch)
+        arch.close()
+    except (FileNotFoundError):
+        sg.popup("No se encontro la configuracion de usuario \n se usara la predeterminada")
+        config = cargar_config_pred()
 
     return config
-
+# ----------------------------------------------------------------------
 def cargar_config_guardada():
     """
     carga la configuracion de un juego guardado
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "r")
-    config = dict()
-    config =  json.load(arch)
-    arch.close()
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "r")
+        config = dict()
+        config =  json.load(arch)
+        arch.close()
+        return config
+    except (FileNotFoundError):
+        sg.popup("No se encontraron datos de una partida guardada, inicie una nueva partida")
+        ScrabbleAR.main()
+        # Se me quedan 2 menus abiertos y no es la idea...
+        
 
-    return config
-
+# ----------------------------------------------------------------------
 def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     """
     Carga las configuraciones de usuario o predeterminadas en caso de que no existan las del usuario
@@ -105,13 +116,13 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     tiempo =  config["tiempo"]
     dificultad = config["dificultad"]
     return bolsa,puntos_por_letra,tiempo,dificultad,config
-
+# ----------------------------------------------------------------------
 def hay_fichas(necesito, bolsa):
     """
     Devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
     """
     return necesito <= (sum(list(bolsa.values())))  
-
+# ----------------------------------------------------------------------
 def dar_fichas(dic, bolsa): 
     """
     se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
@@ -129,7 +140,7 @@ def dar_fichas(dic, bolsa):
             letras_juntas.pop(indice)
     if len(letras_juntas) == 0:
         sg.popup('Se acabaron las fichas')
-
+# ----------------------------------------------------------------------
 def devolver_fichas(dic,keys,bolsa):
     """
     Devuelve las fichas a la bolsa
@@ -138,7 +149,7 @@ def devolver_fichas(dic,keys,bolsa):
         bolsa[dic[nro]]+=1
         dic[nro]=""
     return dic
-
+# ----------------------------------------------------------------------
 def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
@@ -291,7 +302,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     layout.insert(0,fila_fichas_maquina)
 
     return layout, letras_jugador, letras_maquina, botones , long_tablero
-
+# ----------------------------------------------------------------------
 def sacar_del_tablero(window, keys, palabra_nueva, botones):
     """
     Sacamos las letras del tablero que no son validas y reiniciamos los parametros
@@ -304,13 +315,13 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones):
     letras_usadas = dict()
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
-
+# ----------------------------------------------------------------------
 def pocas_fichas(fichas):
     if len("".join(fichas.values())) < len(fichas.keys()):
         return True
     else:
         return False
-
+# ----------------------------------------------------------------------
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
@@ -335,7 +346,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     else:
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego
-
+# ----------------------------------------------------------------------
 def cambiar_turno(turnoj, turnopc, window):
     """
     Cambio de turno del Usuario --> PC / PC --> Usuario
@@ -350,22 +361,27 @@ def cambiar_turno(turnoj, turnopc, window):
     window["turnopc"].update("Turno del la maquina",visible= turnopc)
     window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
-
+# ----------------------------------------------------------------------
 def cargar_puntuaciones():
     """
     Cargamos las puntuaciones de la partida en un archivo .json
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
-    top_10 = json.load(arch)
+    try:
+        arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
+        top_10 = json.load(arch)
+    except (FileNotFoundError):
+        sg.popup("No se encontraron puntuaciones guardadas")
+        top_10 = {}
+        return top_10
     return top_10
-
+# ----------------------------------------------------------------------
 def guardar_puntuaciones(datos):
     """
     Guardamos las puntuaciones de la partida
     """
     arch= open(os.path.join(absolute_path, "Datos","info","top_10.json"), "w")
     json.dump(datos,arch)
-
+# ----------------------------------------------------------------------
 def main(guardado):
     """
     Desarrollo del juego y tablero principal
@@ -376,6 +392,10 @@ def main(guardado):
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
+
+# ----------------------------------------------------------------------
+#Imagenes con los puntajes de cada letra
+# ----------------------------------------------------------------------
     img_nros = {1: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'uno.png'),
                 2: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'dos.png'),
                 3: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'tres.png'),
@@ -390,22 +410,30 @@ def main(guardado):
     # Config del tablero:
     bolsa , puntos_por_letra, tiempo ,dificultad, config = cargar_configuraciones(bolsa,puntos_por_letra,guardado)
 
+# ----------------------------------------------------------------------
     #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
     #Abro el tablero correspondiente a la dificultad seleccionada
     #Abre para windows y linux
+# ----------------------------------------------------------------------
+
     if (guardado): #Si hay partida guardada carga el tablero guardado
         arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"),newline = '')
     else:
-        if(dificultad == "facil"):
-            arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-1.csv"), "r")
-        elif (dificultad == "medio"):
-            arch = open(os.path.join(absolute_path, "Datos","info","tablero-cohete.csv"), "r")
-        else:
-            arch = open(os.path.join(absolute_path, "Datos","info","tablero-21x21.csv"), "r")
-
+        try:
+            if(dificultad == "facil"):
+                arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-1.csv"), "r")
+            elif (dificultad == "medio"):
+                arch = open(os.path.join(absolute_path, "Datos","info","tablero-cohete.csv"), "r")
+            else:
+                arch = open(os.path.join(absolute_path, "Datos","info","tablero-21x21.csv"), "r")
+        except (FileNotFoundError):
+            sg.popup("No se ha encontrado el tablero")
     csvreader = csv.reader(arch)
 
-    # Opciones de dificultad --> lista de tags
+# ----------------------------------------------------------------------
+# Opciones de dificultad --> lista de tags
+# ----------------------------------------------------------------------
+
     dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
                          'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
@@ -430,12 +458,17 @@ def main(guardado):
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
 
-    ################### Puntos ##################
+# ----------------------------------------------------------------------
+# Manejo de puntajes, si hay partida guardada setea los puntos
+#Sino es 0
+# ----------------------------------------------------------------------
     if (guardado):
-        #Si hay partida guardada setea los puntos de los jugadores 
+
             pj.puntos = config["puntos_j"]
             pc.puntos = config["puntos_pc"]
-
+# ----------------------------------------------------------------------
+#Configuracion de ventana y turnos
+# ----------------------------------------------------------------------
     window = sg.Window("Ventana de juego", layout)
 
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
@@ -473,8 +506,9 @@ def main(guardado):
     else:  # empieza la compu
         turno_jugador = False
         turno_pc = True
-
-    while True:  # Event Loop
+# ----------------------------------------------------------------------
+#Loop de ventana
+    while True: 
         # Actualizamos el tiempo en pantalla (por el momento en segundos --> modificar la visualización a min:seg)
         restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
@@ -600,7 +634,10 @@ def main(guardado):
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
 
-        # turno de la pc: 
+# ----------------------------------------------------------------------
+# turno de la pc: 
+# ----------------------------------------------------------------------
+
         if turno_pc:
             time.sleep(2)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
@@ -610,5 +647,5 @@ def main(guardado):
             fin_fichas = pocas_fichas(pc.getFichas())
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
-
+# ----------------------------------------------------------------------
     window.close()
