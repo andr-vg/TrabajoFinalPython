@@ -192,7 +192,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     #                                      pad=(0, 0), button_color=('black', 'white'))
 
     ficha_jugador = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', '#649E52'))
+                                         pad=(0, 0), button_color=('black', '#BA7FB0'))
     
     sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
@@ -303,15 +303,20 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
 
     return layout, letras_jugador, letras_maquina, botones , long_tablero
 # ----------------------------------------------------------------------
-def sacar_del_tablero(window, keys, palabra_nueva, botones):
+def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     """
     Sacamos las letras del tablero que no son validas y reiniciamos los parametros
     que guardan nuestras letras y la palabra
     """
+    colores = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', '-' : '#008080', '--' : '#005555', '---' : '#000000'},
+               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
+               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
+              }
+
     for val in keys:
         window[val].update(disabled=False)  # reactivamos las fichas
     for val in palabra_nueva:
-        window[val].update("", disabled=False) # eliminamos del tablero las fichas
+        window[val].update("", disabled=False,button_color= ("black",colores[dificultad][botones[val]])) # eliminamos del tablero las fichas
     letras_usadas = dict()
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
@@ -322,7 +327,7 @@ def pocas_fichas(fichas):
     else:
         return False
 # ----------------------------------------------------------------------
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
     actualiza el tablero y los parametros
@@ -344,7 +349,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
             palabra_nueva = dict()
             turno_jugador, turno_pc = cambiar_turno(turno_jugador, turno_pc, window)
     else:
-        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+        letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux,dificultad)
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego
 # ----------------------------------------------------------------------
 def cambiar_turno(turnoj, turnopc, window):
@@ -450,6 +455,8 @@ def main(guardado):
         tipo_palabra = ""
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
 
+# ----------------------------------------------------------------------
+#Instanciacion de objetos y creacion del layout
 
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
@@ -457,7 +464,7 @@ def main(guardado):
 
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
-
+    botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
 # ----------------------------------------------------------------------
 # Manejo de puntajes, si hay partida guardada setea los puntos
 #Sino es 0
@@ -566,7 +573,7 @@ def main(guardado):
                     palabra_nueva[ind] = letras[box]
                     if len(palabra_nueva.keys()) > 1:
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
-                    window[ind].update(letras[box], disabled=True)  # actualizo la casilla y la desactivo
+                    window[ind].update(letras[box], disabled=True, button_color = ("black","#BA7FB0"))  # actualizo la casilla y la desactivo
                     botones = pc.get_botones().copy()
                     botones[ind] = "" + "/"
                     pc.actualiza_botones(botones)
@@ -576,16 +583,16 @@ def main(guardado):
 
             # boton de deshacer las palabras puestas en el tablero
             elif event == "-d":
-                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad)
 
             # boton de pasar el turno a la pc
             elif event == "-paso":
                 turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
-                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones)
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad)
 
             #boton cambio de fichas
             elif (event == "-cf") and (cambios_de_fichas < 3):
-                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones) #si ya hay fichas jugadas en el tablero volveran al atril
+                letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad) #si ya hay fichas jugadas en el tablero volveran al atril
                 letras_a_cambiar=[]
                 window["-c"].update(disabled=True)  #los desactivo para que no se toque nada que no sean las fichas a cambiar
                 window["-d"].update(disabled=True)  #-c y -d no los vuelvo a activar porque los quiero desactivados cuando empiece el sigueinte turno
@@ -642,8 +649,8 @@ def main(guardado):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
                 else:
                     sg.popup_no_frame("Termino el juego \n Perdiste :( ")
-                from datetime import date
-                fecha =  str(date.today())
+                from datetime import datetime
+                fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                 puntos_jugador[fecha] = pj.puntos
                 guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
@@ -653,7 +660,7 @@ def main(guardado):
             elif event == "-c":
                 window["-c"].update(disabled=True)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros)
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad)
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
