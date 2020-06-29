@@ -1,5 +1,8 @@
 # ScrabbleAR
 
+![Logo](https://github.com/andr-vg/TrabajoFinalPython/blob/master/TrabajoFinalPython/scrabbleAR/Datos/media/Logo.png?raw=true)
+
+
 #### Alumnos: 
 *  Andrea Verónica Goyechea
 *  Juan Sebastian Montalivet
