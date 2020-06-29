@@ -508,18 +508,36 @@ def main(guardado):
         turno_pc = True
 # ----------------------------------------------------------------------
 #Loop de ventana
+    tiempo_seg = 60 
     while True: 
-        # Actualizamos el tiempo en pantalla (por el momento en segundos --> modificar la visualización a min:seg)
+        #------------------------------------------------------
+        #Tiempo
+        #------------------------------------------------------
         restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
+        
+        tiempo_seg -= 1
+        tiempo_int = round(cuenta_regresiva - restar_tiempo)
+        tiempo_min = round(tiempo_int / 60)
+        if (tiempo_seg == 0):
+            tiempo_seg = 60
+            tiempo_min -= 1
+        if (tiempo_seg < 10):
+            tiempo_seg_final = "0"+str(tiempo_seg)
+        else:
+            tiempo_seg_final =  tiempo_seg
+        tiempo_str = "{}:{}".format(tiempo_min,tiempo_seg_final)
+        print("tiempo: ",tiempo_str)
 
-        window["tiempo"].update(str(round(cuenta_regresiva - restar_tiempo)))
+        window["tiempo"].update(tiempo_str)
 
         if restar_tiempo > cuenta_regresiva:
             sg.popup("Se termino el tiempo")
             fin_juego = True
-
-        # mientras sea el turno del jugador, podrá realizar todos los eventos del tablero
+        #------------------------------------------------------
+        # mientras sea el turno del jugador, podrá realizar 
+        # todos los eventos del tablero
+        #------------------------------------------------------
         if turno_jugador:
             if event is None:
                 break
@@ -532,7 +550,13 @@ def main(guardado):
                 window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
                     window[val].update(disabled=True)  # desactivo los botones de las fichas
+                #-------------------------------------
                 restar_tiempo = int(time.time())
+                tiempo_seg -= 1
+                if tiempo_seg == 0:
+                    tiempo_seg = 60
+                    tiempo_min -= 1
+                #------------------------------------
                 event, values = window.read()
                 window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
 
