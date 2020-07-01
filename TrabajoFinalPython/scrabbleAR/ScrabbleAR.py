@@ -18,58 +18,67 @@ def cargar_top_10():
         arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
         list_aux = []
         top_10 = json.load(arch)
-        # top_10 = {k: v for k, v in sorted(top_10.items())}
+        top_10 = {k: v for k, v in sorted(top_10.items())}
         for key in top_10.keys():
-            str_aux = "Fecha: " + key +" Puntos: "+ str(top_10[key])
+            key_aux = key.split("-")
+            str_aux = "Fecha: " + key_aux[0] +" Puntos: "+ str(top_10[key])
             list_aux.append(str_aux)
+        list_aux = list_aux[:10] #-----> Organizo por dia y muestro solamente 10 
+        #---------------------------------------------------
+        #Saco los datos sobrantes
+        #---------------------------------------------------
+        lista_keys_borrar = list(top_10.keys())
+        lista_keys_borrar = lista_keys_borrar[10:len(top_10.keys())]
+        for key in lista_keys_borrar:
+            top_10.pop(key)
+
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio")
         list_aux = []
     return list_aux
 # ----------------------------------------------------------------------
-def crear_layout():
+def crear_layout(config):
     """
     Crea el layout de la ventana menu
     """
     top_10 = cargar_top_10()
 
     tab1_layout = [
-        [sg.Text("")],
-        [sg.Button("Nueva partida", key="-jugar-",size=(50,4))],
-        [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4))],
-        [sg.Button("Salir", key="-salir-",size=(50,4))]
+        [sg.Button("Nueva partida", key="-jugar-",size=(50,4),pad=(150,2))],
+        [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4), pad=(150,2))],
+        [sg.Button("Salir", key="-salir-",size=(50,4), pad= (150,3))]
     ]
     frame_0 = [
-        [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default=True),
-        sg.Radio("Medio", "nivel", tooltip="Sustantivos y verbos", key="medio"),
-        sg.Radio("Dificil", "nivel", tooltip="Categoria al azar", key="dificil")]
+        [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default= True if config["dificultad"] == "facil" else False),
+        sg.Radio("Medio", "nivel", tooltip="Sustantivos y verbos", key="medio", default= True if config["dificultad"] == "medio" else False ),
+        sg.Radio("Dificil", "nivel", tooltip="Categoria al azar", key="dificil", default= True if config["dificultad"] == "dificil" else False)]
     ]
 
     colum = [
-        [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=10,key="grupo_1_cant")],
-        [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=8,key="grupo_2_cant")],
-        [sg.Text("M, B, P"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=6,key="grupo_3_cant")],
-        [sg.Text("F,H,V,Y"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=4,key="grupo_4_cant")],
-        [sg.Text("J"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=3,key="grupo_5_cant")],
-        [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=2,key="grupo_6_cant")],
-        [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=1,key="grupo_7_cant")]
+        [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_1_cant"],key="grupo_1_cant")],
+        [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_2_cant"],key="grupo_2_cant")],
+        [sg.Text("M, B, P"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_3_cant"],key="grupo_3_cant")],
+        [sg.Text("F,H,V,Y"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_4_cant"],key="grupo_4_cant")],
+        [sg.Text("J"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_5_cant"],key="grupo_5_cant")],
+        [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_6_cant"],key="grupo_6_cant")],
+        [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_7_cant"],key="grupo_7_cant")]
     ]
     frame_col = [
         [sg.Frame("Cantidad de letras",layout=colum)]
     ]
 
     frame_1 = [
-        [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=1,key="grupo_1")],
-        [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=2,key="grupo_2")],
-        [sg.Text("M, B, P"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=3,key="grupo_3")],
-        [sg.Text("F,H,V,Y"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=4,key="grupo_4")],
-        [sg.Text("J"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=6,key="grupo_5")],
-        [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=8,key="grupo_6")],
-        [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=10,key="grupo_7")]
+        [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_1"],key="grupo_1")],
+        [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_2"],key="grupo_2")],
+        [sg.Text("M, B, P"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_3"],key="grupo_3")],
+        [sg.Text("F,H,V,Y"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_4"],key="grupo_4")],
+        [sg.Text("J"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_5"],key="grupo_5")],
+        [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_6"],key="grupo_6")],
+        [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_7"],key="grupo_7")]
     ]
 
     frame_2 = [
-        [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=10,orientation="horizontal",key="-tiempo-")]])]
+        [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=round(config["tiempo"] / 60),orientation="horizontal",key="-tiempo-")]])]
     ]
 
 
@@ -78,25 +87,54 @@ def crear_layout():
         [sg.Frame("Puntos por letra",layout=frame_1),sg.Column(frame_col)],
         [sg.Button("Guardar", key="-guardar-"),sg.Button("Config predeterminada",key="-pred-")]
                    ]
-
+    frame_top_10 = [
+         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(100, 10))]
+    ]
     tab3_layout = [
-        [sg.Text("Top 10")],
-        [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(60, 10))]
+        [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
+    ]
+    frame_ayuda_0 = [
+        [sg.T("""En la pestaña de configuraciones encontrara las siguientes opciones 
+        • Dificultad 
+        • Cantidad de letras 
+        • Puntos por letra
+        • Tiempo
+        """)]
+    ]
+    frame_ayuda_1 = [
+        [sg.Text("""• Facil: se permiten 'Sustantivos, adjetivos y verbos'
+• Medio: 'Adjetivos y verbos'
+• Dificil: Un tipo aleatorio
+        """)]
+    ]
+    col_ayuda_0 = [
+        [sg.Frame("Dificultades",layout=frame_ayuda_1)]
+    ]
+    frame_ayuda_1 = [
+        [sg.Text(
+            """En el juego hay distintos tipos de fichas: 
+            • Fichas de premio: que duplican o triplican el puntaje de la palabra
+            • Fichas de descuento: Que quitan 1, 2 o 3 puntos dependiendo
+
+Cada una de estas fichas esta indicada con un color en cada nivel de dificultad 
+            """
+        )]
     ]
 
     tab4_layout = [
-        [sg.T("Menu de ayuda")]
+    [sg.Frame("Configuraciones",layout= frame_ayuda_0),sg.Column(col_ayuda_0)],
+    [sg.Frame("Fichas especiales",layout= frame_ayuda_1)]
     ]
 
     tab_grupo = [
         [sg.Tab("Juego", tab1_layout, key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
+         sg.Tab("Como jugar", tab4_layout, key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0),
          sg.Tab("Config nivel", tab2_layout, key="-tab2-", background_color="#E3F2FD", title_color="#E3F2FD",
                 border_width=0),
-         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0),
-         sg.Tab("Como jugar", tab4_layout, key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0)]
+         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
     ]
 
-    layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(20,None))],
+    layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(200,None))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 # ----------------------------------------------------------------------
@@ -142,14 +180,22 @@ def main():
     """
     Visualización principal antes de iniciar el juego
     """
+    #Si hay configuraciones de usuario las cargo para mostrarlas en 
+    #pestaña config
+    if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+        config = cargar_config_usr()
+    else:
+        config = cargar_config_pred()
+# ----------------------------------------------------------------------
     sg.theme("lightblue")
-    layout = crear_layout()
+    layout = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
 # ----------------------------------------------------------------------
 #Chekeo exitencia de tablero guardado y muestro o no el boton continuar
     if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "Datos","info"))):
         window["-continuar-"].update(visible=True)
 # ----------------------------------------------------------------------
+
     while True:
         event, values = window.read()
         if (event == None or event == "-salir-"):
@@ -158,19 +204,37 @@ def main():
             try: 
                 os.remove(os.path.join(absolute_path, "Datos","info","configUsuario.json"))
                 window["-pred-"].update(disabled=True)
-            except (FileNotFoundError):
-                window["-pred-"].update(disabled=True)
-                sg.popup("Configuraciones reiniciadas")            
-        if (event == "-jugar-"):
-            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
-                config = cargar_config_usr()
-            else:
                 config = cargar_config_pred()
+                #---------------------------------------------------------------------------------
+                #Actualizacion del menu
+                #Con las configs predeterminadas
+                #---------------------------------------------------------------------------------
+                for i in range(7):
+                    ind = i + 1 if i < 7 else 7
+                    window["grupo_"+str(ind)].update(config["grupo_"+str(ind)])
+                    window["grupo_"+str(ind)+"_cant"].update(config["grupo_"+str(ind)+"_cant"])
+                window["-tiempo-"].update(value = round(config["tiempo"] / 60))
+                if (config["dificultad"] == "facil"):
+                    window["facil"].update(True)
+                elif (config["dificultad" == "medio"]):
+                    window["medio"].update(True)
+                elif (config["dificultad"] == "dificil"):
+                    window["dificil"].update(True)
+                #-----------------------------------------------------------------------------------
+            except (FileNotFoundError):
+                window["-pred-"].update(disabled=True) 
+                config = cargar_config_pred()
+            finally:
+                sg.popup("Configuraciones reiniciadas")
+
+        if (event == "-jugar-"):
             Juego.main(False)
+
         if (event == "-continuar-"):
             Juego.main(True)
 
         if (event == "-guardar-"):
+            window["-pred-"].update(disabled=False)
             if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
                 config = cargar_config_usr()
             else:
@@ -183,21 +247,15 @@ def main():
                 config["dificultad"] = "medio"
             elif (window["dificil"].get()):
                 config["dificultad"] = "dificil"
-            config["grupo_1"] = int(window.FindElement("grupo_1").get())
-            config["grupo_2"] = int(window.FindElement("grupo_2").get())
-            config["grupo_3"] = int(window.FindElement("grupo_3").get())
-            config["grupo_4"] = int(window.FindElement("grupo_4").get())
-            config["grupo_5"] = int(window.FindElement("grupo_5").get())
-            config["grupo_6"] = int(window.FindElement("grupo_6").get())
-            config["grupo_7"] = int(window.FindElement("grupo_7").get())
-            config["grupo_1_cant"] = int(window.FindElement("grupo_1_cant").get())
-            config["grupo_2_cant"] = int(window.FindElement("grupo_2_cant").get())
-            config["grupo_3_cant"] = int(window.FindElement("grupo_3_cant").get())
-            config["grupo_4_cant"] = int(window.FindElement("grupo_4_cant").get())
-            config["grupo_5_cant"] = int(window.FindElement("grupo_5_cant").get())
-            config["grupo_6_cant"] = int(window.FindElement("grupo_6_cant").get())
-            config["grupo_7_cant"] = int(window.FindElement("grupo_7_cant").get())
+            #-----------------------------------
+            #Guardando las configs
+            #-----------------------------------
+            for i in range(7):
+                ind = i+1
+                config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get()) if int(window.FindElement("grupo_"+str(ind)).get()) > 0 else 1
+                config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get()) if int(window.FindElement("grupo_"+str(ind)+"_cant").get()) > 0 else 1
             guardar_configuracion(config)
+            sg.popup("Se han guardado las configuraciones")
 
     window.close()
 

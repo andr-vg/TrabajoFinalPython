@@ -385,7 +385,7 @@ def guardar_puntuaciones(datos):
     Guardamos las puntuaciones de la partida
     """
     arch= open(os.path.join(absolute_path, "Datos","info","top_10.json"), "w")
-    json.dump(datos,arch)
+    json.dump(datos,arch,indent= 2)
 # ----------------------------------------------------------------------
 def main(guardado):
     """
@@ -525,7 +525,6 @@ def main(guardado):
         #------------------------------------------------------
         #Tiempo
         #------------------------------------------------------
-        # restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
         if (cont_tiempo_seg == 0):
             cont_tiempo_seg = 59
