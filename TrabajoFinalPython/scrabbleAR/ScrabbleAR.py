@@ -18,6 +18,7 @@ def cargar_top_10():
         arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
         list_aux = []
         top_10 = json.load(arch)
+        # top_10 = {k: v for k, v in sorted(top_10.items())}
         for key in top_10.keys():
             str_aux = "Fecha: " + key +" Puntos: "+ str(top_10[key])
             list_aux.append(str_aux)
@@ -80,14 +81,19 @@ def crear_layout():
 
     tab3_layout = [
         [sg.Text("Top 10")],
-        [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10 , default_values="Aun no hay partidas registradas", size=(60, 10))]
+        [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(60, 10))]
+    ]
+
+    tab4_layout = [
+        [sg.T("Menu de ayuda")]
     ]
 
     tab_grupo = [
         [sg.Tab("Juego", tab1_layout, key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
          sg.Tab("Config nivel", tab2_layout, key="-tab2-", background_color="#E3F2FD", title_color="#E3F2FD",
                 border_width=0),
-         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
+         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0),
+         sg.Tab("Como jugar", tab4_layout, key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0)]
     ]
 
     layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(20,None))],
