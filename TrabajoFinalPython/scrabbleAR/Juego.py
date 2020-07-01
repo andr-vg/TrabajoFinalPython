@@ -181,17 +181,17 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     # casilleros de name = '' : no suman ni restan ptos
     # casilleros de name =  + : duplican ptos
 
-    casillero = lambda name, key: sg.Button('', border_width=1, size=(3, 1), key=key,
+    casillero = lambda name, key: sg.Button('', border_width=3, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', colores[dificultad][name]))
 
     # casilleros con letras de una partida anterior:
 
-    ficha_pc = lambda name,key: sg.Button(name, border_width = 1, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
+    ficha_pc = lambda name,key: sg.Button(name, border_width = 3, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
     # blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
     #                                      pad=(0, 0), button_color=('black', 'white'))
 
-    ficha_jugador = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
+    ficha_jugador = lambda name, key: sg.Button(name, border_width=3, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#BA7FB0'))
     
     sg.theme("lightblue")
@@ -497,13 +497,18 @@ def main(guardado):
     fin_fichas = False
 
     fin_juego = False
+    #Configuracion del tiempo
+    cont_tiempo_min_config = tiempo  
+    cont_tiempo_min = round(cont_tiempo_min_config / 60)
+    if (cont_tiempo_min > 1):
+        cont_tiempo_seg = 59
+        cont_tiempo_min -= 1
+    else:
+        cont_tiempo_seg = 0
 
-    cont_tiempo = tiempo  # Esto deberia venir como parametro
-    cuenta_regresiva = int(time.time()) + cont_tiempo
     #Cierro el archivo del tablero
     arch.close()
     window.finalize()
-
     # se decide de forma aleatoria quien comienza la partida
     #turno = random.randint(0,1) # comentado por ahora
     turno = random.randint(0,1)
@@ -515,30 +520,30 @@ def main(guardado):
         turno_pc = True
 # ----------------------------------------------------------------------
 #Loop de ventana
-    tiempo_seg = 60 
+    
     while True: 
         #------------------------------------------------------
         #Tiempo
         #------------------------------------------------------
-        restar_tiempo = int(time.time())
+        # restar_tiempo = int(time.time())
         event, values = window.read(timeout=1000)
-        
-        tiempo_seg -= 1
-        tiempo_int = round(cuenta_regresiva - restar_tiempo)
-        tiempo_min = round(tiempo_int / 60)
-        if (tiempo_seg == 0):
-            tiempo_seg = 60
-            tiempo_min -= 1
-        if (tiempo_seg < 10):
-            tiempo_seg_final = "0"+str(tiempo_seg)
+        if (cont_tiempo_seg == 0):
+            cont_tiempo_seg = 59
+            cont_tiempo_min -= 1
         else:
-            tiempo_seg_final =  tiempo_seg
-        tiempo_str = "{}:{}".format(tiempo_min,tiempo_seg_final)
-        print("tiempo: ",tiempo_str)
+            cont_tiempo_seg -= 1
+
+        if (cont_tiempo_seg < 10):
+            tiempo_seg_final = "0" + str(cont_tiempo_seg)
+        else:
+            tiempo_seg_final = cont_tiempo_seg
+
+        tiempo_str = "{}:{}".format(cont_tiempo_min,tiempo_seg_final)
+
 
         window["tiempo"].update(tiempo_str)
 
-        if restar_tiempo > cuenta_regresiva:
+        if (cont_tiempo_min == 0) and (cont_tiempo_seg == 0):
             sg.popup("Se termino el tiempo")
             fin_juego = True
         #------------------------------------------------------
@@ -558,11 +563,13 @@ def main(guardado):
                 for val in letras.keys():
                     window[val].update(disabled=True)  # desactivo los botones de las fichas
                 #-------------------------------------
-                restar_tiempo = int(time.time())
-                tiempo_seg -= 1
-                if tiempo_seg == 0:
-                    tiempo_seg = 60
-                    tiempo_min -= 1
+                
+                if (cont_tiempo_seg == 0):
+                    cont_tiempo_seg = 59
+                    cont_tiempo_min -= 1
+                else:
+                    cont_tiempo_seg -= 1
+
                 #------------------------------------
                 event, values = window.read()
                 window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
@@ -636,7 +643,7 @@ def main(guardado):
                 guardar_partida(window,boton)
                 datos = dict()
                 datos = config
-                datos["tiempo"] = round(cuenta_regresiva - restar_tiempo)
+                datos["tiempo"] = tiempo_str
                 datos["puntos_j"] = pj.puntos
                 datos["puntos_pc"] = pc.puntos
                 pc.guardar_estado()
