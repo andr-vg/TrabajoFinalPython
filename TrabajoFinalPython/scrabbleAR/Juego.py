@@ -654,6 +654,8 @@ def main(guardado):
             elif event == "-t" or fin_fichas or fin_juego:  
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
+                elif (pj.puntos == pc.puntos):
+                    sg.popup("EMPATE! ☻")
                 else:
                     sg.popup_no_frame("Termino el juego \n Perdiste :( ")
                 from datetime import datetime
