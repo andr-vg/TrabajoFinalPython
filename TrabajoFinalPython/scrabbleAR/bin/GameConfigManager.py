@@ -8,15 +8,16 @@ import ScrabbleAR
 import json
 import PySimpleGUI as sg
 import csv
+from pathlib import Path
 
-absolute_path = os.path.dirname(os.path.abspath(__file__))
+absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
 
 def guardar_info_partida(datos):
     """
     Guarda las puntuaciones, tiempo restante
 
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "w")
+    arch = open(os.path.join(absolute_path, "lib","info","datos_guardados.json"), "w")
     json.dump(datos,arch,indent = 2)
     arch.close()
 
@@ -25,7 +26,7 @@ def guardar_partida(window,botones):
     recibe el layout saca los botones que no son del tablero y los exporta a un csv
 
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w",newline='')
+    arch = open(os.path.join(absolute_path, "lib","info","guardado.csv"), "w",newline='')
     escritor = csv.writer(arch)
     x = 0 #Pos de la lista
     for aux in range(15):
@@ -39,7 +40,7 @@ def cargar_config_pred():
     devuelve un diccionario
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
+        arch = open(os.path.join(absolute_path, "lib","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
         config = dict()
         config = json.load(arch)
         arch.close()
@@ -54,7 +55,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     """
     config = dict()
     if not(guardado):
-        if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+        if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info")):
             # print("HAY CONFIG")
             config = cargar_config_usr()
         else:
@@ -87,7 +88,7 @@ def cargar_puntuaciones():
     Cargamos las puntuaciones de la partida en un archivo .json
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
+        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
         top_10 = json.load(arch)
     except (FileNotFoundError):
         sg.popup("No se encontraron puntuaciones guardadas")
@@ -99,7 +100,7 @@ def guardar_puntuaciones(datos):
     """
     Guardamos las puntuaciones de la partida
     """
-    arch= open(os.path.join(absolute_path, "Datos","info","top_10.json"), "w")
+    arch= open(os.path.join(absolute_path, "lib","info","top_10.json"), "w")
     json.dump(datos,arch,indent= 2)
 
 def cargar_config_usr():
@@ -108,7 +109,7 @@ def cargar_config_usr():
     devuelve un diccionario
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
+        arch = open(os.path.join(absolute_path, "lib","info","configUsuario.json"), "r")
         config = dict()
         config = json.load(arch)
         arch.close()
@@ -123,7 +124,7 @@ def cargar_config_guardada():
     carga la configuracion de un juego guardado
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "r")
+        arch = open(os.path.join(absolute_path, "lib","info","datos_guardados.json"), "r")
         config = dict()
         config =  json.load(arch)
         arch.close()

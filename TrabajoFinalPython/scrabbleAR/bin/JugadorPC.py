@@ -3,8 +3,8 @@ import random
 import json
 from Jugadores import Jugadores
 import os
-
-absolute_path = os.path.dirname(os.path.abspath(__file__))
+from pathlib import Path
+absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
 
 # ----------------------------------------------------------------------
 #Clase Jugador PC
@@ -43,9 +43,9 @@ class PC(Jugadores):
         """
         Parsea el Json para poder guardarlo
         """
-        import pprint
-        p = pprint.PrettyPrinter(indent = 2)
-        p.pprint(self._botones)
+        # import pprint
+        # p = pprint.PrettyPrinter(indent = 2)
+        # p.pprint(self._botones)
         dic_aux = {}
         for clave,valor in self._botones.items():
             dic_aux[str(clave[0])+","+str(clave[1])] = valor        
@@ -58,7 +58,7 @@ class PC(Jugadores):
         dic_aux = {}
         for clave,valor in botones.items():
             dic_aux[tuple(map(int,clave.split(",")))] = valor  
-        import pprint
+        # import pprint
         # p = pprint.PrettyPrinter(indent=4)
         # p.pprint(dic_aux)
         return dic_aux
@@ -67,7 +67,7 @@ class PC(Jugadores):
         """
         Guarda el estado interno del jugador PC
         """
-        arch = open(os.path.join(absolute_path, "Datos","info","datos_pc.json"), "w")
+        arch = open(os.path.join(absolute_path, "lib","info","datos_pc.json"), "w")
         datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._pos_usadas_tablero}
         json.dump(datos,arch,indent = 4)
         arch.close()
@@ -76,7 +76,7 @@ class PC(Jugadores):
         """
         Si la partida esta guardada carga el estado guardado en un json
         """
-        datos = open(os.path.join(absolute_path, "Datos","info","datos_pc.json"), "r")
+        datos = open(os.path.join(absolute_path, "lib","info","datos_pc.json"), "r")
         data = {}
         data = json.load(datos)
         self._fichas = data["fichas"]
@@ -94,7 +94,7 @@ class PC(Jugadores):
         
         letras = ""
         for letra in self.fichas.values():
-            print("LETRA;", letra)
+            # print("LETRA;", letra)
             letras += letra
         letras = letras.lower()
         l = []
@@ -219,7 +219,7 @@ class PC(Jugadores):
                     posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
                     # print(long_y_posiciones[long_max_tablero][posiciones_random][i])
                     pos_aux =long_y_posiciones[long_max_tablero][posiciones_random][i]
-                    print("MAX: ",long_max_tablero,"Pos random: ",posiciones_random,"Pos de palabra: ",pos_aux)
+                    # print("MAX: ",long_max_tablero,"Pos random: ",posiciones_random,"Pos de palabra: ",pos_aux)
                     window[pos_aux].update(mejor_palabra[i - inicio], disabled=True,button_color=("black","#A4E6FD"))  # agregamos las letras al tablero
                     # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
                     palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i - inicio]
@@ -230,13 +230,13 @@ class PC(Jugadores):
                 centro = self.long_tablero // 2
                 indice_letra_centro = random.randint(0, len(mejor_palabra) - 1)
                 orientacion = random.randint(0, 1)  ## orientacion = 1 : vertical, 0: horizontal
-                print(mejor_palabra)
-                print(mejor_palabra[indice_letra_centro])
+                # print(mejor_palabra)
+                # print(mejor_palabra[indice_letra_centro])
                 for i in range(centro - indice_letra_centro, centro):  # antes del centro
                     pos = (centro, i) if orientacion == 0 else (i, centro)
                     posiciones_ocupadas_tablero.append(pos)
-                    print(pos)
-                    print(mejor_palabra[indice_letra_centro - (centro - i)])
+                    # print(pos)
+                    # print(mejor_palabra[indice_letra_centro - (centro - i)])
                     window[pos].update(mejor_palabra[indice_letra_centro - (centro - i)], disabled=True,
                                        button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
                     self._botones[pos] = "" + "*"
@@ -246,12 +246,12 @@ class PC(Jugadores):
                                                 button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
                 self._botones[(centro,centro)] = "" + "*"
                 palabra_nueva[(centro, centro)] = mejor_palabra[indice_letra_centro]
-                print((centro, centro))
-                print(mejor_palabra[indice_letra_centro])
+                # print((centro, centro))
+                # print(mejor_palabra[indice_letra_centro])
                 for i in range(centro + 1, centro + len(mejor_palabra) - indice_letra_centro):  # despues del centro
                     pos = (centro, i) if orientacion == 0 else (i, centro)
-                    print(pos)
-                    print(mejor_palabra[indice_letra_centro - (centro - i)])
+                    # print(pos)
+                    # print(mejor_palabra[indice_letra_centro - (centro - i)])
                     posiciones_ocupadas_tablero.append(pos)
                     window[pos].update(mejor_palabra[indice_letra_centro + i - centro], disabled=True,
                                        button_color = ("black", "#A4E6FD"))  # agregamos las letras al tablero

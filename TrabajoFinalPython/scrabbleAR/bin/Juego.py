@@ -9,7 +9,8 @@ import os
 import json
 import ScrabbleAR   #-----------------> Menu del juego
 import GameConfigManager as cm #---------> Manejo de configuraciones
-absolute_path = os.path.dirname(os.path.abspath(__file__)) 
+from pathlib import Path
+absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
 
 def hay_fichas(necesito, bolsa):
     """
@@ -275,16 +276,16 @@ def main(guardado):
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
 
-    img_nros = {1: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'uno.png'),
-                2: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'dos.png'),
-                3: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'tres.png'),
-                4: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'cuatro.png'),
-                5: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'cinco.png'),
-                6: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'seis.png'),
-                7: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'siete.png'),
-                8: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'ocho.png'),
-                9: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'nueve.png'),
-                10: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'diez.png')}
+    img_nros = {1: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'uno.png'),
+                2: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'dos.png'),
+                3: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'tres.png'),
+                4: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'cuatro.png'),
+                5: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'cinco.png'),
+                6: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'seis.png'),
+                7: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'siete.png'),
+                8: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'ocho.png'),
+                9: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'nueve.png'),
+                10: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'diez.png')}
 
     bolsa , puntos_por_letra, tiempo ,dificultad, config = cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
     # ----------------------------------------------------------------------
@@ -293,15 +294,15 @@ def main(guardado):
         #Abre para windows y linux
     # ----------------------------------------------------------------------
     if (guardado): #Si hay partida guardada carga el tablero guardado
-        arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"),newline = '')
+        arch = open(os.path.join(absolute_path, "lib","info","guardado.csv"),newline = '')
     else:
         try:
             if(dificultad == "facil"):
-                arch = open(os.path.join(absolute_path, "Datos","info","tablero-nivel-1.csv"), "r")
+                arch = open(os.path.join(absolute_path, "lib","info","tablero-nivel-1.csv"), "r")
             elif (dificultad == "medio"):
-                arch = open(os.path.join(absolute_path, "Datos","info","tablero-cohete.csv"), "r")
+                arch = open(os.path.join(absolute_path, "lib","info","tablero-cohete.csv"), "r")
             else:
-                arch = open(os.path.join(absolute_path, "Datos","info","tablero-21x21.csv"), "r")
+                arch = open(os.path.join(absolute_path, "lib","info","tablero-21x21.csv"), "r")
         except (FileNotFoundError):
             sg.popup("No se ha encontrado el tablero")
     csvreader = csv.reader(arch)
@@ -353,13 +354,18 @@ def main(guardado):
     fin_fichas = False
     fin_juego = False
     #Configuracion del tiempo
-    cont_tiempo_min_config = tiempo  
-    cont_tiempo_min = round(cont_tiempo_min_config / 60)
-    if (cont_tiempo_min > 1):
-        cont_tiempo_seg = 59
-        cont_tiempo_min -= 1
+    if not(guardado):
+        cont_tiempo_min_config = tiempo  
+        cont_tiempo_min = round(cont_tiempo_min_config / 60)
+        if (cont_tiempo_min > 0):
+            cont_tiempo_seg = 59
+            cont_tiempo_min -= 1 
+        else:
+            cont_tiempo_seg = 0
     else:
-        cont_tiempo_seg = 0
+        aux_tiempo = config["tiempo"].split(":")
+        cont_tiempo_min = int(aux_tiempo[0])
+        cont_tiempo_seg = int(aux_tiempo[1])
     arch.close()
     window.finalize()
     # se decide de forma aleatoria quien comienza la partida
@@ -377,7 +383,7 @@ def main(guardado):
         event, values = window.read(timeout=1000)
         if (cont_tiempo_seg == 0):
             cont_tiempo_seg = 59
-            cont_tiempo_min -= 1
+            cont_tiempo_min -= 1 if cont_tiempo_min -1 > 0 else 0
         else:
             cont_tiempo_seg -= 1
         if (cont_tiempo_seg < 10):
@@ -462,9 +468,10 @@ def main(guardado):
                             if cambios_de_fichas == 3:
                                 window["-cf"].update(disabled=True)
                                 window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
-                            print("Cambio de letras realizado.")
+                            # print("Cambio de letras realizado.")
                         else:
-                            print("No se selecciono ninguna letra, no se realizo ningun cambio.")
+                            # print("No se selecciono ninguna letra, no se realizo ningun cambio.")
+                            pass
                         break
                 turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
                 window["-paso"].update(disabled=False)

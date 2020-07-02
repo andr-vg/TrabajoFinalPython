@@ -4,18 +4,19 @@ import os
 import sys
 import json
 import ScrabbleAR
+from pathlib import Path
 # ----------------------------------------------------------------------
 #Path making
-absolute_path = os.path.dirname(os.path.abspath(__file__))
-
-logo = os.path.join(absolute_path, "Datos","media","Logo.png")
+absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
+# print("ABSOLUTE PATH: ",absolute_path)
+logo = os.path.join(absolute_path, "lib","media","Logo.png")
 # ----------------------------------------------------------------------
 def cargar_top_10():
     """
     Cargamos los puntajes del top 10
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"),"r")
+        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"r")
         list_aux = []
         top_10 = json.load(arch)
         top_10 = {k: v for k, v in sorted(top_10.items())}
@@ -142,7 +143,7 @@ def guardar_configuracion(config):
     """
     Guarda la configuracion que hizo el usuario en un .json
     """
-    arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "w")
+    arch = open(os.path.join(absolute_path, "lib","info","configUsuario.json"), "w")
     json.dump(config,arch,indent=2)
     arch.close()
 # ----------------------------------------------------------------------
@@ -151,7 +152,7 @@ def cargar_config_pred():
     Carga la configuracion predeterminada del juego
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r")
+        arch = open(os.path.join(absolute_path, "lib","info","configPred.json"), "r")
         config = dict()
         config = json.load(arch)
         arch.close()
@@ -166,7 +167,7 @@ def cargar_config_usr():
     en la pestaña de configuracion
     """
     try:
-        arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
+        arch = open(os.path.join(absolute_path, "lib","info","configUsuario.json"), "r")
         config = dict()
         config = json.load(arch)
         arch.close()
@@ -182,7 +183,7 @@ def main():
     """
     #Si hay configuraciones de usuario las cargo para mostrarlas en 
     #pestaña config
-    if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+    if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info")):
         config = cargar_config_usr()
     else:
         config = cargar_config_pred()
@@ -192,7 +193,7 @@ def main():
     window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
 # ----------------------------------------------------------------------
 #Chekeo exitencia de tablero guardado y muestro o no el boton continuar
-    if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "Datos","info"))):
+    if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "lib","info"))):
         window["-continuar-"].update(visible=True)
 # ----------------------------------------------------------------------
 
@@ -202,7 +203,7 @@ def main():
             break
         if (event == "-pred-"):
             try: 
-                os.remove(os.path.join(absolute_path, "Datos","info","configUsuario.json"))
+                os.remove(os.path.join(absolute_path, "lib","info","configUsuario.json"))
                 window["-pred-"].update(disabled=True)
                 config = cargar_config_pred()
                 #---------------------------------------------------------------------------------
@@ -235,7 +236,7 @@ def main():
 
         if (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
-            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
+            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info")):
                 config = cargar_config_usr()
             else:
                 config = cargar_config_pred()
