@@ -1,4 +1,4 @@
-![Logo](https://github.com/andr-vg/TrabajoFinalPython/blob/master/TrabajoFinalPython/scrabbleAR/Datos/media/Logo.png?raw=true)
+![Logo](https://github.com/andr-vg/TrabajoFinalPython/blob/master/TrabajoFinalPython/scrabbleAR/lib/media/Logo.png?raw=true)
 
 
 #### Alumnos: 
