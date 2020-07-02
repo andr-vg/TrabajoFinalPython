@@ -8,121 +8,15 @@ from functools import reduce
 import os
 import json
 import ScrabbleAR   #-----------------> Menu del juego
+import GameConfigManager as cm #---------> Manejo de configuraciones
 absolute_path = os.path.dirname(os.path.abspath(__file__)) 
 
-# ----------------------------------------------------------------------
-
-def guardar_info_partida(datos):
-    """
-    Guarda las puntuaciones, tiempo restante
-
-    """
-    arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "w")
-    json.dump(datos,arch,indent = 2)
-    arch.close()
-# ----------------------------------------------------------------------
-def guardar_partida(window,botones):
-    """
-    recibe el layout saca los botones que no son del tablero y los exporta a un csv
-
-    """
-    arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"), "w",newline='')
-    escritor = csv.writer(arch)
-    x = 0 #Pos de la lista
-    import pprint
-    for aux in range(15):
-         escritor.writerow(window[(x,i)].get_text()+botones[x,i] for i in range(15))        
-         x+=1
-    arch.close()
-# ----------------------------------------------------------------------
-def cargar_config_pred():
-    """
-    carga la configuracion predeterminada
-    devuelve un diccionario
-    """
-    try:
-        arch = open(os.path.join(absolute_path, "Datos","info","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
-        config = dict()
-        config = json.load(arch)
-        arch.close()
-    except (FileNotFoundError):
-        sg.popup("No se encontro el archivo de configuraciones predetermiadas \n el juego se cerrara")
-        exit()
-    return config
-# ----------------------------------------------------------------------
-def cargar_config_usr():
-    """
-    carga la configuracion del usuario
-    devuelve un diccionario
-    """
-    try:
-        arch = open(os.path.join(absolute_path, "Datos","info","configUsuario.json"), "r")
-        config = dict()
-        config = json.load(arch)
-        arch.close()
-    except (FileNotFoundError):
-        sg.popup("No se encontro la configuracion de usuario \n se usara la predeterminada")
-        config = cargar_config_pred()
-
-    return config
-# ----------------------------------------------------------------------
-def cargar_config_guardada():
-    """
-    carga la configuracion de un juego guardado
-    """
-    try:
-        arch = open(os.path.join(absolute_path, "Datos","info","datos_guardados.json"), "r")
-        config = dict()
-        config =  json.load(arch)
-        arch.close()
-        return config
-    except (FileNotFoundError):
-        sg.popup("No se encontraron datos de una partida guardada, inicie una nueva partida")
-        ScrabbleAR.main()
-        # Se me quedan 2 menus abiertos y no es la idea...
-        
-
-# ----------------------------------------------------------------------
-def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
-    """
-    Carga las configuraciones de usuario o predeterminadas en caso de que no existan las del usuario
-    """
-    config = dict()
-    if not(guardado):
-        if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "Datos","info")):
-            # print("HAY CONFIG")
-            config = cargar_config_usr()
-        else:
-            # print("NO HAY CONFIG")
-            config = cargar_config_pred()
-    else:
-        config = cargar_config_guardada()
-
-    grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L","R", "T"]
-    grupo_2 = ["C", "D", "G"]
-    grupo_3 = ["M","B","P"]
-    grupo_4 = ["F","H","V","Y"]
-    grupo_5 = ["J"]
-    grupo_6 = ["K","LL","Ñ","Q","RR","W","X"]
-    grupo_7 = ["Z"]
-    cont = 1
-    grupos = [grupo_1,grupo_2,grupo_3,grupo_4,grupo_5,grupo_6,grupo_7]
-    for grupo in grupos:
-        for letra in grupo:
-            bolsa[letra] = config["grupo_"+str(cont)+"_cant"]
-            puntos_por_letra[letra] = config["grupo_"+str(cont)]
-        cont += 1
-
-    tiempo =  config["tiempo"]
-    dificultad = config["dificultad"]
-    return bolsa,puntos_por_letra,tiempo,dificultad,config
-# ----------------------------------------------------------------------
 def hay_fichas(necesito, bolsa):
     """
     Devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
     """
     return necesito <= (sum(list(bolsa.values())))  
-# ----------------------------------------------------------------------
+
 def dar_fichas(dic, bolsa): 
     """
     se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
@@ -140,7 +34,7 @@ def dar_fichas(dic, bolsa):
             letras_juntas.pop(indice)
     if len(letras_juntas) == 0:
         sg.popup('Se acabaron las fichas')
-# ----------------------------------------------------------------------
+
 def devolver_fichas(dic,keys,bolsa):
     """
     Devuelve las fichas a la bolsa
@@ -149,7 +43,7 @@ def devolver_fichas(dic,keys,bolsa):
         bolsa[dic[nro]]+=1
         dic[nro]=""
     return dic
-# ----------------------------------------------------------------------
+
 def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
@@ -302,7 +196,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     layout.insert(0,fila_fichas_maquina)
 
     return layout, letras_jugador, letras_maquina, botones , long_tablero
-# ----------------------------------------------------------------------
+
 def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     """
     Sacamos las letras del tablero que no son validas y reiniciamos los parametros
@@ -320,13 +214,13 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     letras_usadas = dict()
     palabra_nueva = dict()
     return letras_usadas, palabra_nueva
-# ----------------------------------------------------------------------
+
 def pocas_fichas(fichas):
     if len("".join(fichas.values())) < len(fichas.keys()):
         return True
     else:
         return False
-# ----------------------------------------------------------------------
+
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
@@ -351,7 +245,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     else:
         letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux,dificultad)
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_juego
-# ----------------------------------------------------------------------
+
 def cambiar_turno(turnoj, turnopc, window):
     """
     Cambio de turno del Usuario --> PC / PC --> Usuario
@@ -366,41 +260,21 @@ def cambiar_turno(turnoj, turnopc, window):
     window["turnopc"].update("Turno del la maquina",visible= turnopc)
     window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
-# ----------------------------------------------------------------------
-def cargar_puntuaciones():
-    """
-    Cargamos las puntuaciones de la partida en un archivo .json
-    """
-    try:
-        arch = open(os.path.join(absolute_path, "Datos","info","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
-        top_10 = json.load(arch)
-    except (FileNotFoundError):
-        sg.popup("No se encontraron puntuaciones guardadas")
-        top_10 = {}
-        return top_10
-    return top_10
-# ----------------------------------------------------------------------
-def guardar_puntuaciones(datos):
-    """
-    Guardamos las puntuaciones de la partida
-    """
-    arch= open(os.path.join(absolute_path, "Datos","info","top_10.json"), "w")
-    json.dump(datos,arch,indent= 2)
-# ----------------------------------------------------------------------
+
 def main(guardado):
     """
     Desarrollo del juego y tablero principal
     """
     import random
-
+    #-----------------------------------------------------------
+        #Configuracion de bolsa puntos y
+        #Imagen de numeros
+    #-----------------------------------------------------------
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
     puntos_por_letra = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
 
-# ----------------------------------------------------------------------
-#Imagenes con los puntajes de cada letra
-# ----------------------------------------------------------------------
     img_nros = {1: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'uno.png'),
                 2: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'dos.png'),
                 3: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'tres.png'),
@@ -412,15 +286,12 @@ def main(guardado):
                 9: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'nueve.png'),
                 10: os.path.join(absolute_path, 'Datos', 'media', 'nros_png', 'diez.png')}
 
-    # Config del tablero:
-    bolsa , puntos_por_letra, tiempo ,dificultad, config = cargar_configuraciones(bolsa,puntos_por_letra,guardado)
-
-# ----------------------------------------------------------------------
-    #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
-    #Abro el tablero correspondiente a la dificultad seleccionada
-    #Abre para windows y linux
-# ----------------------------------------------------------------------
-
+    bolsa , puntos_por_letra, tiempo ,dificultad, config = cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
+    # ----------------------------------------------------------------------
+        #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
+        #Abro el tablero correspondiente a la dificultad seleccionada
+        #Abre para windows y linux
+    # ----------------------------------------------------------------------
     if (guardado): #Si hay partida guardada carga el tablero guardado
         arch = open(os.path.join(absolute_path, "Datos","info","guardado.csv"),newline = '')
     else:
@@ -434,17 +305,14 @@ def main(guardado):
         except (FileNotFoundError):
             sg.popup("No se ha encontrado el tablero")
     csvreader = csv.reader(arch)
-
-# ----------------------------------------------------------------------
-# Opciones de dificultad --> lista de tags
-# ----------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------
+        # Opciones de dificultad --> lista de tags
+    # ----------------------------------------------------------------------
     dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
                          'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
                           "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]
                         }
-
     if dificultad == "dificil":
         tipo_palabra = random.choice(list(dificultad_random.keys()))
         tipo = dificultad_random[tipo_palabra]
@@ -454,48 +322,35 @@ def main(guardado):
     else:
         tipo_palabra = ""
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
-
-# ----------------------------------------------------------------------
-#Instanciacion de objetos y creacion del layout
-
+    #Instanciacion de objetos y creacion del layout
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
-
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
-# ----------------------------------------------------------------------
-# Manejo de puntajes, si hay partida guardada setea los puntos
-#Sino es 0
-# ----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
+        # Manejo de puntajes, si hay partida guardada setea los puntos
+        #Sino es 0
+    # ----------------------------------------------------------------------
     if (guardado):
-
             pj.puntos = config["puntos_j"]
             pc.puntos = config["puntos_pc"]
-# ----------------------------------------------------------------------
-#Configuracion de ventana y turnos
-# ----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
+        #Configuracion de ventana y turnos
+    # ----------------------------------------------------------------------
     window = sg.Window("Ventana de juego", layout)
-
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
-
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
-
     puntos_jugador = dict()
-    puntos_jugador = cargar_puntuaciones()
-
+    puntos_jugador = cm.cargar_puntuaciones()
     if (guardado):
         primer_turno = False
     else:
         primer_turno = True
-
     cambios_de_fichas = 0
-
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero
-
     fin_fichas = False
-
     fin_juego = False
     #Configuracion del tiempo
     cont_tiempo_min_config = tiempo  
@@ -505,12 +360,9 @@ def main(guardado):
         cont_tiempo_min -= 1
     else:
         cont_tiempo_seg = 0
-
-    #Cierro el archivo del tablero
     arch.close()
     window.finalize()
     # se decide de forma aleatoria quien comienza la partida
-    #turno = random.randint(0,1) # comentado por ahora
     turno = random.randint(0,1)
     if turno == 1: # empieza el jugador
         turno_jugador = True
@@ -518,41 +370,32 @@ def main(guardado):
     else:  # empieza la compu
         turno_jugador = False
         turno_pc = True
-# ----------------------------------------------------------------------
-#Loop de ventana
-    
+    # ----------------------------------------------------------------------
+        #Loop de ventana
+    # ----------------------------------------------------------------------
     while True: 
-        #------------------------------------------------------
-        #Tiempo
-        #------------------------------------------------------
         event, values = window.read(timeout=1000)
         if (cont_tiempo_seg == 0):
             cont_tiempo_seg = 59
             cont_tiempo_min -= 1
         else:
             cont_tiempo_seg -= 1
-
         if (cont_tiempo_seg < 10):
             tiempo_seg_final = "0" + str(cont_tiempo_seg)
         else:
             tiempo_seg_final = cont_tiempo_seg
-
         tiempo_str = "{}:{}".format(cont_tiempo_min,tiempo_seg_final)
-
-
         window["tiempo"].update(tiempo_str)
-
         if (cont_tiempo_min == 0) and (cont_tiempo_seg == 0):
             sg.popup("Se termino el tiempo")
             fin_juego = True
         #------------------------------------------------------
-        # mientras sea el turno del jugador, podrá realizar 
-        # todos los eventos del tablero
+            # mientras sea el turno del jugador, podrá realizar 
+            # todos los eventos del tablero
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
                 break
-
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
@@ -560,19 +403,14 @@ def main(guardado):
                 letras_usadas[box] = letras[box]
                 window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
-                    window[val].update(disabled=True)  # desactivo los botones de las fichas
-                #-------------------------------------
-                
+                    window[val].update(disabled=True)  # desactivo los botones de las fichas            
                 if (cont_tiempo_seg == 0):
                     cont_tiempo_seg = 59
                     cont_tiempo_min -= 1
                 else:
                     cont_tiempo_seg -= 1
-
-                #------------------------------------
                 event, values = window.read()
                 window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
-
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
@@ -586,16 +424,13 @@ def main(guardado):
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B
-
             # boton de deshacer las palabras puestas en el tablero
             elif event == "-d":
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad)
-
             # boton de pasar el turno a la pc
             elif event == "-paso":
                 turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad)
-
             #boton cambio de fichas
             elif (event == "-cf") and (cambios_de_fichas < 3):
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad) #si ya hay fichas jugadas en el tablero volveran al atril
@@ -635,35 +470,32 @@ def main(guardado):
                 window["-paso"].update(disabled=False)
                 window["-p"].update(disabled=False)
                 window["-t"].update(disabled=False)
-
             # boton de guardar partida
             elif event == "-p":
                 boton = pc.get_botones()
-                guardar_partida(window,boton)
+                cm.guardar_partida(window,boton)
                 datos = dict()
                 datos = config
                 datos["tiempo"] = tiempo_str
                 datos["puntos_j"] = pj.puntos
                 datos["puntos_pc"] = pc.puntos
                 pc.guardar_estado()
-                guardar_info_partida(datos)
+                cm.guardar_info_partida(datos)
                 break
-
             # boton de terminar partida
             elif event == "-t" or fin_fichas or fin_juego:  
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
                 elif (pj.puntos == pc.puntos):
-                    sg.popup("EMPATE! ☻")
+                    sg.popup("EMPATE!")
                 else:
                     sg.popup_no_frame("Termino el juego \n Perdiste :( ")
                 from datetime import datetime
                 fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                 puntos_jugador[fecha] = pj.puntos
-                guardar_puntuaciones(puntos_jugador)
+                cm.guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
                 break
-
             # boton de confirmar palabra
             elif event == "-c":
                 window["-c"].update(disabled=True)
@@ -672,13 +504,8 @@ def main(guardado):
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
-
-# ----------------------------------------------------------------------
-# turno de la pc: 
-# ----------------------------------------------------------------------
-
         if turno_pc:
-            time.sleep(2)   #maquina pensando la jugarreta
+            # time.sleep(2)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
             fichas_pc = pc.getFichas()
             dar_fichas(fichas_pc, bolsa)
@@ -686,5 +513,5 @@ def main(guardado):
             fin_fichas = pocas_fichas(pc.getFichas())
             # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
-# ----------------------------------------------------------------------
+
     window.close()
