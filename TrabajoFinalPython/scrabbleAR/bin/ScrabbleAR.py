@@ -10,6 +10,9 @@ from pathlib import Path
 absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
 # print("ABSOLUTE PATH: ",absolute_path)
 logo = os.path.join(absolute_path, "lib","media","Logo.png")
+jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
+salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
+
 # ----------------------------------------------------------------------
 def cargar_top_10():
     """
@@ -45,9 +48,9 @@ def crear_layout(config):
     top_10 = cargar_top_10()
 
     tab1_layout = [
-        [sg.Button("Nueva partida", key="-jugar-",size=(50,4),pad=(150,2))],
-        [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4), pad=(150,2))],
-        [sg.Button("Salir", key="-salir-",size=(50,4), pad= (150,3))]
+        [sg.Button("", key="-jugar-", size=(50,4), pad=(150,2), image_filename=jugar, button_color=("#E3F2FD","#E3F2FD")) ],
+        # [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4), pad=(150,2))],
+        [sg.Button("", key="-salir-",size=(50,4), pad= (150,3), image_filename=salir, button_color=("#E3F2FD","#E3F2FD"))]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default= True if config["dificultad"] == "facil" else False),
@@ -89,7 +92,7 @@ def crear_layout(config):
         [sg.Button("Guardar", key="-guardar-"),sg.Button("Config predeterminada",key="-pred-")]
                    ]
     frame_top_10 = [
-         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(100, 10))]
+         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, pad=(140,None),size=(30, 10), background_color="#E3F2FD")]
     ]
     tab3_layout = [
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
@@ -108,25 +111,34 @@ def crear_layout(config):
 • Dificil: Un tipo aleatorio
         """)]
     ]
-    col_ayuda_0 = [
-        [sg.Frame("Dificultades",layout=frame_ayuda_1)]
-    ]
-    frame_ayuda_1 = [
-        [sg.Text(
-            """En el juego hay distintos tipos de fichas: 
-            • Fichas de premio: que duplican o triplican el puntaje de la palabra
-            • Fichas de descuento: Que quitan 1, 2 o 3 puntos dependiendo
 
-Cada una de estas fichas esta indicada con un color en cada nivel de dificultad 
+    frame_ayuda_2 = [
+        [sg.Text(
+            """En el juego hay distintos tipos de casilleros: 
+            • Casilleros de premio: que duplican o triplican el puntaje de la palabra
+            • Casilleros de descuento: Que quitan 1, 2 o 3 puntos dependiendo
+
+Cada uno de estos casilleros esta indicado con un color en cada nivel de dificultad 
             """
         )]
     ]
+    frame_ayuda_3 = [
+        [sg.Text("""Si no podes formar ninguna palabra en tu turno
+podes darle al boton "Cambiar Fichas"
+para seleccionar las fichas que quieres cambiar y dandole de nuevo al boton
+se cambian
+• Solo hay 3 cambios de fichas por juego y cuando cambias perdes el turno
+"""
+        )]]
 
-    tab4_layout = [
-    [sg.Frame("Configuraciones",layout= frame_ayuda_0),sg.Column(col_ayuda_0)],
-    [sg.Frame("Fichas especiales",layout= frame_ayuda_1)]
-    ]
 
+
+    tab_lista = [
+                [sg.Tab("Info",layout=frame_ayuda_0)],
+                 [sg.Tab("Dificultad",layout=frame_ayuda_1)],
+                 [sg.Tab("Casilleros especiales",layout=frame_ayuda_2)],
+                 [sg.Tab("Cambio de fichas",layout=frame_ayuda_3)]]
+    tab4_layout = [[sg.TabGroup(layout=tab_lista)]]
     tab_grupo = [
         [sg.Tab("Juego", tab1_layout, key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
          sg.Tab("Como jugar", tab4_layout, key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0),
@@ -135,7 +147,7 @@ Cada una de estas fichas esta indicada con un color en cada nivel de dificultad
          sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
     ]
 
-    layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(200,None))],
+    layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(100,None))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 # ----------------------------------------------------------------------
@@ -187,18 +199,14 @@ def main():
         config = cargar_config_usr()
     else:
         config = cargar_config_pred()
-# ----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
     sg.theme("lightblue")
     layout = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
-# ----------------------------------------------------------------------
-#Chekeo exitencia de tablero guardado y muestro o no el boton continuar
-    if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "lib","info"))):
-        window["-continuar-"].update(visible=True)
-# ----------------------------------------------------------------------
 
     while True:
         event, values = window.read()
+        # print("Evento",event,"valor",values)
         if (event == None or event == "-salir-"):
             break
         if (event == "-pred-"):
@@ -229,10 +237,19 @@ def main():
                 sg.popup("Configuraciones reiniciadas")
 
         if (event == "-jugar-"):
-            Juego.main(False)
-
-        if (event == "-continuar-"):
-            Juego.main(True)
+            if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "lib","info"))):
+                popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "))            
+                if (popup == "   NO   "):
+                    window.close()
+                    Juego.main(False)
+                elif (popup == None):
+                    pass
+                else:
+                    window.close()
+                    Juego.main(True)
+        else:
+            window.close()
+            Juego.main(False)           
 
         if (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
@@ -259,6 +276,6 @@ def main():
             sg.popup("Se han guardado las configuraciones")
 
     window.close()
-
+    
 if __name__ == "__main__":
     main()

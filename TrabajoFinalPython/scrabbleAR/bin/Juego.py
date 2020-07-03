@@ -522,3 +522,4 @@ def main(guardado):
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
+    ScrabbleAR.main()
