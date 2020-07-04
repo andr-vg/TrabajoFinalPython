@@ -8,7 +8,7 @@ import pathlib
 # ----------------------------------------------------------------------
 #Path making
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
-print("ABSOLUTE PATH: ",absolute_path)
+# print("ABSOLUTE PATH: ",absolute_path)
 logo = os.path.join(absolute_path, "lib","media","Logo.png")
 jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
@@ -206,7 +206,7 @@ def main():
 
     while True:
         event, values = window.read()
-        # print("Evento",event,"valor",values)
+        print("Evento",event)
         if (event == None or event == "-salir-"):
             break
         if (event == "-pred-"):
@@ -247,9 +247,7 @@ def main():
                 else:
                     window.close()
                     Juego.main(True)
-        else:
-            window.close()
-            Juego.main(False)           
+        
 
         if (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
