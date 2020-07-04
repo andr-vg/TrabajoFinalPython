@@ -10,7 +10,7 @@ import json
 import ScrabbleAR   #-----------------> Menu del juego
 import GameConfigManager as cm #---------> Manejo de configuraciones
 from pathlib import Path
-absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
+absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 def hay_fichas(necesito, bolsa):
     """

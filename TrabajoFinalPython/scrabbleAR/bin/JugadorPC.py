@@ -4,7 +4,7 @@ import json
 from Jugadores import Jugadores
 import os
 from pathlib import Path
-absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
+absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 # ----------------------------------------------------------------------
 #Clase Jugador PC

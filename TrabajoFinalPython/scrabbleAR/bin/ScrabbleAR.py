@@ -4,11 +4,11 @@ import os
 import sys
 import json
 import ScrabbleAR
-from pathlib import Path
+import pathlib
 # ----------------------------------------------------------------------
 #Path making
-absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
-# print("ABSOLUTE PATH: ",absolute_path)
+absolute_path = os.path.join(os.path.dirname(__file__), '..')
+print("ABSOLUTE PATH: ",absolute_path)
 logo = os.path.join(absolute_path, "lib","media","Logo.png")
 jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")

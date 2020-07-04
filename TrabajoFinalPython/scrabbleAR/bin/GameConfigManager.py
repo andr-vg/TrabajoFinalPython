@@ -10,7 +10,7 @@ import PySimpleGUI as sg
 import csv
 from pathlib import Path
 
-absolute_path = Path(os.path.join("TrabajoFinalPython","ScrabbleAR"))
+absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 def guardar_info_partida(datos):
     """
