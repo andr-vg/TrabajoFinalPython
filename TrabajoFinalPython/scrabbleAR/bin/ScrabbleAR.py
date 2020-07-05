@@ -21,25 +21,18 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
     try:
         arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"r")
         list_aux = []
+        list_final = []
         top_10 = json.load(arch)
-        top_10 = {k: v for k, v in sorted(top_10.items())}
-        for key in top_10.keys():
-            key_aux = key.split("-")
-            str_aux = "Fecha: " + key_aux[0] +" Puntos: "+ str(top_10[key])
-            list_aux.append(str_aux)
-        list_aux = list_aux[:10] #-----> Organizo por dia y muestro solamente 10
-        #---------------------------------------------------
-        #Saco los datos sobrantes
-        #---------------------------------------------------
-        lista_keys_borrar = list(top_10.keys())
-        lista_keys_borrar = lista_keys_borrar[10:len(top_10.keys())]
-        for key in lista_keys_borrar:
-            top_10.pop(key)
-
+        list_aux = sorted(top_10["puntos"],reverse=True)
+        list_aux = list_aux[:10]
+        for punt in list_aux:
+            dato = punt.split()
+            cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[4]+" |Nivel: "+dato[5]
+            list_final.append(cadena)
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio")
-        list_aux = []
-    return list_aux
+        list_final = []
+    return list_final
 # ----------------------------------------------------------------------
 def crear_layout(config):
     """
@@ -187,7 +180,7 @@ def cargar_config_pred():
         config = dict()
         config = json.load(arch)
         arch.close()
-    except (ZeroDivisionError):
+    except (FileNotFoundError):
         sg.popup("Algo salio mal! no hay config predeterminada :(")
         exit()
     return config

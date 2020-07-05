@@ -347,6 +347,7 @@ def main(guardado):
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
     puntos_jugador = dict()
     puntos_jugador = cm.cargar_puntuaciones()
+    lista_puntajes = puntos_jugador["puntos"]
     if (guardado):
         primer_turno = False
     else:
@@ -503,7 +504,11 @@ def main(guardado):
                     sg.popup_no_frame("Termino el juego \n Perdiste :( ")
                 from datetime import datetime
                 fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
-                puntos_jugador[fecha] = pj.puntos
+                # puntos_jugador[fecha] = pj.puntos
+                nombre = sg.popup_get_text("Ingrese su nombre")
+                datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
+                lista_puntajes.append(datos)
+                puntos_jugador["puntos"] = lista_puntajes
                 cm.guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
                 break
