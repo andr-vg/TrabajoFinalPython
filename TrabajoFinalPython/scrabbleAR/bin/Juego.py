@@ -81,12 +81,12 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
 
     # casilleros con letras de una partida anterior:
 
-    ficha_pc = lambda name,key: sg.Button(name, border_width = 3, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
+    ficha_pc = lambda name,key: sg.Button(name, disabled=True, border_width = 3, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
 
     # blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
     #                                      pad=(0, 0), button_color=('black', 'white'))
 
-    ficha_jugador = lambda name, key: sg.Button(name, border_width=3, size=(3, 1), key=key,
+    ficha_jugador = lambda name, key: sg.Button(name, disabled=True,border_width=3, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', '#BA7FB0'))
     
     sg.theme("lightblue")
@@ -222,7 +222,7 @@ def pocas_fichas(fichas):
     else:
         return False
 
-def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad):
+def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad, pc):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
     actualiza el tablero y los parametros
@@ -230,7 +230,9 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     turno_jugador = True
     turno_pc = False
     fin_juego = False
+    posiciones_ocupadas_tablero = pc.get_pos_tablero()
     letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
+    pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
     if actualizar_juego:
         window['-d'].update(disabled=True)
         letras = pj.getFichas()
@@ -381,6 +383,7 @@ def main(guardado):
     # ----------------------------------------------------------------------
     while True: 
         event, values = window.read(timeout=1000)
+        # print("POS: ",event)
         if (cont_tiempo_seg == 0):
             cont_tiempo_seg = 59
             cont_tiempo_min -= 1 if cont_tiempo_min -1 > 0 else 0
@@ -488,6 +491,7 @@ def main(guardado):
                 datos["puntos_pc"] = pc.puntos
                 pc.guardar_estado()
                 cm.guardar_info_partida(datos)
+                sg.popup_no_border("Partida guardada",keep_on_top=True,auto_close_duration=2)
                 break
             # boton de terminar partida
             elif event == "-t" or fin_fichas or fin_juego:  
@@ -507,13 +511,15 @@ def main(guardado):
             elif event == "-c":
                 window["-c"].update(disabled=True)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad)
+                posiciones_ocupadas_tablero = pc.get_pos_tablero()
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad, pc)
+                pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
         if turno_pc:
             # time.sleep(2)   #maquina pensando la jugarreta
-            primer_turno = pc.jugar(window,posiciones_ocupadas_tablero,primer_turno)
+            primer_turno = pc.jugar(window,primer_turno)
             fichas_pc = pc.getFichas()
             dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)

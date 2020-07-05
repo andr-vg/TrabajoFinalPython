@@ -14,8 +14,7 @@ class PC(Jugadores):
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         self._palabras_usadas = []
-        self._pos_usadas_tablero = []
-        self._partida_guardada = guardada
+        self._posiciones_ocupadas_tablero = []
         if (guardada):
             self._cargar_estado()
 
@@ -68,7 +67,7 @@ class PC(Jugadores):
         Guarda el estado interno del jugador PC
         """
         arch = open(os.path.join(absolute_path, "lib","info","datos_pc.json"), "w")
-        datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._pos_usadas_tablero}
+        datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._posiciones_ocupadas_tablero}
         json.dump(datos,arch,indent = 4)
         arch.close()
 # ----------------------------------------------------------------------
@@ -82,7 +81,7 @@ class PC(Jugadores):
         self._fichas = data["fichas"]
         self._botones = self._convertirDic(data["botones"])
         self._palabras_usadas = data["palabras_usadas"]
-        self._pos_usadas_tablero = data["pos_usadas"]
+        self._posiciones_ocupadas_tablero = data["pos_usadas"]
 
 # ----------------------------------------------------------------------
     def _obtenerPalabra(self, long_max):
@@ -124,25 +123,31 @@ class PC(Jugadores):
                 self._palabras_usadas.append(palabra)
         return palabra.upper() if valido else ""
 # ----------------------------------------------------------------------
-    def _mapeoHorizontal(self, i, j, posiciones_ocupadas_tablero):
+    def _mapeoHorizontal(self, i, j):
         """
         Mapeamos el tablero fila por fila y agregamos las posiciones libres encontradas
         """
         cant = 0
         posiciones = []
-        while not (i, j) in posiciones_ocupadas_tablero and j < self.long_tablero:
+        while not (i, j) in self._posiciones_ocupadas_tablero and j < self.long_tablero:
             cant += 1
             posiciones.append((i, j))
             j += 1
         return cant, posiciones
 # ----------------------------------------------------------------------
-    def _mapeoVertical(self, i, j, posiciones_ocupadas_tablero):
+    def get_pos_tablero(self):
+        return self._posiciones_ocupadas_tablero
+# ----------------------------------------------------------------------
+    def actualizar_pos_tablero(self,list_pos):
+        self.posiciones_ocupadas_tablero = list_pos
+# ----------------------------------------------------------------------
+    def _mapeoVertical(self, i, j):
         """
         Mapeamos el tablero columna por columna y agregamos las posiciones libres encontradas
         """
         cant = 0
         posiciones = []
-        while not (j, i) in posiciones_ocupadas_tablero and j < self.long_tablero:
+        while not (j, i) in self._posiciones_ocupadas_tablero and j < self.long_tablero:
             cant += 1
             posiciones.append((j, i))
             j += 1
@@ -158,7 +163,7 @@ class PC(Jugadores):
             else:
                 long_y_posiciones[cant].append(posiciones)
 # ----------------------------------------------------------------------
-    def _mapear_tablero(self, posiciones_ocupadas_tablero):
+    def _mapear_tablero(self):
         """ 
         Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
         en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
@@ -168,9 +173,9 @@ class PC(Jugadores):
         for i in range(self.long_tablero):
             j = 0
             while j < self.long_tablero:
-                cant, posiciones = self._mapeoHorizontal(i, j, posiciones_ocupadas_tablero)  # mapeo horizontalmente
+                cant, posiciones = self._mapeoHorizontal(i, j)  # mapeo horizontalmente
                 self._agrego_posiciones(cant, posiciones, long_y_posiciones)
-                cant, posiciones = self._mapeoVertical(j, i, posiciones_ocupadas_tablero)  # mapeo verticalmente
+                cant, posiciones = self._mapeoVertical(j, i)  # mapeo verticalmente
                 self._agrego_posiciones(cant, posiciones, long_y_posiciones)
                 j += 1
         return long_y_posiciones
@@ -189,7 +194,7 @@ class PC(Jugadores):
         else:
             return long_max_tablero
 # ----------------------------------------------------------------------
-    def jugar(self, window, posiciones_ocupadas_tablero, primer_turno):
+    def jugar(self, window, primer_turno):
         """
         Jugada del usuario: se forma la palabra más larga posible según la dificultad.
         Se mapea el tablero para obtener las posiciones libres donde puede ubicarse la palabra obtenida.
@@ -202,8 +207,7 @@ class PC(Jugadores):
                             premio (de ser posible) --> falta implementar
         """
 
-        long_y_posiciones = self._mapear_tablero(
-            posiciones_ocupadas_tablero)  # obtenemos las posiciones libres en el tablero
+        long_y_posiciones = self._mapear_tablero()  # obtenemos las posiciones libres en el tablero
         long_max_tablero = max(long_y_posiciones.keys())  # calculamos la long maxima entre todas esas posiciones libres
         long_max = self._calcular_long_maxima(long_max_tablero, len(
             self.fichas.values()))  # nos quedamos con la max entre casillas y cant fichas
@@ -216,7 +220,7 @@ class PC(Jugadores):
                 fin = inicio + len(mejor_palabra)
                 palabra_nueva = dict()
                 for i in range(inicio, fin):  # agregamos las posiciones a la lista de posiciones ocupadas
-                    posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
+                    self._posiciones_ocupadas_tablero.append(long_y_posiciones[long_max_tablero][posiciones_random][i])
                     # print(long_y_posiciones[long_max_tablero][posiciones_random][i])
                     pos_aux =long_y_posiciones[long_max_tablero][posiciones_random][i]
                     # print("MAX: ",long_max_tablero,"Pos random: ",posiciones_random,"Pos de palabra: ",pos_aux)
@@ -234,14 +238,14 @@ class PC(Jugadores):
                 # print(mejor_palabra[indice_letra_centro])
                 for i in range(centro - indice_letra_centro, centro):  # antes del centro
                     pos = (centro, i) if orientacion == 0 else (i, centro)
-                    posiciones_ocupadas_tablero.append(pos)
+                    self._posiciones_ocupadas_tablero.append(pos)
                     # print(pos)
                     # print(mejor_palabra[indice_letra_centro - (centro - i)])
                     window[pos].update(mejor_palabra[indice_letra_centro - (centro - i)], disabled=True,
                                        button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
                     self._botones[pos] = "" + "*"
                     palabra_nueva[pos] = mejor_palabra[indice_letra_centro - (centro - i)]
-                posiciones_ocupadas_tablero.append((centro, centro))  # agregamos el centro
+                self._posiciones_ocupadas_tablero.append((centro, centro))  # agregamos el centro
                 window[(centro, centro)].update(mejor_palabra[indice_letra_centro], disabled=True,
                                                 button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
                 self._botones[(centro,centro)] = "" + "*"
@@ -252,7 +256,7 @@ class PC(Jugadores):
                     pos = (centro, i) if orientacion == 0 else (i, centro)
                     # print(pos)
                     # print(mejor_palabra[indice_letra_centro - (centro - i)])
-                    posiciones_ocupadas_tablero.append(pos)
+                    self._posiciones_ocupadas_tablero.append(pos)
                     window[pos].update(mejor_palabra[indice_letra_centro + i - centro], disabled=True,
                                        button_color = ("black", "#A4E6FD"))  # agregamos las letras al tablero
                     self._botones[pos] = "" + "*"
@@ -264,11 +268,10 @@ class PC(Jugadores):
             ## actualizamos las fichas de la pc:        
             self.reinicioFichas(mejor_palabra)
             ## se actualizan los puntos         
-            window["p_pc"].update(str(self.getPuntos()))
-            self._pos_usadas_tablero = posiciones_ocupadas_tablero
+            window["p_pc"].update(str(self.getPuntos()))           
 
         else:
-            sg.popup("La PC le ha pasado el turno")
+            sg.popup_no_border("La PC le ha pasado el turno",keep_on_top=True)
             letras = ""
             self.reinicioFichas(letras.join(self.fichas.values()))
         return primer_turno
