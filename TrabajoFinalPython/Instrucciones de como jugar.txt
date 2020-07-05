@@ -1,0 +1,37 @@
+ScrebbleAR es un juego de estrategia en el cual se juega maquina vs jugador por turnos,
+con el objetivo de formar palabras colocando letras en los casilleros de un tablero
+para sumar puntos.
+Si se consiguen mas puntos que la maquina al final de la partida se gana, de
+lo contrario se pierde el juego.
+
+En el juego hay distintos tipos de casilleros:
+ • Casilleros de premio: que duplican o triplican el puntaje de la palabra
+ • Casilleros de descuento: Que quitan 1, 2 o 3 puntos dependiendo
+
+Cada uno de estos casilleros esta indicado con un color en cada nivel de dificultad
+
+opcion de cambiar fichas:
+Si no podes formar ninguna palabra en tu turno podes darle al boton "Cambiar Fichas"
+para seleccionar las fichas que quieres cambiar y dandole de nuevo al boton
+se cambian
+Solo hay 3 cambios de fichas por juego y cuando cambias perdes el turno
+
+------------------------------------------------
+
+En la configuracion de nivel del juego se puede elegir:
+Dificultad: segun la dificultad que se elija, se podran formar distintos tipos de palabras
+	• Facil: se permiten formar Sustantivos, adjetivos y verbos
+	• Medio: se permiten formar Adjetivos y verbos
+	• Dificil: se permiten formar palabras de tipo aleatorio
+
+Tiempo: Indica cuanto dura la partida de principio a fin, teniendo en cuenta que la maquina
+tarda un segundo en hacer su jugada.
+
+Puntos por letra: cuantos puntos vale cada letra, al colocar una palabra valida los puntos
+de las letras utilizadas se sumaran al puntaje del jugador.
+
+Cantidad de letras: esta opcion permite elegir con cuantas letras se quiere jugar.
+una partida con pocas letras sera una partida mas corta y mientras menos vocales haya
+sera mas dificil armar palabras
+
+-------------------------------------------------
