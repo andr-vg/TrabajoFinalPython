@@ -48,9 +48,9 @@ def crear_layout(config):
     top_10 = cargar_top_10()
 
     tab1_layout = [
-        [sg.Button("", key="-jugar-", size=(50,4), pad=(300,5), image_filename=jugar, button_color=("#E3F2FD","#E3F2FD")) ],
+        [sg.Button("", key="-jugar-", image_filename=jugar, button_color=("#E3F2FD","#E3F2FD")) ],
         # [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4), pad=(150,2))],
-        [sg.Button("", key="-salir-",size=(50,4), pad= (300,5), image_filename=salir, button_color=("#E3F2FD","#E3F2FD"))]
+        [sg.Button("", key="-salir-", image_filename=salir, button_color=("#E3F2FD","#E3F2FD"))]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default= True if config["dificultad"] == "facil" else False),
@@ -86,23 +86,24 @@ def crear_layout(config):
     ]
 
     ayuda_config= [
-                [sg.Text("""Dificultad: segun la dificultad que se elija, se podran formar distintos tipos de palabras
+[sg.Text("""Dificultad: segun la dificultad que se elija, se podran formar
+distintos tipos de palabras y se jugara con distintos tableros.
 	• Facil: se permiten formar Sustantivos, adjetivos y verbos
 	• Medio: se permiten formar Adjetivos y verbos
 	• Dificil: se permiten formar palabras de tipo aleatorio
 
-Tiempo: Indica cuanto dura la partida de principio a fin, teniendo en cuenta que la maquina
-tarda un segundo en hacer su jugada.
+Tiempo: Indica cuanto dura la partida de principio a fin, teniendo en cuenta
+que la maquina tarda un segundo en hacer su jugada.
 
-Puntos por letra: cuantos puntos vale cada letra, al colocar una palabra valida los puntos
-de las letras utilizadas se sumaran al puntaje del jugador.
+Puntos por letra: cuantos puntos vale cada letra, al colocar una palabra valida
+ los puntos de las letras utilizadas se sumaran al puntaje del jugador.
 
 Cantidad de letras: esta opcion permite elegir con cuantas letras se quiere jugar.
-una partida con pocas letras sera una partida mas corta y mientras menos vocales haya
-sera mas dificil armar palabras""")]
+una partida con pocas letras sera una partida mas corta y mientras menos
+vocales haya sera mas dificil armar palabras""")]
     ]
     tab2_layout0 = [
-        [sg.Frame("Dificultad",layout=frame_0),sg.Column(frame_2)],
+        [sg.Column(frame_2),sg.Frame("Dificultad",layout=frame_0)],
         [sg.Frame("Puntos por letra",layout=frame_1),sg.Column(frame_col)],
         [sg.Button("Guardar", key="-guardar-"),sg.Button("Config predeterminada",key="-pred-")]
                    ]
@@ -110,7 +111,7 @@ sera mas dificil armar palabras""")]
 
     ]
     frame_top_10 = [
-         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, pad=(140,None),size=(30, 10), background_color="#E3F2FD")]
+         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(100, 10), background_color="#E3F2FD")]
     ]
     tab3_layout = [
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
@@ -158,14 +159,14 @@ se cambian
                  [sg.Tab("Cambio de fichas",layout=frame_ayuda_3)]]
     tab4_layout = [[sg.TabGroup(layout=tab_lista)]]
     tab_grupo = [
-        [sg.Tab("Juego", tab1_layout, key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
-         sg.Tab("Como jugar", tab4_layout, key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0),
-         sg.Tab("Config nivel", tab2_layout, key="-tab2-", background_color="#E3F2FD", title_color="#E3F2FD",
+        [sg.Tab("Juego", tab1_layout, element_justification='c' , key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
+         sg.Tab("Como jugar", tab4_layout, element_justification='c' , key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0),
+         sg.Tab("Config nivel", tab2_layout, element_justification='c' , key="-tab2-", background_color="#E3F2FD", title_color="#E3F2FD",
                 border_width=0),
-         sg.Tab("Top 10", tab3_layout, key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
+         sg.Tab("Top 10", tab3_layout, element_justification='c' , key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
     ]
 
-    layout = [[sg.Image(logo, background_color=("#E3F2FD"),pad=(300,None))],
+    layout = [[sg.Image(logo, background_color=("#E3F2FD"))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 # ----------------------------------------------------------------------
@@ -220,7 +221,7 @@ def main():
     # ----------------------------------------------------------------------
     sg.theme("lightblue")
     layout = crear_layout(config)
-    window = sg.Window("ScrabbleAR", layout,resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
+    window = sg.Window("ScrabbleAR", layout,element_justification='c',resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
 
     while True:
         event, values = window.read()
