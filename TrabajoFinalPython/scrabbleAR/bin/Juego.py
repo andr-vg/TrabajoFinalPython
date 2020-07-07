@@ -185,7 +185,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
 
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
                              button_color=('white', '#CE5A57'),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
-    frame_fichas_maquina = [[sg.Button(button_text="", key=(list(letras_maquina.keys())[i]), size=(6, 3),border_width=0,
+    frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', '#CE5A57'),disabled=True) for i in range(fichas_por_jugador)]]
     fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
@@ -264,10 +264,20 @@ def cambiar_turno(turnoj, turnopc, window):
     window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
 
+def mostrar_fichas_compu(window, dic_fichas, img_nros, puntos_por_letra):
+    """
+    Visualiza las fichas de la compu
+    """
+    for clave, letra in dic_fichas.items():
+        if letra != '':
+            window[clave].update(letra, image_filename=img_nros[puntos_por_letra[letra]], 
+            disabled=False, image_size=(50, 50), image_subsample=21)
+
 def main(guardado):
     """
     Desarrollo del juego y tablero principal
     """
+    
     import random
     #-----------------------------------------------------------
         #Configuracion de bolsa puntos y
@@ -287,7 +297,8 @@ def main(guardado):
                 7: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'siete.png'),
                 8: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'ocho.png'),
                 9: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'nueve.png'),
-                10: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'diez.png')}
+                10: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'diez.png'),
+                11: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'vacio.png')}
 
     bolsa , puntos_por_letra, tiempo ,dificultad, config = cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
     # ----------------------------------------------------------------------
@@ -496,6 +507,9 @@ def main(guardado):
                 break
             # boton de terminar partida
             elif event == "-t" or fin_fichas or fin_juego:  
+                pj.restar_puntos_finales()
+                pc.restar_puntos_finales()
+                mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \n Ganaste!")
                 elif (pj.puntos == pc.puntos):
