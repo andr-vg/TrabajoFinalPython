@@ -70,7 +70,10 @@ class Jugadores:
 
     def restar_puntos_finales(self):
         for letra in self.fichas.values():
-            if letra != '':
-                self.puntaje -= self.puntos_por_letra[letra]
+            if (letra != ''):
+                if (self.puntaje != 0) and (self.puntaje - self.puntos_por_letra[letra] > 0):
+                    self.puntaje -= self.puntos_por_letra[letra]
+                else:
+                    self.puntaje = 0
 
     puntos = property(getPuntos, sumPuntos, doc="Setter y Getter")

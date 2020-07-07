@@ -14,6 +14,10 @@ jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
 
 # ----------------------------------------------------------------------
+def key_orden(cadena):
+    cadena = cadena.split()
+    aux = cadena[1]+" "+cadena[3]
+    return aux
 def cargar_top_10():    #esto podria ir en GameConfigManager?
     """
     Cargamos los puntajes del top 10
@@ -23,12 +27,20 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
         list_aux = []
         list_final = []
         top_10 = json.load(arch)
-        list_aux = sorted(top_10["puntos"],reverse=True)
-        list_aux = list_aux[:10]
+        # list_aux = sorted(top_10["puntos"],reverse=True)
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(list_aux)
+        list_aux = top_10["puntos"].copy()
+        list_aux = list_aux[-10:]
+        list_aux = sorted(list_aux,key=key_orden,reverse=True)
+        print("\n LISTA")
+        pp.pprint(list_aux)
         for punt in list_aux:
             dato = punt.split()
-            cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[4]+" |Nivel: "+dato[5]
-            list_final.append(cadena)
+            if (dato[4] != "0"):
+                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[4]+" |Nivel: "+dato[5]
+                list_final.append(cadena)
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio")
         list_final = []

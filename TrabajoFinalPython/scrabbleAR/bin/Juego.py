@@ -168,6 +168,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
 
     colum = [
         [sg.T("Tiempo: "),sg.Text('00:00', key='tiempo')],
+        [sg.T("Cambios de fichas"),sg.T("3",key="cfichas")],
        [sg.Text("Tus Puntos:"),sg.T("",key="p_j",size=(0,1))], 
        [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))]
@@ -363,7 +364,7 @@ def main(guardado):
         primer_turno = False
     else:
         primer_turno = True
-    cambios_de_fichas = 0
+    cambios_de_fichas = 3
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero
     fin_fichas = False
     fin_juego = False
@@ -454,7 +455,7 @@ def main(guardado):
                 turno_jugador, turno_pc= cambiar_turno(turno_jugador ,turno_pc, window)
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad)
             #boton cambio de fichas
-            elif (event == "-cf") and (cambios_de_fichas < 3):
+            elif (event == "-cf") and (cambios_de_fichas != 0):
                 letras_usadas, palabra_nueva = sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad) #si ya hay fichas jugadas en el tablero volveran al atril
                 letras_a_cambiar=[]
                 window["-c"].update(disabled=True)  #los desactivo para que no se toque nada que no sean las fichas a cambiar
@@ -482,8 +483,9 @@ def main(guardado):
                             pj.setFichas(letras)
                             for f in letras_a_cambiar:
                                 window[f].update(letras[f], image_size=(50, 50), image_subsample=21, image_filename=img_nros[puntos_por_letra[letras[f]]], disabled=False)
-                            cambios_de_fichas+=1
-                            if cambios_de_fichas == 3:
+                            cambios_de_fichas -= 1
+                            window["cfichas"].update(str(cambios_de_fichas))
+                            if cambios_de_fichas == 0:
                                 window["-cf"].update(disabled=True)
                                 window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
                             # print("Cambio de letras realizado.")
@@ -496,7 +498,6 @@ def main(guardado):
                     window["-paso"].update(disabled=False)
                     window["-p"].update(disabled=False)
                     window["-t"].update(disabled=False)
-                    window[None].update(disabled=False)
             # boton de guardar partida
             elif event == "-p":
                 boton = pc.get_botones()
