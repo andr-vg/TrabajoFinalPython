@@ -416,6 +416,7 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
+                sg.popup_no_frame('Salió de la partida')
                 break
             # botones del atril del jugador
             if event in letras.keys():
@@ -465,11 +466,13 @@ def main(guardado):
                              'Seleccione clickeando las letras que quiere cambiar y ',
                              'vuelva a clickear en \"Cambiar fichas\" para confirmar ',
                              'el cambio')
+                cerro_ventana = False
                 while True:
                     event = window.read()[0]
                     if event is None:
-                        break   #ver
-                    elif event in letras.keys():
+                        cerro_ventana = True
+                        break
+                    if event in letras.keys():
                         letras_a_cambiar.append(event)
                         window[event].update(disabled=True)
                     elif event == "-cf":
@@ -484,14 +487,16 @@ def main(guardado):
                                 window["-cf"].update(disabled=True)
                                 window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
                             # print("Cambio de letras realizado.")
-                        else:
-                            # print("No se selecciono ninguna letra, no se realizo ningun cambio.")
-                            pass
+                        #else:
+                        #    # print("No se selecciono ninguna letra, no se realizo ningun cambio.")
+                        #    pass
                         break
-                turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
-                window["-paso"].update(disabled=False)
-                window["-p"].update(disabled=False)
-                window["-t"].update(disabled=False)
+                if not cerro_ventana:
+                    turno_jugador,turno_pc= cambiar_turno(turno_jugador,turno_pc, window)
+                    window["-paso"].update(disabled=False)
+                    window["-p"].update(disabled=False)
+                    window["-t"].update(disabled=False)
+                    window[None].update(disabled=False)
             # boton de guardar partida
             elif event == "-p":
                 boton = pc.get_botones()
@@ -526,10 +531,11 @@ def main(guardado):
                 fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                 # puntos_jugador[fecha] = pj.puntos
                 nombre = sg.popup_get_text("Ingrese su nombre")
-                datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
-                lista_puntajes.append(datos)
-                puntos_jugador["puntos"] = lista_puntajes
-                cm.guardar_puntuaciones(puntos_jugador)
+                if nombre != None: # solo guarda si le pone un nombre
+                    datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
+                    lista_puntajes.append(datos)
+                    puntos_jugador["puntos"] = lista_puntajes
+                    cm.guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
                 break
             # boton de confirmar palabra
