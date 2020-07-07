@@ -511,11 +511,17 @@ def main(guardado):
                 pc.restar_puntos_finales()
                 mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
                 if (pj.puntos > pc.puntos):
-                    sg.popup_no_frame("Termino el juego \n Ganaste!")
+                    sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC ",
+                                    "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
+                                        " Ganaste!")
                 elif (pj.puntos == pc.puntos):
-                    sg.popup("EMPATE!")
+                    sg.popup("Termino el juego \nTus puntos vs Puntos PC ",
+                                 "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
+                                 " EMPATE!")
                 else:
-                    sg.popup_no_frame("Termino el juego \n Perdiste :( ")
+                    sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC \n",
+                                         "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
+                                         " Perdiste :(")
                 from datetime import datetime
                 fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                 # puntos_jugador[fecha] = pj.puntos
