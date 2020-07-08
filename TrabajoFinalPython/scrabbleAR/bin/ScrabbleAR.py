@@ -14,6 +14,26 @@ jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
 
 # ----------------------------------------------------------------------
+def limpiar_json():
+    try:
+        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"r")
+        datos = json.load(arch)
+        lista = datos["puntos"]
+        lista_final = []
+        for cadena in lista:
+            aux = cadena.split()
+            if aux[4] != "0":
+                lista_final.append(cadena)
+        arch.close()
+        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"w")
+        datos["puntos"] = lista_final
+        json.dump(datos,arch,indent=4)
+        arch.close()
+    except (FileNotFoundError):
+        pass
+                
+
+# ----------------------------------------------------------------------
 def key_orden(cadena):
     cadena = cadena.split()
     aux = cadena[1]+" "+cadena[3]
@@ -28,14 +48,14 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
         list_final = []
         top_10 = json.load(arch)
         # list_aux = sorted(top_10["puntos"],reverse=True)
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(list_aux)
         list_aux = top_10["puntos"].copy()
         list_aux = list_aux[-10:]
         list_aux = sorted(list_aux,key=key_orden,reverse=True)
         print("\n LISTA")
-        pp.pprint(list_aux)
+        # pp.pprint(list_aux)
         for punt in list_aux:
             dato = punt.split()
             if (dato[4] != "0"):
@@ -231,8 +251,17 @@ def main():
     while True:
         event, values = window.read()
         print("Evento",event)
-        if (event == None or event == "-salir-"):
+        if (event == None):
+            limpiar_json()
             break
+        if (event == "-salir-"):
+            salir = sg.popup("Salir del juego?", custom_text=("   SI   ","   NO   "))
+            if (salir == "   SI   "):
+                limpiar_json()
+                break
+            else:
+                pass
+
         if (event == "-pred-"):
             try:
                 os.remove(os.path.join(absolute_path, "lib","info","configUsuario.json"))
@@ -271,8 +300,12 @@ def main():
                 else:
                     window.close()
                     Juego.main(True)
+            else:
+                window.close()
+                Juego.main(False)
 
-
+        if (event == "-tab3-" ):
+            window.refresh()
         if (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
             if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info")):
