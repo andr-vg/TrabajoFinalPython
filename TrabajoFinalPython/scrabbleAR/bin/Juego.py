@@ -45,7 +45,7 @@ def devolver_fichas(dic,keys,bolsa):
         dic[nro]=""
     return dic
 
-def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra):
+def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra, nombre):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -169,8 +169,8 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
     colum = [
         [sg.T("Tiempo: "),sg.Text('00:00', key='tiempo')],
         [sg.T("Cambios de fichas"),sg.T("3",key="cfichas")],
-       [sg.Text("Tus Puntos:"),sg.T("",key="p_j",size=(0,1))], 
-       [sg.Text("Puntos Pc:"),sg.T("",key="p_pc",size=(0,1))],
+       [sg.Text("Tus Puntos:"),sg.T("0",key="p_j",size=(0,1))], 
+       [sg.Text("Puntos Pc:"),sg.T("0",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))]
     ]
 
@@ -188,7 +188,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra)
                              button_color=('white', '#CE5A57'),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', '#CE5A57'),disabled=True) for i in range(fichas_por_jugador)]]
-    fila_fichas_jugador = [sg.Frame("Fichas jugador",layout=frame_fichas_jugador)]+ [sg.Text("",key="turnoj", size=(15, 1))]
+    fila_fichas_jugador = [sg.Frame(nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
@@ -278,7 +278,9 @@ def main(guardado):
     """
     Desarrollo del juego y tablero principal
     """
-    
+
+    #------------------------------------------------
+
     import random
     #-----------------------------------------------------------
         #Configuracion de bolsa puntos y
@@ -338,7 +340,14 @@ def main(guardado):
         tipo_palabra = ""
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
     #Instanciacion de objetos y creacion del layout
-    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra)  # botones es un diccionario de pares (tupla, valor)
+    if not(guardado):
+        nombre = sg.popup_get_text("Ingrese su nombre")
+        if nombre == None or nombre == "" :
+            nombre = "Usuario"
+    else:
+        nombre = config["nombre"]
+    
+    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
@@ -507,6 +516,7 @@ def main(guardado):
                 datos["tiempo"] = tiempo_str
                 datos["puntos_j"] = pj.puntos
                 datos["puntos_pc"] = pc.puntos
+                datos["nombre"] = nombre
                 pc.guardar_estado()
                 cm.guardar_info_partida(datos)
                 sg.popup_no_border("Partida guardada",keep_on_top=True,auto_close_duration=2)
@@ -531,13 +541,17 @@ def main(guardado):
                 from datetime import datetime
                 fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                 # puntos_jugador[fecha] = pj.puntos
-                nombre = sg.popup_get_text("Ingrese su nombre")
                 if nombre != None: # solo guarda si le pone un nombre
                     datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
                     lista_puntajes.append(datos)
                     puntos_jugador["puntos"] = lista_puntajes
                     cm.guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
+                if (guardado):
+                    #Si termine la partida guardada la borro 
+                    os.remove(os.path.join(absolute_path, "lib","info","datos_guardados.json"))
+                    os.remove(os.path.join(absolute_path, "lib","info","datos_pc.json"))
+                    os.remove(os.path.join(absolute_path, "lib","info","guardado.csv"))
                 break
             # boton de confirmar palabra
             elif event == "-c":
