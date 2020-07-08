@@ -4,6 +4,7 @@ import json
 from Jugadores import Jugadores
 import os
 from pathlib import Path
+import GameConfigManager as cm
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 # ----------------------------------------------------------------------
@@ -15,6 +16,7 @@ class PC(Jugadores):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         self._palabras_usadas = []
         self._posiciones_ocupadas_tablero = []
+        self._colores = cm.cargar_colores()
         if (guardada):
             self._cargar_estado()
 
@@ -224,7 +226,7 @@ class PC(Jugadores):
                     # print(long_y_posiciones[long_max_tablero][posiciones_random][i])
                     pos_aux =long_y_posiciones[long_max_tablero][posiciones_random][i]
                     # print("MAX: ",long_max_tablero,"Pos random: ",posiciones_random,"Pos de palabra: ",pos_aux)
-                    window[pos_aux].update(mejor_palabra[i - inicio], disabled=True,button_color=("black","#A4E6FD"))  # agregamos las letras al tablero
+                    window[pos_aux].update(mejor_palabra[i - inicio], disabled=True,button_color=("black",self._colores["letra_pc"]))  # agregamos las letras al tablero
                     # guardamos las posiciones y las letras de la palabra en palabra_nueva así despues sumamos los puntos
                     palabra_nueva[long_y_posiciones[long_max_tablero][posiciones_random][i]] = mejor_palabra[i - inicio]
                     self._botones[long_y_posiciones[long_max_tablero][posiciones_random][i]] = "" + "*"
@@ -242,12 +244,12 @@ class PC(Jugadores):
                     # print(pos)
                     # print(mejor_palabra[indice_letra_centro - (centro - i)])
                     window[pos].update(mejor_palabra[indice_letra_centro - (centro - i)], disabled=True,
-                                       button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
+                                       button_color=("black", self._colores["letra_pc"]))  # agregamos las letras al tablero
                     self._botones[pos] = "" + "*"
                     palabra_nueva[pos] = mejor_palabra[indice_letra_centro - (centro - i)]
                 self._posiciones_ocupadas_tablero.append((centro, centro))  # agregamos el centro
                 window[(centro, centro)].update(mejor_palabra[indice_letra_centro], disabled=True,
-                                                button_color=("black", "#A4E6FD"))  # agregamos las letras al tablero
+                                                button_color=("black",self._colores["letra_pc"]))  # agregamos las letras al tablero
                 self._botones[(centro,centro)] = "" + "*"
                 palabra_nueva[(centro, centro)] = mejor_palabra[indice_letra_centro]
                 # print((centro, centro))
@@ -258,7 +260,7 @@ class PC(Jugadores):
                     # print(mejor_palabra[indice_letra_centro - (centro - i)])
                     self._posiciones_ocupadas_tablero.append(pos)
                     window[pos].update(mejor_palabra[indice_letra_centro + i - centro], disabled=True,
-                                       button_color = ("black", "#A4E6FD"))  # agregamos las letras al tablero
+                                       button_color = ("black", self._colores["letra_pc"]))  # agregamos las letras al tablero
                     self._botones[pos] = "" + "*"
                     palabra_nueva[pos] = mejor_palabra[indice_letra_centro + i - centro]
                     

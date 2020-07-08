@@ -73,9 +73,9 @@ def crear_layout(config):
     top_10 = cargar_top_10()
 
     tab1_layout = [
-        [sg.Button("", key="-jugar-", image_filename=jugar, button_color=("#E3F2FD","#E3F2FD")) ],
+        [sg.Button("", key="-jugar-", image_filename=jugar, border_width = 0,button_color=("#c5dbf1","#c5dbf1")) ],
         # [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4), pad=(150,2))],
-        [sg.Button("", key="-salir-", image_filename=salir, button_color=("#E3F2FD","#E3F2FD"))]
+        [sg.Button("", key="-salir-", image_filename=salir, border_width = 0,button_color=("#c5dbf1","#c5dbf1"))]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default= True if config["dificultad"] == "facil" else False),
@@ -136,7 +136,7 @@ vocales haya sera mas dificil armar palabras""")]
 
     ]
     frame_top_10 = [
-         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(100, 10), background_color="#E3F2FD")]
+         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(100, 10), background_color="#c5dbf1")]
     ]
     tab3_layout = [
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
@@ -184,14 +184,14 @@ se cambian
                  [sg.Tab("Cambio de fichas",layout=frame_ayuda_3)]]
     tab4_layout = [[sg.TabGroup(layout=tab_lista)]]
     tab_grupo = [
-        [sg.Tab("Juego", tab1_layout, element_justification='c' , key="-tab1-", background_color="#E3F2FD", title_color="#2c2825", border_width=0),
-         sg.Tab("Como jugar", tab4_layout, element_justification='c' , key="-tab4-", background_color="#E3F2FD", title_color="#E3F2FD", border_width = 0),
-         sg.Tab("Config nivel", tab2_layout, element_justification='c' , key="-tab2-", background_color="#E3F2FD", title_color="#E3F2FD",
+        [sg.Tab("Juego", tab1_layout, element_justification='c' , key="-tab1-", background_color="#c5dbf1", title_color="#2c2825", border_width=0),
+         sg.Tab("Como jugar", tab4_layout, element_justification='c' , key="-tab4-", background_color="#c5dbf1", title_color="#c5dbf1", border_width = 0),
+         sg.Tab("Config nivel", tab2_layout, element_justification='c' , key="-tab2-", background_color="#c5dbf1", title_color="#c5dbf1",
                 border_width=0),
-         sg.Tab("Top 10", tab3_layout, element_justification='c' , key="-tab3-", background_color="#E3F2FD", title_color="#E3F2FD", border_width=0)]
+         sg.Tab("Top 10", tab3_layout, element_justification='c' , key="-tab3-", background_color="#c5dbf1", title_color="#c5dbf1", border_width=0)]
     ]
 
-    layout = [[sg.Image(logo, background_color=("#E3F2FD"))],
+    layout = [[sg.Image(logo, background_color=("#c5dbf1"))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout
 # ----------------------------------------------------------------------
@@ -244,7 +244,18 @@ def main():
     else:
         config = cargar_config_pred()
     # ----------------------------------------------------------------------
-    sg.theme("lightblue")
+    sg.LOOK_AND_FEEL_TABLE['MyNewTheme'] = {'BACKGROUND': '#c5dbf1',
+                                        'TEXT': '#000000',
+                                        'INPUT': '#2a6daf',
+                                        'TEXT_INPUT': '#000000',
+                                        'SCROLL': '#2a6daf',
+                                        'BUTTON': ('white', '#2a6daf'),
+                                        'PROGRESS': ('#2a6daf', '#2a6daf'),
+                                        'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
+                                        }  
+
+    sg.theme("MyNewTheme")
+    # sg.theme("lightblue")
     layout = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,element_justification='c',resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True)
 

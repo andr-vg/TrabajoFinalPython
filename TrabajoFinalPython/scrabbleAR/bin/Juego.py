@@ -62,10 +62,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
 
     ################ Colores segun el nivel ######################
 
-    colores = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', '-' : '#008080', '--' : '#005555', '---' : '#000000'},
-               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
-               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
-              }
+    colores = cm.cargar_colores()
 
     ################ Tipos de casilleros #########################
 
@@ -81,15 +78,28 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
 
     # casilleros con letras de una partida anterior:
 
-    ficha_pc = lambda name,key: sg.Button(name, disabled=True, border_width = 3, size = (3,1), key = key, pad = (0,0), button_color = ("#000000","#A4E6FD"))
+    ficha_pc = lambda name,key: sg.Button(name, disabled=True, border_width = 3, size = (3,1), key = key, pad = (0,0), button_color = ("#000000",colores["letra_pc"]),
+                                            disabled_button_color = ("#000000",colores["letra_pc"]))
 
     # blanco = lambda name, key: sg.Button(name, border_width=1, size=(3, 1), key=key,
     #                                      pad=(0, 0), button_color=('black', 'white'))
 
     ficha_jugador = lambda name, key: sg.Button(name, disabled=True,border_width=3, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', '#BA7FB0'))
+                                         pad=(0, 0), disabled_button_color=('black', colores["letra_jugador"]),button_color=('black', colores["letra_jugador"]))
     
-    sg.theme("lightblue")
+
+    sg.LOOK_AND_FEEL_TABLE['MyNewTheme'] = {'BACKGROUND': '#c5dbf1',
+                                        'TEXT': '#000000',
+                                        'INPUT': '#2a6daf',
+                                        'TEXT_INPUT': '#000000',
+                                        'SCROLL': '#2a6daf',
+                                        'BUTTON': ('white', '#2a6daf'),
+                                        'PROGRESS': ('#2a6daf', '#2a6daf'),
+                                        'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
+                                        }  
+
+    sg.theme("MyNewTheme")
+    # sg.theme("lightblue")
     #sg.theme_background_color('#488A99')
 
     ############### Lectura del archivo del tablero .csv ###############
@@ -185,9 +195,9 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
     layout.append(columna_principal)
 
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
-                             button_color=('white', '#CE5A57'),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
+                             button_color=('white', colores["atril"]),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
-                             button_color=('white', '#CE5A57'),disabled=True) for i in range(fichas_por_jugador)]]
+                             button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)]]
     fila_fichas_jugador = [sg.Frame(nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Text("",key="turnoj", size=(15, 1))]
     fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
@@ -204,10 +214,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     Sacamos las letras del tablero que no son validas y reiniciamos los parametros
     que guardan nuestras letras y la palabra
     """
-    colores = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', '-' : '#008080', '--' : '#005555', '---' : '#000000'},
-               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
-               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
-              }
+    colores = cm.cargar_colores()
 
     for val in keys:
         window[val].update(disabled=False)  # reactivamos las fichas
@@ -278,7 +285,7 @@ def main(guardado):
     """
     Desarrollo del juego y tablero principal
     """
-
+    colores = cm.cargar_colores()
     #------------------------------------------------
 
     import random
@@ -433,7 +440,7 @@ def main(guardado):
                 window['-d'].update(disabled=False)
                 box = event  # letra seleccionada
                 letras_usadas[box] = letras[box]
-                window[box].update(button_color=('white', '#FFBEBD'))    #al seleccionado se le cambia el color
+                window[box].update(button_color=('white', '#55a4fc'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
                     window[val].update(disabled=True)  # desactivo los botones de las fichas            
                 if (cont_tiempo_seg == 0):
@@ -442,14 +449,14 @@ def main(guardado):
                 else:
                     cont_tiempo_seg -= 1
                 event, values = window.read()
-                window[box].update(button_color=('white', '#CE5A57'))      #se le devuelve el color
+                window[box].update(button_color=('white', '#006699'))      #se le devuelve el color
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
                     ind = event  # casilla seleccionada
                     palabra_nueva[ind] = letras[box]
                     if len(palabra_nueva.keys()) > 1:
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
-                    window[ind].update(letras[box], disabled=True, button_color = ("black","#BA7FB0"))  # actualizo la casilla y la desactivo
+                    window[ind].update(letras[box], disabled=True, button_color = ("black",colores["letra_jugador"]))  # actualizo la casilla y la desactivo
                     botones = pc.get_botones().copy()
                     botones[ind] = "" + "/"
                     pc.actualiza_botones(botones)
@@ -575,3 +582,5 @@ def main(guardado):
 
     window.close()
     ScrabbleAR.main()
+# if __name__ == "__main__":
+#     main(False)

@@ -133,3 +133,17 @@ def cargar_config_guardada():
         sg.popup("No se encontraron datos de una partida guardada, inicie una nueva partida")
         ScrabbleAR.main()
         # Se me quedan 2 menus abiertos y no es la idea...
+
+def cargar_colores():
+    try:
+        col = open(os.path.join(absolute_path, "lib", "info", "colores.json"),"r")
+        dic_col = json.load(col)
+        col.close()
+    except (FileNotFoundError):
+        sg.popup("No se encontro colores.json \n usando colores predeterminados")
+        dic_col = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', '-' : '#008080', '--' : '#005555', '---' : '#000000'},
+               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
+               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
+              }
+    finally:
+        return (dic_col)
