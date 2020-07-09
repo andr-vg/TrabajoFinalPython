@@ -19,7 +19,7 @@ class PC(Jugadores):
         self._colores = cm.cargar_colores()
         if (guardada):
             self._cargar_estado()
-
+# ---------------------------------------------------------------------
     def reinicioFichas(self, palabra):
         """
         Reinicia los valores de las fichas usadas en "" para luego ser actualizadas por nuevos valores de la bolsa
@@ -32,14 +32,13 @@ class PC(Jugadores):
                     cant += -1
             else:
                 break
-    
+# ---------------------------------------------------------------------   
     def actualiza_botones(self,botones):
         """
         Actualiza el diccionario botones con las pos usadas por el usuario
         """
-
         self._botones = botones
-
+# ---------------------------------------------------------------------
     def _convertirJson(self):
         """
         Parsea el Json para poder guardarlo
@@ -51,7 +50,7 @@ class PC(Jugadores):
         for clave,valor in self._botones.items():
             dic_aux[str(clave[0])+","+str(clave[1])] = valor        
         return dic_aux
-    
+# ---------------------------------------------------------------------   
     def _convertirDic(self,botones):
         """
         Vuelve a darle formato al diccionario de botones
@@ -63,7 +62,7 @@ class PC(Jugadores):
         # p = pprint.PrettyPrinter(indent=4)
         # p.pprint(dic_aux)
         return dic_aux
-
+# ---------------------------------------------------------------------
     def guardar_estado(self):
         """
         Guarda el estado interno del jugador PC
@@ -84,7 +83,6 @@ class PC(Jugadores):
         self._botones = self._convertirDic(data["botones"])
         self._palabras_usadas = data["palabras_usadas"]
         self._posiciones_ocupadas_tablero = data["pos_usadas"]
-
 # ----------------------------------------------------------------------
     def _obtenerPalabra(self, long_max):
         """
@@ -181,7 +179,7 @@ class PC(Jugadores):
                 self._agrego_posiciones(cant, posiciones, long_y_posiciones)
                 j += 1
         return long_y_posiciones
-
+# ---------------------------------------------------------------------
     def _calcular_long_maxima(self, long_max_tablero, cant_fichas):
         """
         Esta funcion retorna la longitud maxima segun dos cosas: la cantidad de fichas disponibles
@@ -277,7 +275,7 @@ class PC(Jugadores):
             letras = ""
             self.reinicioFichas(letras.join(self.fichas.values()))
         return primer_turno
-    
+# ---------------------------------------------------------------------  
     def get_botones(self):
         """
         Devuelve el diccionario botones para el guardado de la partida
