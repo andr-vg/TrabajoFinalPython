@@ -16,9 +16,9 @@ def hay_fichas(necesito, bolsa):
     """
     Devuelve true si hay en la bolsa la cantidad de fichas que se necesitan
     """
-    return necesito <= (sum(list(bolsa.values())))  
+    return necesito <= (sum(list(bolsa.values())))
 
-def dar_fichas(dic, bolsa): 
+def dar_fichas(dic, bolsa):
     """
     se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
     """
@@ -86,7 +86,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
 
     ficha_jugador = lambda name, key: sg.Button(name, disabled=True,border_width=3, size=(3, 1), key=key,
                                          pad=(0, 0), disabled_button_color=('black', colores["letra_jugador"]),button_color=('black', colores["letra_jugador"]))
-    
+
 
     sg.LOOK_AND_FEEL_TABLE['MyNewTheme'] = {'BACKGROUND': '#c5dbf1',
                                         'TEXT': '#000000',
@@ -96,7 +96,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
                                         'BUTTON': ('white', '#2a6daf'),
                                         'PROGRESS': ('#2a6daf', '#2a6daf'),
                                         'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
-                                        }  
+                                        }
 
     sg.theme("MyNewTheme")
     # sg.theme("lightblue")
@@ -179,7 +179,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
     colum = [
         [sg.T("Tiempo: "),sg.Text('00:00', key='tiempo')],
         [sg.T("Cambios de fichas"),sg.T("3",key="cfichas")],
-       [sg.Text("Tus Puntos:"),sg.T("0",key="p_j",size=(0,1))], 
+       [sg.Text("Tus Puntos:"),sg.T("0",key="p_j",size=(0,1))],
        [sg.Text("Puntos Pc:"),sg.T("0",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))]
     ]
@@ -198,8 +198,8 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
                              button_color=('white', colores["atril"]),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)]]
-    fila_fichas_jugador = [sg.Frame(nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Text("",key="turnoj", size=(15, 1))]
-    fila_fichas_maquina = [sg.Frame("Fichas maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
+    fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Text("",key="turnoj", size=(15, 1))]
+    fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
                     sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]
@@ -278,7 +278,7 @@ def mostrar_fichas_compu(window, dic_fichas, img_nros, puntos_por_letra):
     """
     for clave, letra in dic_fichas.items():
         if letra != '':
-            window[clave].update(letra, image_filename=img_nros[puntos_por_letra[letra]], 
+            window[clave].update(letra, image_filename=img_nros[puntos_por_letra[letra]],
             disabled=False, image_size=(50, 50), image_subsample=21)
 
 def main(guardado):
@@ -346,14 +346,14 @@ def main(guardado):
     else:
         tipo_palabra = ""
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
-    #Instanciacion de objetos y creacion del layout
+
     if not(guardado):
-        nombre = sg.popup_get_text("Ingrese su nombre")
-        if nombre == None or nombre == "" :
-            nombre = "Usuario"
+        nombre = sg.popup_get_text("ScrabbleAR está por comenzar, ingrese su nombre de jugador", title="Ingrese su nombre", default_text="Jugador invitado",size=(None, None))
+        if nombre == None or nombre == "":
+            nombre = "Jugador invitado"
     else:
         nombre = config["nombre"]
-    
+    #Instanciacion de objetos y creacion del layout
     layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
@@ -386,11 +386,11 @@ def main(guardado):
     fin_juego = False
     #Configuracion del tiempo
     if not(guardado):
-        cont_tiempo_min_config = tiempo  
+        cont_tiempo_min_config = tiempo
         cont_tiempo_min = round(cont_tiempo_min_config / 60)
         if (cont_tiempo_min > 0):
             cont_tiempo_seg = 59
-            cont_tiempo_min -= 1 
+            cont_tiempo_min -= 1
         else:
             cont_tiempo_seg = 0
     else:
@@ -410,7 +410,7 @@ def main(guardado):
     # ----------------------------------------------------------------------
         #Loop de ventana
     # ----------------------------------------------------------------------
-    while True: 
+    while True:
         event, values = window.read(timeout=1000)
         # print("POS: ",event)
         if (cont_tiempo_seg == 0):
@@ -428,7 +428,7 @@ def main(guardado):
             sg.popup("Se termino el tiempo")
             fin_juego = True
         #------------------------------------------------------
-            # mientras sea el turno del jugador, podrá realizar 
+            # mientras sea el turno del jugador, podrá realizar
             # todos los eventos del tablero
         #------------------------------------------------------
         if turno_jugador:
@@ -442,7 +442,7 @@ def main(guardado):
                 letras_usadas[box] = letras[box]
                 window[box].update(button_color=('white', '#55a4fc'))    #al seleccionado se le cambia el color
                 for val in letras.keys():
-                    window[val].update(disabled=True)  # desactivo los botones de las fichas            
+                    window[val].update(disabled=True)  # desactivo los botones de las fichas
                 if (cont_tiempo_seg == 0):
                     cont_tiempo_seg = 59
                     cont_tiempo_min -= 1
@@ -529,7 +529,7 @@ def main(guardado):
                 sg.popup_no_border("Partida guardada",keep_on_top=True,auto_close_duration=2)
                 break
             # boton de terminar partida
-            elif event == "-t" or fin_fichas or fin_juego:  
+            elif event == "-t" or fin_fichas or fin_juego:
                 pj.restar_puntos_finales()
                 pc.restar_puntos_finales()
                 mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
@@ -555,7 +555,7 @@ def main(guardado):
                     cm.guardar_puntuaciones(puntos_jugador)
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
                 if (guardado):
-                    #Si termine la partida guardada la borro 
+                    #Si termine la partida guardada la borro
                     os.remove(os.path.join(absolute_path, "lib","info","datos_guardados.json"))
                     os.remove(os.path.join(absolute_path, "lib","info","datos_pc.json"))
                     os.remove(os.path.join(absolute_path, "lib","info","guardado.csv"))

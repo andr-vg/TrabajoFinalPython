@@ -31,7 +31,7 @@ def limpiar_json():
         arch.close()
     except (FileNotFoundError):
         pass
-                
+
 
 # ----------------------------------------------------------------------
 def key_orden(cadena):
@@ -252,7 +252,7 @@ def main():
                                         'BUTTON': ('white', '#2a6daf'),
                                         'PROGRESS': ('#2a6daf', '#2a6daf'),
                                         'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
-                                        }  
+                                        }
 
     sg.theme("MyNewTheme")
     # sg.theme("lightblue")
@@ -323,7 +323,6 @@ def main():
                 config = cargar_config_usr()
             else:
                 config = cargar_config_pred()
-
             config["tiempo"] = values["-tiempo-"]*60
             if (window["facil"].get()):
                 config["dificultad"] = "facil"
