@@ -34,7 +34,7 @@ def dar_fichas(dic, bolsa):
             bolsa[letras_juntas[indice]] -= 1
             letras_juntas.pop(indice)
     if len(letras_juntas) == 0:
-        sg.popup('Se acabaron las fichas')
+        sg.popup('Se acabaron las fichas',keep_on_top=True)
 
 def devolver_fichas(dic,keys,bolsa):
     """
@@ -45,7 +45,7 @@ def devolver_fichas(dic,keys,bolsa):
         dic[nro]=""
     return dic
 
-def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra, nombre):
+def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -193,12 +193,14 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
     columna_principal = [sg.Column(columna_casilleros, background_color='grey'), sg.Column(frame_colum)]
 
     layout.append(columna_principal)
-
+    frame_palabras_usadas = [
+        [sg.InputCombo(palabras_usadas,key="-pal-",size=(15,1))]
+    ]
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
                              button_color=('white', colores["atril"]),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)]]
-    fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Text("",key="turnoj", size=(15, 1))]
+    fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Frame("Palabras Usadas",layout=frame_palabras_usadas)]
     fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
@@ -229,7 +231,11 @@ def pocas_fichas(fichas):
         return True
     else:
         return False
-
+def input_palabra(lista):
+    lista_final = list()
+    for pal in lista:
+        lista_final.append(pal.replace("\n",""))
+    return lista_final
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad, pc):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
@@ -239,7 +245,8 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     turno_pc = False
     fin_juego = False
     posiciones_ocupadas_tablero = pc.get_pos_tablero()
-    letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
+    letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero, palabras_usadas = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
+    window["-pal-"].update(None,input_palabra(palabras_usadas))
     pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
     if actualizar_juego:
         window['-d'].update(disabled=True)
@@ -267,7 +274,6 @@ def cambiar_turno(turnoj, turnopc, window):
         window["turno"].update("¡Es tu turno!")
     else:
         window["turno"].update("Turno del la maquina")
-    window["turnoj"].update("¡Es tu turno!",visible= turnoj)
     window["turnopc"].update("Turno del la maquina",visible= turnopc)
     window.Refresh()    #la window solo se actualiza con read() o refresh(), prefiero poner un refresh aca asi no tengo que esperar a que se actualice el turno en pantalla cuando se haga el read del timeout
     return turnoj,turnopc
@@ -327,7 +333,7 @@ def main(guardado):
             else:
                 arch = open(os.path.join(absolute_path, "lib","info","tablero-21x21.csv"), "r")
         except (FileNotFoundError):
-            sg.popup("No se ha encontrado el tablero")
+            sg.popup("No se ha encontrado el tablero",keep_on_top=True)
     csvreader = csv.reader(arch)
     # ----------------------------------------------------------------------
         # Opciones de dificultad --> lista de tags
@@ -348,16 +354,17 @@ def main(guardado):
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
 
     if not(guardado):
-        nombre = sg.popup_get_text("ScrabbleAR está por comenzar, ingrese su nombre de jugador", title="Ingrese su nombre", default_text="Jugador invitado",size=(None, None))
+        nombre = sg.popup_get_text("ScrabbleAR está por comenzar, ingrese su nombre de jugador", title="Ingrese su nombre", default_text="Jugador invitado",size=(None, None),keep_on_top=True)
         if nombre == None or nombre == "":
             nombre = "Jugador invitado"
     else:
         nombre = config["nombre"]
     #Instanciacion de objetos y creacion del layout
-    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre)  # botones es un diccionario de pares (tupla, valor)
+    palabras_usadas = []
+    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre, palabras_usadas)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
-    pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo)
+    pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
     # ----------------------------------------------------------------------
@@ -425,7 +432,7 @@ def main(guardado):
         tiempo_str = "{}:{}".format(cont_tiempo_min,tiempo_seg_final)
         window["tiempo"].update(tiempo_str)
         if (cont_tiempo_min == 0) and (cont_tiempo_seg == 0):
-            sg.popup("Se termino el tiempo")
+            sg.popup("Se termino el tiempo",keep_on_top=True)
             fin_juego = True
         #------------------------------------------------------
             # mientras sea el turno del jugador, podrá realizar
@@ -433,7 +440,7 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
-                sg.popup_no_frame('Salió de la partida')
+                sg.popup_no_frame('Salió de la partida',keep_on_top=True)
                 break
             # botones del atril del jugador
             if event in letras.keys():
@@ -482,7 +489,7 @@ def main(guardado):
                 sg.Popup('Cambio de fichas:',
                              'Seleccione clickeando las letras que quiere cambiar y ',
                              'vuelva a clickear en \"Cambiar fichas\" para confirmar ',
-                             'el cambio')
+                             'el cambio',keep_on_top=True)
                 cerro_ventana = False
                 while True:
                     event = window.read()[0]
@@ -525,6 +532,7 @@ def main(guardado):
                 datos["puntos_pc"] = pc.puntos
                 datos["nombre"] = nombre
                 pc.guardar_estado()
+                pj.guardar_info()
                 cm.guardar_info_partida(datos)
                 sg.popup_no_border("Partida guardada",keep_on_top=True,auto_close_duration=2)
                 break
@@ -536,15 +544,15 @@ def main(guardado):
                 if (pj.puntos > pc.puntos):
                     sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC ",
                                     "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
-                                        " Ganaste!")
+                                        " Ganaste!",keep_on_top=True)
                 elif (pj.puntos == pc.puntos):
                     sg.popup("Termino el juego \nTus puntos vs Puntos PC ",
                                  "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
-                                 " EMPATE!")
+                                 " EMPATE!",keep_on_top=True)
                 else:
                     sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC \n",
                                          "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
-                                         " Perdiste :(")
+                                         " Perdiste :(",keep_on_top=True)
                 from datetime import datetime
                 fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                 # puntos_jugador[fecha] = pj.puntos
@@ -553,7 +561,7 @@ def main(guardado):
                     lista_puntajes.append(datos)
                     puntos_jugador["puntos"] = lista_puntajes
                     cm.guardar_puntuaciones(puntos_jugador)
-                sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None)
+                sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None,keep_on_top=True)
                 if (guardado):
                     #Si termine la partida guardada la borro
                     os.remove(os.path.join(absolute_path, "lib","info","datos_guardados.json"))
@@ -581,6 +589,6 @@ def main(guardado):
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
-    ScrabbleAR.main()
-# if __name__ == "__main__":
-#     main(False)
+#     ScrabbleAR.main()
+if __name__ == "__main__":
+    main(False)
