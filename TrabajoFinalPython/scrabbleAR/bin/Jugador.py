@@ -1,13 +1,38 @@
 import PySimpleGUI as sg
 from Jugadores import Jugadores
-
+import os
+import json
+absolute_path = os.path.join(os.path.dirname(__file__), '..')
 # ----------------------------------------------------------------------
 #Clase Jugador
 # ----------------------------------------------------------------------
 
 class Jugador(Jugadores):
-    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):
+    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardado):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
+        if(guardado):
+            self._cargar_datos()
+        else:
+            self._palabras_usadas = []
+
+    def guardar_info(self):
+        """
+        Guarda la lista de palabras que formo el jugador
+        """
+        datos = open(os.path.join(absolute_path, "lib","info","palabras_jugador.json"),"w")
+        json.dump(self._palabras_usadas,datos)
+
+    def _cargar_datos(self):
+        """
+        Carga la lista de palabras usadas por el jugador
+        """
+        try:
+            datos = open(os.path.join(absolute_path, "lib","info","palabras_jugador.json"),"r")
+            self._palabras_usadas = json.load(datos)
+        except (FileNotFoundError):
+            sg.popup("No se encontro archivo con palabras del usuario")
+            self._palabras_usadas = []
+
 
     def _analizo(self, keys_ordenados, menor_1, menor_2, j,
                  k):  # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical)
@@ -53,7 +78,8 @@ class Jugador(Jugadores):
                 lista_letras_ordenadas.append(palabra_nueva[key])
             palabra_obtenida = ''.join(lista_letras_ordenadas)
             palabra_obtenida.strip()
-            if self.es_palabra_valida(palabra_obtenida):
+            if self.es_palabra_valida(palabra_obtenida) and not(palabra_obtenida in self._palabras_usadas):
+                self._palabras_usadas.append(palabra_obtenida)
                 al_centro = self._estan_en_el_centro(keys_ordenados)
                 if (not primer_turno) or (primer_turno and al_centro):
                     posiciones_ocupadas_tablero.extend(palabra_nueva.keys())
@@ -66,4 +92,5 @@ class Jugador(Jugadores):
                     sg.popup('La primer palabra debe ir en el centro')
             else:
                 sg.popup_ok('Palabra no válida, por favor ingrese otra')
-        return letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero
+
+        return letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero, self._palabras_usadas
