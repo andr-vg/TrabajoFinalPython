@@ -141,9 +141,9 @@ def cargar_colores():
         col.close()
     except (FileNotFoundError):
         sg.popup("No se encontro colores.json \n usando colores predeterminados")
-        dic_col = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', '-' : '#008080', '--' : '#005555', '---' : '#000000'},
-               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
-               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
+        dic_col = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', "+++": "#efcfe8", "++++": "#c1a4ff", '-' : '#008080', '--' : '#005555', '---' : '#000000'},
+               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', "+++": "#efcfe8", "++++": "#c1a4ff", '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
+               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', "+++": "#efcfe8", "++++": "#c1a4ff", '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
               }
     finally:
         return (dic_col)

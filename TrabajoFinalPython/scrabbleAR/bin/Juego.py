@@ -69,9 +69,12 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
     # casilleros de name = --- : restan 3 ptos
     # casilleros de name =  -- : restan 2 ptos
     # casilleros de name =  - : restan 1 ptos
-    # casilleros de name =  ++ : triplican ptos
+    # casilleros de name =  + : duplican ptos por letra
+    # casilleros de name =  ++ : triplican ptos por letra
+    # casilleros de name =  +++ : duplican ptos por palabra
+    # casilleros de name =  ++++ : triplican ptos por palabra
     # casilleros de name = '' : no suman ni restan ptos
-    # casilleros de name =  + : duplican ptos
+    
 
     casillero = lambda name, key: sg.Button('', border_width=3, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', colores[dificultad][name]))
@@ -128,6 +131,12 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
             elif boton == "++":
                 fichas.append(casillero('++', key))
                 botones[key] = "++"
+            elif boton == '+++':
+                fichas.append(casillero('+++', key))
+                botones[key] = '+++'
+            elif boton == '++++':
+                fichas.append(casillero('++++', key))
+                botones[key] = '++++'   
             elif boton == "-":
                 fichas.append(casillero('-', key))
                 botones[key] = "-"
@@ -165,7 +174,7 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
 
     ############## Creacion del tablero y datos a mostrar #####################
 
-    premio_y_descuento = {'': 'Simple', '+': 'Duplica puntaje', '++': 'Triplica puntaje', '-': 'Resta 1 pto', '--': 'Resta 2 ptos', '---': 'Resta 3 ptos'}
+    premio_y_descuento = {'': 'Simple', '+': 'Duplica puntaje por letra', '++': 'Triplica puntaje por letra', '+++': 'Duplica puntaje por palabra', '++++': 'Triplica puntaje por palabra', '-': 'Resta 1 pto', '--': 'Resta 2 ptos', '---': 'Resta 3 ptos'}
 
     columna_datos = [[sg.Text('Nivel: '+dificultad)],
                      [sg.Text('Tipos de palabras a formar: '+tipo)],
@@ -231,11 +240,13 @@ def pocas_fichas(fichas):
         return True
     else:
         return False
+
 def input_palabra(lista):
     lista_final = list()
     for pal in lista:
         lista_final.append(pal.replace("\n",""))
     return lista_final
+
 def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad, pc):
     """
     Funcion que analiza si la palabra ingresada es una palabra valida y si no lo es
@@ -246,10 +257,10 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     fin_juego = False
     posiciones_ocupadas_tablero = pc.get_pos_tablero()
     letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero, palabras_usadas = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
-    window["-pal-"].update(None,input_palabra(palabras_usadas))
     pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
     if actualizar_juego:
-        window['-d'].update(disabled=True)
+        window['-d'].update(disabled=True) 
+        window["-pal-"].update(None,input_palabra(palabras_usadas)) # actualizamos el listbox de palabras si lo ubico correctamente
         letras = pj.getFichas()
         dar_fichas(letras, bolsa)
         pj.setFichas(letras)
@@ -287,6 +298,27 @@ def mostrar_fichas_compu(window, dic_fichas, img_nros, puntos_por_letra):
             window[clave].update(letra, image_filename=img_nros[puntos_por_letra[letra]],
             disabled=False, image_size=(50, 50), image_subsample=21)
 
+def salir_del_juego():
+    """
+    Ventana que pregunta si salir y guardar el juego, retorna booleanos segun la respuesta del jugador
+    """
+    guardar_partida = False
+
+    layout2 = [[sg.Text('Está saliendo del juego, desea guardarlo?')],
+               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar')]]
+    window_salir = sg.Window('Abandonar partida actual', layout2)
+
+    while True:
+        event, values = window_salir.read()
+        if event in (None, '-noguardar'):
+            break
+        if event == '-guardar':
+            guardar_partida = True
+            break
+    window_salir.close()
+
+    return guardar_partida
+
 def main(guardado):
     """
     Desarrollo del juego y tablero principal
@@ -316,7 +348,7 @@ def main(guardado):
                 10: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'diez.png'),
                 11: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'vacio.png')}
 
-    bolsa , puntos_por_letra, tiempo ,dificultad, config = cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
+    bolsa , puntos_por_letra, tiempo ,dificultad, config= cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
     # ----------------------------------------------------------------------
         #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
         #Abro el tablero correspondiente a la dificultad seleccionada
@@ -391,6 +423,7 @@ def main(guardado):
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero
     fin_fichas = False
     fin_juego = False
+    guardar_partida = False
     #Configuracion del tiempo
     if not(guardado):
         cont_tiempo_min_config = tiempo
@@ -406,18 +439,23 @@ def main(guardado):
         cont_tiempo_seg = int(aux_tiempo[1])
     arch.close()
     window.finalize()
-    # se decide de forma aleatoria quien comienza la partida
-    turno = random.randint(0,1)
-    if turno == 1: # empieza el jugador
-        turno_jugador = True
-        turno_pc = False
-    else:  # empieza la compu
-        turno_jugador = False
-        turno_pc = True
+    # se decide de forma aleatoria quien comienza la partida si no se abrio el archivo guardado
+    if guardado:
+        turno_pc = True if config["turno_pc"] == "True" else False
+        turno_jugador = True if config["turno_jugador"] == "True" else False 
+    else:
+        turno = random.randint(0,1)
+        if turno == 1: # empieza el jugador
+            turno_jugador = True
+            turno_pc = False
+        else:  # empieza la compu
+            turno_jugador = False
+            turno_pc = True
     # ----------------------------------------------------------------------
         #Loop de ventana
     # ----------------------------------------------------------------------
     while True:
+        # 
         event, values = window.read(timeout=1000)
         # print("POS: ",event)
         if (cont_tiempo_seg == 0):
@@ -440,8 +478,11 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
-                sg.popup_no_frame('Salió de la partida',keep_on_top=True)
-                break
+                guardar_partida = salir_del_juego() 
+                if not guardar_partida:
+                    sg.popup_no_frame('Salió de la partida', keep_on_top=True)
+                    break
+
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
@@ -522,7 +563,7 @@ def main(guardado):
                     window["-p"].update(disabled=False)
                     window["-t"].update(disabled=False)
             # boton de guardar partida
-            elif event == "-p":
+            elif event == "-p" or guardar_partida:
                 boton = pc.get_botones()
                 cm.guardar_partida(window,boton)
                 datos = dict()
@@ -531,6 +572,8 @@ def main(guardado):
                 datos["puntos_j"] = pj.puntos
                 datos["puntos_pc"] = pc.puntos
                 datos["nombre"] = nombre
+                datos["turno_jugador"] = str(turno_jugador)
+                datos["turno_pc"] = str(turno_pc)
                 pc.guardar_estado()
                 pj.guardar_info()
                 cm.guardar_info_partida(datos)

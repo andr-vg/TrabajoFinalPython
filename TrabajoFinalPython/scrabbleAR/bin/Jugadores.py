@@ -43,28 +43,40 @@ class Jugadores:
         """
         Calculamos y actualizamos los puntos del jugador 
         """
-        duplicar = False
-        triplicar = False
+        duplicar_palabra = False
+        triplicar_palabra = False
+        restar_uno = False
+        restar_dos = False
+        restar_tres = False
         puntos = 0
         for casillero, letra in palabra_nueva.items():
             puntaje_letra = self.puntos_por_letra[letra]
-            if self._botones[casillero] == '+':  # duplicamos el puntaje por letra
+            if self._botones[casillero] == '++++':
+                duplicar_palabra = True
+            elif self._botones[casillero] == '+++':
+                triplicar_palabra = True
+            elif self._botones[casillero] == '+':  # duplicamos el puntaje por letra
                 puntaje_letra = 2 * puntaje_letra
-                duplicar = True
             elif self._botones[casillero] == '++':  # triplicamos el puntaje por letra
                 puntaje_letra = 3 * puntaje_letra
-                triplicar = True
-            elif self._botones[casillero] == '-':  # se le resta 1 punto al puntaje total obtenido
-                puntos += -1
-            elif self._botones[casillero] == '--':  # se le resta 2 puntos al puntaje total obtenido
-                puntos += -2
             elif self._botones[casillero] == '---':  # se le resta 3 puntos al puntaje total obtenido
-                puntos += -3
+                restar_tres = True
+            elif self._botones[casillero] == '--':  # se le resta 2 puntos al puntaje total obtenido
+                restar_dos = True
+            elif self._botones[casillero] == '-':  # se le resta 1 punto al puntaje total obtenido
+                restar_uno = True
             puntos += puntaje_letra  # sumamos el puntaje por cada letra de la palabra
-        if triplicar:
+        if triplicar_palabra:
             puntos = 3 * puntos
-        elif duplicar:
+        elif duplicar_palabra:
             puntos = 2 * puntos
+        if restar_tres and puntos >= 3:  # restamos el puntaje si hay algun casillero descuento y el puntaje no queda negativo
+            puntos -= 3
+        elif restar_dos and puntos >= 2:
+            puntos -= 2
+        elif restar_uno and puntos >= 1:
+            puntos -= 1
+
         print(str(puntos))
         self.sumPuntos(puntos)
 
