@@ -386,9 +386,9 @@ def main(guardado):
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
 
     if not(guardado):
-        nombre = sg.popup_get_text("ScrabbleAR está por comenzar, ingrese su nombre de jugador", title="Ingrese su nombre", default_text="Jugador invitado",size=(None, None),keep_on_top=True)
+        nombre = sg.popup_get_text("ScrabbleAR está por comenzar, ingrese su nombre de jugador", title="Ingrese su nombre", default_text="Invitado",size=(None, None),keep_on_top=True)
         if nombre == None or nombre == "":
-            nombre = "Jugador invitado"
+            nombre = "Invitado"
     else:
         nombre = config["nombre"]
     #Instanciacion de objetos y creacion del layout
@@ -632,6 +632,6 @@ def main(guardado):
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
-#     ScrabbleAR.main()
-if __name__ == "__main__":
-    main(False)
+    ScrabbleAR.main()
+# if __name__ == "__main__":
+#     main(False)
