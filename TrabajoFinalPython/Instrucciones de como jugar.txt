@@ -1,8 +1,8 @@
-ScrebbleAR es un juego de estrategia en el cual se juega maquina vs jugador por turnos,
+ScrabbleAR es un juego de estrategia en el cual se juega Jugador vs Maquina por turnos,
 con el objetivo de formar palabras colocando letras en los casilleros de un tablero
 para sumar puntos.
-Si se consiguen mas puntos que la maquina al final de la partida se gana, de
-lo contrario se pierde el juego.
+Si se consiguen mas puntos que la maquina al final de la partida se gana el juego, de
+lo contrario se pierde.
 
 En el juego hay distintos tipos de casilleros:
  • Casilleros de premio: que duplican o triplican el puntaje de la palabra

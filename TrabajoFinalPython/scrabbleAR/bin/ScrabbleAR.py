@@ -142,46 +142,44 @@ vocales haya sera mas dificil armar palabras""")]
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
     ]
     frame_ayuda_0 = [
-        [sg.T("""En la pestaña de configuraciones encontrara las siguientes opciones
-        • Dificultad
-        • Cantidad de letras
-        • Puntos por letra
-        • Tiempo
-        """)]
+        [sg.T("""ScrabbleAR es un juego de estrategia en el cual se juega Jugador vs Maquina por turnos,
+con el objetivo de formar palabras colocando letras en los casilleros de un tablero
+para sumar puntos.
+Si se consiguen mas puntos que la maquina al final de la partida se gana el juego, de
+lo contrario se pierde.""")]
     ]
+
     frame_ayuda_1 = [
-        [sg.Text("""• Facil: se permiten 'Sustantivos, adjetivos y verbos'
-• Medio: 'Adjetivos y verbos'
-• Dificil: Un tipo aleatorio
-        """)]
-    ]
+        [sg.Text("""Antes de empezar a jugar desde ScrabbleAR recomendamos hechar un vistazo
+a la pestaña "Configuracion de nivel", en ella se tiene la opcion de modificar aspectos
+importantes del juegos como por ej: la duracion de la partida, la dificultad,
+etc. En caso de que no se quiera modificar las configuraciones de partida se pueden dejar
+con estan por defecto.
+Para empezar a jugar nada mas basta con clickear en el boton "JUGAR" que se encuentra en
+la pestaña "Juego" del menu y empezara la partida dandote la opcion de ingresar tu nombre
+de usuario para guardar tu puntaje o jugar como jugador invitado.""")]
+        ]
 
     frame_ayuda_2 = [
-        [sg.Text(
-            """En el juego hay distintos tipos de casilleros:
-            • Casilleros de premio: que duplican o triplican el puntaje de la palabra
-            • Casilleros de descuento: Que quitan 1, 2 o 3 puntos dependiendo
+        [sg.Text("""Una vez empezada la partida se encuentran a disposicion del jugador el tablero
+y el atril con las fichas para poder jugar, para armar las palabras simplemente dando
+un click en la ficha deseada y el casillero del tablero deseado podemos ir armando
+letra a letra la palabra de nuestro turno.""")]]
 
-Cada uno de estos casilleros esta indicado con un color en cada nivel de dificultad
-            """
-        )]
-    ]
     frame_ayuda_3 = [
-        [sg.Text("""Si no podes formar ninguna palabra en tu turno
-podes darle al boton "Cambiar Fichas"
-para seleccionar las fichas que quieres cambiar y dandole de nuevo al boton
-se cambian
-• Solo hay 3 cambios de fichas por juego y cuando cambias perdes el turno
-"""
-        )]]
-
-
+        [sg.Text(""""Confirmar"
+"Deshacer"
+"Terminar"
+"Cambiar Fichas"
+"Posponer"
+"Pasar Turno"
+""")]]
 
     tab_lista = [
-                [sg.Tab("Info",layout=frame_ayuda_0)],
-                 [sg.Tab("Dificultad",layout=frame_ayuda_1)],
-                 [sg.Tab("Casilleros especiales",layout=frame_ayuda_2)],
-                 [sg.Tab("Cambio de fichas",layout=frame_ayuda_3)]]
+                [sg.Tab("Introduccion",layout=frame_ayuda_0)],
+                 [sg.Tab("Como empezar a jugar",layout=frame_ayuda_1)],
+                 [sg.Tab("Empezando la partida",layout=frame_ayuda_2)],
+                 [sg.Tab("Botones especiales",layout=frame_ayuda_3)]]
     tab4_layout = [[sg.TabGroup(layout=tab_lista)]]
     tab_grupo = [
         [sg.Tab("Juego", tab1_layout, element_justification='c' , key="-tab1-", background_color="#c5dbf1", title_color="#2c2825", border_width=0),
