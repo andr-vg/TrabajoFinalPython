@@ -1,0 +1,260 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The original template (the Legrand Orange Book Template) can be found here --> http://www.latextemplates.com/template/the-legrand-orange-book
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[11pt,fleqn]{book} % Default font size and left-justified equations
+
+\usepackage[spanish,activeacute,es-tabla]{babel}
+
+\usepackage[top=3cm,bottom=3cm,left=3.2cm,right=3.2cm,headsep=10pt,letterpaper]{geometry} % Page margins
+
+\usepackage{xcolor} % Required for specifying colors by name
+\definecolor{ocre}{RGB}{52,177,201} % Define the orange color used for highlighting throughout the book
+
+% Font Settings
+\usepackage{avant} % Use the Avantgarde font for headings
+%\usepackage{times} % Use the Times font for headings
+\usepackage{mathptmx} % Use the Adobe Times Roman as the default text font together with math symbols from the Sym­bol, Chancery and Com­puter Modern fonts
+
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage[utf8]{inputenc} % Required for including letters with accents
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+
+% Bibliography
+\usepackage[style=alphabetic,sorting=nyt,sortcites=true,autopunct=true,babel=hyphen,hyperref=true,abbreviate=false,backref=true,backend=biber]{biblatex}
+\addbibresource{bibliography.bib} % BibTeX bibliography file
+\defbibheading{bibempty}{}
+
+\input{structure} % Insert the commands.tex file which contains the majority of the structure behind the template
+
+\begin{document}
+\title{ScrabbleAR}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+% imagen original sacada de: 
+% <a href="https://pixabay.com/es/users/Wokandapix-614097/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=921254">Wokandapix</a> en <a href="https://pixabay.com/es/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=921254">Pixabay</a>
+
+\begingroup
+\thispagestyle{empty} 
+\begin{tikzpicture}[remember picture,overlay]
+\node[inner sep=0pt] (background) at (current page.center) {\includegraphics[scale=1]{Pictures/scrabble-maximizado - copia (3).jpg}};
+\draw (current page.center) node [fill=white,fill opacity=0.7,text opacity=1,inner sep=1.5cm]{\Huge\centering\bfseries\sffamily\parbox[c][][t]{\paperwidth}
+{\par\normalfont\fontsize{45}{45}\sffamily\selectfont 
+\centering \textbf{ScrabbleAR}\\%[45pt] % Book title
+{\LARGE Seminario de Python}\\ % [20pt] % Subtitle
+\vspace*{1cm}
+{\huge Julián Feregotti, Andrea Goyechea, Juan Sebastian Montalivet } \par
+}}; % Author name
+\end{tikzpicture}
+\vfill
+\endgroup
+
+%----------------------------------------------------------------------------------------
+%\newpage
+%~\vfill
+%\thispagestyle{empty}
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Table of contents heading image
+
+\pagestyle{empty} % No headers
+
+\tableofcontents % Print the table of contents itself
+
+%\cleardoublepage % Forces the first chapter to start on an odd page so it's on the right
+
+\pagestyle{fancy} % Print headers again
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 1
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Introducción}
+\vspace*{1cm}
+\index{Introducción}
+
+
+En este informe se detalla el proceso de implementación
+del juego denominado \emph{ScrabbleAR} \footnote{Repositorio del juego: \url{https://github.com/andr-vg/TrabajoFinalPython}} desarrollado en la materia Seminario de Lenguajes con opción Python. 
+
+\emph{ScrabbleAR} es un juego de estrategia basado en el popular juego Scrabble, en el que se intenta ganar puntos mediante la asociación de letras para la construcción de distintos tipos de palabras (según el nivel de dificultad) sobre un tablero.
+Está ideado para un único jugador, el cual deberá competir por puntos contra la computadora.
+
+El juego fue desarrollado principalmente con las librerías PySimpleGUI y Pattern de Python. 
+
+
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 2
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg}
+
+\chapter{Reglas del ScrabbleAR}
+\vspace*{1cm}
+\index{Reglas de ScrabbleAR}
+
+\section{Inicio del juego}
+Al inicio del juego, se visualiza un menú de opciones para:
+\begin{itemize}
+\item jugar, que permite iniciar una partida nueva, o retomar una partida previamente guardada.
+\item saber cómo se juega: Brinda información del juego y qué tipos de configuraciones y niveles dispone
+\item configurar el juego: nivel, duración de la partida, cantidad y puntaje por letra.
+\item visualizar el top 10 con mejores puntajes de partidas previas.
+\end{itemize}
+
+\subsection{Iniciar partida}
+\begin{itemize}
+\item Si se decide iniciar una partida nueva, aparecerá el tablero principal del juego y el primer turno será designado de manera aleatoria, en cualquier caso la primer palabra deberá posicionarse en el centro del tablero.
+
+\item Si se retoma una partida anterior, se buscará la información guardada desde un archivo de texto externo y se procederá a mostrar el tablero con la información y las fichas de la partida previa. 
+\end{itemize}
+
+\subsection{Configurar juego}
+Esta sección permite configurar el juego según preferencias del jugador, entre ellas se encuentran:
+\begin{itemize}
+    \item niveles:
+        \begin{itemize}
+            \item fácil: se pueden formar sustantivos, adjetivos y verbos.
+            \item medio: sólo se permiten formar adjetivos y verbos.
+            \item difícil: se designa aleatoriamente un tipo.
+        \end{itemize}
+    \item tiempo: de 1 a 60 minutos.
+    \item puntos por letra: se podrán asignar de 1 a 10 puntos inclusive.
+    \item cantidad de fichas por letra: se podrán asignar de 1 a 10 por letra.
+\end{itemize}
+
+\section{Desarrollo del juego}
+El juego dispone de tres tableros distintos según el nivel de dificultad. Los tableros poseen distintos colores en sus casilleros que indican el tipo, y estos pueden ser:
+\begin{itemize}
+    \item casilleros premio: pueden duplicar o triplicar el puntaje por palabra formada.
+    \item casilleros descuento: pueden restar 1, 2 o 3 puntos al puntaje por palabra formada.
+    \item casilleros normales: no suman ni restan puntos.
+\end{itemize}
+Una vez en la ventana principal del juego, se visualiza el tablero, junto a los atriles de la computadora y el jugador, las fichas del jugador con sus respectivos puntajes, y la información necesaria de la partida. Tanto el jugador como la máquina dispondrán siempre de siete (7) fichas. Éstas se irán reponiendo en el atril a medida que los jugadores formen palabras válidas en el tablero.
+
+\subsection{Turno del jugador}
+Durante su turno, el jugador deberá formar una palabra válida con sus fichas y ubicarlas en casilleros libres contiguos del tablero. Si se confunde puede devolver las fichas al atril (botón deshacer) y comenzar a formar de nuevo.  Si no puede formar ninguna palabra con sus fichas, tiene la opción de cambiarlas hasta 3 veces por partida, perdiendo su turno en este caso.
+
+Una vez confirmada la palabra, se analiza si pertenece al tipo de palabra requerido en el nivel, en caso de ser válido, se actualizará el tablero y el puntaje del jugador. Caso contrario, las fichas volverán al atril.
+
+Si se encuentra en el nivel difícil, el jugador dispone de un determinado tiempo por turno para formar una palabra. En caso de superar el límite de tiempo especificado en pantalla, pierde el turno.
+
+El puntaje por palabra válida se obtiene sumando primero los puntos por cada letra que la forma, y luego, según los casilleros elegidos en el tablero, se duplicará o triplicará este puntaje en caso de ser de tipo premio, o se descontarán puntos en caso de ser de tipo descuento.
+
+%\subsection{Turno de la máquina}
+%Durante
+
+\subsection{Requisitos para formar palabras en el tablero}
+El jugador debe formar una palabra usando dos (2) o más letras, colocándolas horizontalmente (las letras ubicadas de izquierda a derecha) o verticalmente (en orden descendente) sobre el tablero. 
+En caso de serle asignado el primer turno, la palabra deberá estar posicionada en el centro del tablero, es decir, una de las fichas deberá ocupar el casillero central.
+Las palabras no deben cruzarse, pero sí pueden quedar “pegadas” tanto horizontal como verticalmente.
+Se puede elegir cualquier zona no ocupada del tablero para ubicar la palabra.
+
+\subsection{Posponer partida}
+El jugador puede posponer la partida actual. En ese caso se guardará la información del tablero y del juego hasta el momento actual, permitiendo continuar desde este punto la partida en otro momento.
+
+\section{Finalización del juego}
+El ganador será el jugador con mayor puntaje al momento de concluir la partida. El juego finaliza cuando:
+
+\begin{itemize}
+    \item se acabó el tiempo
+    \item se acabaron las fichas
+    \item el jugador decidió terminar la partida.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 3
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg}
+
+\chapter{Temas estudiados}
+\vspace*{1cm}
+\index{Temas estudiados}
+
+\section{Sobre entornos virtuales}
+
+\section{Sobre PySimpleGUI}
+
+\section{Sobre otros módulos utilizados}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 4
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Problemas y soluciones}
+\vspace*{1cm}
+\index{Problemas y soluciones}
+
+\section{Problemas y soluciones surgidas durante el desarrollo}
+
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 5
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Consideraciones éticas sobre el desarrollo}
+\vspace*{1cm}
+\index{Consideraciones éticas sobre el desarrollo}
+
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 6
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Conclusiones y trabajos futuros}
+\vspace*{1cm}
+\index{Conclusiones y trabajos futuros}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 7
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Referencias}
+\vspace*{1cm}
+\index{Referencias}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 8
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Anexo 1: guía de usuario}
+\vspace*{1cm}
+\index{Anexo 1}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 9
+%----------------------------------------------------------------------------------------
+
+\chapterimage{scrabble-921255_1920.jpg} % Chapter heading image
+
+\chapter{Anexo 2: guía para el desarrollador}
+\vspace*{1cm}
+\index{Anexo 2}
+
+%-------------------------------------------------------------------------------------
+
+\end{document}
