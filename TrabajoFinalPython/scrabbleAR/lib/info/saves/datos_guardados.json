@@ -1,6 +1,6 @@
 {
-  "tiempo": "10:29",
-  "dificultad": "facil",
+  "tiempo": "2:53",
+  "dificultad": "medio",
   "grupo_1": 1,
   "grupo_2": 2,
   "grupo_3": 3,
@@ -15,9 +15,9 @@
   "grupo_5_cant": 2,
   "grupo_6_cant": 1,
   "grupo_7_cant": 1,
-  "puntos_j": 81,
-  "puntos_pc": 21,
-  "nombre": "Andrea",
+  "puntos_j": 0,
+  "puntos_pc": 0,
+  "nombre": "Invitado",
   "turno_jugador": "True",
   "turno_pc": "False"
 }
