@@ -9,7 +9,7 @@ import os
 import json
 import ScrabbleAR   #-----------------> Menu del juego
 import GameConfigManager as cm #---------> Manejo de configuraciones
-from pathlib import Path
+import math
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 def hay_fichas(necesito, bolsa):
@@ -45,7 +45,7 @@ def devolver_fichas(dic,keys,bolsa):
         dic[nro]=""
     return dic
 
-def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas):
+def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -102,14 +102,8 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
                                         }
 
     sg.theme("MyNewTheme")
-    # sg.theme("lightblue")
-    #sg.theme_background_color('#488A99')
-
-    ############### Lectura del archivo del tablero .csv ###############
-
     layout = []
     botones = {}
-    key = 0
 
     # vamos a tratar a los botones como una matriz nxn, donde cada elem tiene asociada una posicion (i,j)
     # 0<=i<=n-1 y 0<=j<=n-1
@@ -117,47 +111,50 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
     columna_casilleros = []
 
     i = 0  # i lleva la posicion de fila
-    for fila in csvreader:
+
+    # import pprint
+    # p = pprint.PrettyPrinter(indent=2)
+    # p.pprint(tab)
+    layout = []
+    botones = dict()
+    largo = int(math.sqrt(len(tab)))
+    for x in range(largo):
         fichas = []
-        j = 0  # j lleva la posicion de columna
-        for boton in fila:
-            key = (i, j)  # por lo tanto las key ahora son elementos de una matriz
-            if boton == "":
+        for y in range(largo):
+            key = (x,y)
+            if tab[key] == "":
                 fichas.append(casillero('', key))
                 botones[key] = ""
-            elif boton == "+":
+            elif tab[key] == "+":
                 fichas.append(casillero('+', key))
                 botones[key] = "+"
-            elif boton == "++":
+            elif tab[key] == "++":
                 fichas.append(casillero('++', key))
                 botones[key] = "++"
-            elif boton == '+++':
+            elif tab[key] == '+++':
                 fichas.append(casillero('+++', key))
                 botones[key] = '+++'
-            elif boton == '++++':
+            elif tab[key] == '++++':
                 fichas.append(casillero('++++', key))
                 botones[key] = '++++'   
-            elif boton == "-":
+            elif tab[key] == "-":
                 fichas.append(casillero('-', key))
                 botones[key] = "-"
-            elif boton == "--":
+            elif tab[key] == "--":
                 fichas.append(casillero('--', key))
                 botones[key] = "--"
-            elif boton == "---":
+            elif tab[key] == "---":
                 fichas.append(casillero('---', key))
                 botones[key] = "---"
             # casilleros que ya están ocupados por letras (caso de partida previamente guardada)
-            elif (boton[0] in string.ascii_uppercase) and (boton != " "):
-                if (len(boton)> 1):
-                    if boton[1] == "*":
-                        fichas.append(ficha_pc(boton[0],key)) # casillas ocupadas por la maquina en una partida previa fueron guardadas con *
+            elif (tab[key][0] in string.ascii_uppercase) and (tab[key] != " "):
+                if (len(tab[key])> 1):
+                    if tab[key][1] == "*":
+                        fichas.append(ficha_pc(tab[key][0],key)) # casillas ocupadas por la maquina en una partida previa fueron guardadas con *
                     else:
-                        fichas.append(ficha_jugador(boton[0],key))  # casillas ocupadas por el jugador en una partida previa
+                        fichas.append(ficha_jugador(tab[key][0],key))  # casillas ocupadas por el jugador en una partida previa
                 botones[key] = ""
-
-            j += 1
         columna_casilleros.append(fichas)
-        i += 1
 
     long_tablero  = len(columna_casilleros) #Esto lo necesita la clase PC para las palabras
     fichas_por_jugador = 7
@@ -217,7 +214,6 @@ def crear_layout(bolsa, csvreader, dificultad, tipo, img_nros, puntos_por_letra,
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
-
     return layout, letras_jugador, letras_maquina, botones , long_tablero
 
 def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
@@ -355,18 +351,17 @@ def main(guardado):
         #Abre para windows y linux
     # ----------------------------------------------------------------------
     if (guardado): #Si hay partida guardada carga el tablero guardado
-        arch = open(os.path.join(absolute_path, "lib","info","guardado.csv"),newline = '')
+        tab = cm.cargar_tablero("guardado")
     else:
         try:
             if(dificultad == "facil"):
-                arch = open(os.path.join(absolute_path, "lib","info","tablero-nivel-1.csv"), "r")
+                tab = cm.cargar_tablero("facil")
             elif (dificultad == "medio"):
-                arch = open(os.path.join(absolute_path, "lib","info","tablero-cohete.csv"), "r")
+                tab = cm.cargar_tablero("medio")
             else:
-                arch = open(os.path.join(absolute_path, "lib","info","tablero-21x21.csv"), "r")
+                tab = cm.cargar_tablero("dificil")
         except (FileNotFoundError):
             sg.popup("No se ha encontrado el tablero",keep_on_top=True)
-    csvreader = csv.reader(arch)
     # ----------------------------------------------------------------------
         # Opciones de dificultad --> lista de tags
     # ----------------------------------------------------------------------
@@ -393,7 +388,7 @@ def main(guardado):
         nombre = config["nombre"]
     #Instanciacion de objetos y creacion del layout
     palabras_usadas = []
-    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa, csvreader, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre, palabras_usadas)  # botones es un diccionario de pares (tupla, valor)
+    layout, letras, letras_pc, botones, long_tablero = crear_layout(bolsa,tab ,dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre, palabras_usadas)  # botones es un diccionario de pares (tupla, valor)
     from JugadorPC import PC
     from Jugador import Jugador
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
@@ -437,7 +432,6 @@ def main(guardado):
         aux_tiempo = config["tiempo"].split(":")
         cont_tiempo_min = int(aux_tiempo[0])
         cont_tiempo_seg = int(aux_tiempo[1])
-    arch.close()
     window.finalize()
     # se decide de forma aleatoria quien comienza la partida si no se abrio el archivo guardado
     if guardado:
@@ -506,7 +500,7 @@ def main(guardado):
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
                     window[ind].update(letras[box], disabled=True, button_color = ("black",colores["letra_jugador"]))  # actualizo la casilla y la desactivo
                     botones = pc.get_botones().copy()
-                    botones[ind] = "" + "/"
+                    botones[ind] = letras[box] + "/"
                     pc.actualiza_botones(botones)
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
@@ -565,7 +559,7 @@ def main(guardado):
             # boton de guardar partida
             elif event == "-p" or guardar_partida:
                 boton = pc.get_botones()
-                cm.guardar_partida(window,boton)
+                cm.guardar_partida(boton)
                 datos = dict()
                 datos = config
                 datos["tiempo"] = tiempo_str
@@ -607,9 +601,9 @@ def main(guardado):
                 sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None,keep_on_top=True)
                 if (guardado):
                     #Si termine la partida guardada la borro
-                    os.remove(os.path.join(absolute_path, "lib","info","datos_guardados.json"))
-                    os.remove(os.path.join(absolute_path, "lib","info","datos_pc.json"))
-                    os.remove(os.path.join(absolute_path, "lib","info","guardado.csv"))
+                    os.remove(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"))
+                    os.remove(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"))
+                    os.remove(os.path.join(absolute_path, "lib","info","saves","guardado.csv"))
                 break
             # boton de confirmar palabra
             elif event == "-c":
@@ -632,6 +626,6 @@ def main(guardado):
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
-    ScrabbleAR.main()
-# if __name__ == "__main__":
-#     main(False)
+    # ScrabbleAR.main()
+if __name__ == "__main__":
+    main(True)

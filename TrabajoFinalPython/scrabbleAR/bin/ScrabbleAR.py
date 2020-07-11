@@ -16,7 +16,7 @@ salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
 # ----------------------------------------------------------------------
 def limpiar_json():
     try:
-        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"r")
+        arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"r")
         datos = json.load(arch)
         lista = datos["puntos"]
         lista_final = []
@@ -25,7 +25,7 @@ def limpiar_json():
             if aux[4] != "0":
                 lista_final.append(cadena)
         arch.close()
-        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"w")
+        arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"w")
         datos["puntos"] = lista_final
         json.dump(datos,arch,indent=4)
         arch.close()
@@ -43,7 +43,7 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
     Cargamos los puntajes del top 10
     """
     try:
-        arch = open(os.path.join(absolute_path, "lib","info","top_10.json"),"r")
+        arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"r")
         list_aux = []
         list_final = []
         top_10 = json.load(arch)
@@ -197,7 +197,7 @@ def guardar_configuracion(config):
     """
     Guarda la configuracion que hizo el usuario en un .json
     """
-    arch = open(os.path.join(absolute_path, "lib","info","configUsuario.json"), "w")
+    arch = open(os.path.join(absolute_path, "lib","info","config","configUsuario.json"), "w")
     json.dump(config,arch,indent=2)
     arch.close()
 # ----------------------------------------------------------------------
@@ -206,7 +206,7 @@ def cargar_config_pred():
     Carga la configuracion predeterminada del juego
     """
     try:
-        arch = open(os.path.join(absolute_path, "lib","info","configPred.json"), "r")
+        arch = open(os.path.join(absolute_path, "lib","info","config","configPred.json"), "r")
         config = dict()
         config = json.load(arch)
         arch.close()
@@ -221,7 +221,7 @@ def cargar_config_usr():
     en la pestaña de configuracion
     """
     try:
-        arch = open(os.path.join(absolute_path, "lib","info","configUsuario.json"), "r")
+        arch = open(os.path.join(absolute_path, "lib","info","config","configUsuario.json"), "r")
         config = dict()
         config = json.load(arch)
         arch.close()
@@ -237,7 +237,7 @@ def main():
     """
     #Si hay configuraciones de usuario las cargo para mostrarlas en
     #pestaña config
-    if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info")):
+    if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info","config")):
         config = cargar_config_usr()
     else:
         config = cargar_config_pred()
@@ -273,7 +273,7 @@ def main():
 
         if (event == "-pred-"):
             try:
-                os.remove(os.path.join(absolute_path, "lib","info","configUsuario.json"))
+                os.remove(os.path.join(absolute_path, "lib","info","config","configUsuario.json"))
                 window["-pred-"].update(disabled=True)
                 config = cargar_config_pred()
                 #---------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ def main():
                 sg.popup("Configuraciones reiniciadas")
 
         if (event == "-jugar-"):
-            if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "lib","info"))):
+            if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
                 popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "))
                 if (popup == "   NO   "):
                     window.close()
@@ -317,7 +317,7 @@ def main():
             window.refresh()
         if (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
-            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info")):
+            if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info","config")):
                 config = cargar_config_usr()
             else:
                 config = cargar_config_pred()

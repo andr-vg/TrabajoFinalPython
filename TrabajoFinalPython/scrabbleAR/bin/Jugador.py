@@ -19,7 +19,7 @@ class Jugador(Jugadores):
         """
         Guarda la lista de palabras que formo el jugador
         """
-        datos = open(os.path.join(absolute_path, "lib","info","palabras_jugador.json"),"w")
+        datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"w")
         json.dump(self._palabras_usadas,datos)
 
     def _cargar_datos(self):
@@ -27,7 +27,7 @@ class Jugador(Jugadores):
         Carga la lista de palabras usadas por el jugador
         """
         try:
-            datos = open(os.path.join(absolute_path, "lib","info","palabras_jugador.json"),"r")
+            datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r")
             self._palabras_usadas = json.load(datos)
         except (FileNotFoundError):
             sg.popup("No se encontro archivo con palabras del usuario")
