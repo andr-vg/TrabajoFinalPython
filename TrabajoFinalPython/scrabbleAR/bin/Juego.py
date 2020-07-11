@@ -74,7 +74,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     # casilleros de name =  +++ : duplican ptos por palabra
     # casilleros de name =  ++++ : triplican ptos por palabra
     # casilleros de name = '' : no suman ni restan ptos
-    
+
 
     casillero = lambda name, key: sg.Button('', border_width=3, size=(3, 1), key=key,
                                          pad=(0, 0), button_color=('black', colores[dificultad][name]))
@@ -136,7 +136,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
                 botones[key] = '+++'
             elif tab[key] == '++++':
                 fichas.append(casillero('++++', key))
-                botones[key] = '++++'   
+                botones[key] = '++++'
             elif tab[key] == "-":
                 fichas.append(casillero('-', key))
                 botones[key] = "-"
@@ -187,7 +187,8 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
         [sg.T("Cambios de fichas"),sg.T("3",key="cfichas")],
        [sg.Text("Tus Puntos:"),sg.T("0",key="p_j",size=(0,1))],
        [sg.Text("Puntos Pc:"),sg.T("0",key="p_pc",size=(0,1))],
-       [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))]
+       [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))],
+       [sg.Button("Como jugar", key="como_jugar"),sg.Button("Botonera", key="botonera"),sg.Button("Ver configuracion", key="ver_config")]
     ]
 
     columna_datos.extend(colum)
@@ -199,18 +200,16 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     columna_principal = [sg.Column(columna_casilleros, background_color='grey'), sg.Column(frame_colum)]
 
     layout.append(columna_principal)
-    frame_palabras_usadas = [
-        [sg.InputCombo(palabras_usadas,key="-pal-",size=(15,1))]
-    ]
+    frame_palabras_usadas = [[sg.InputCombo(palabras_usadas,key="-pal-",size=(15,1))]]
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
                              button_color=('white', colores["atril"]),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)]]
-    fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")]+ [sg.Frame("Palabras Usadas",layout=frame_palabras_usadas)]
+    fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")] + [sg.Frame("Palabras Usadas",layout=frame_palabras_usadas)]
     fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
-    fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True), sg.Button("Terminar", key="-t"),
+    fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True),sg.Button("Pasar Turno",key="-paso"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
-                    sg.Button("Posponer", key="-p"),sg.Button("Pasar Turno",key="-paso")]
+                    sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t")]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
@@ -255,7 +254,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero, palabras_usadas = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
     pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
     if actualizar_juego:
-        window['-d'].update(disabled=True) 
+        window['-d'].update(disabled=True)
         window["-pal-"].update(None,input_palabra(palabras_usadas)) # actualizamos el listbox de palabras si lo ubico correctamente
         letras = pj.getFichas()
         dar_fichas(letras, bolsa)
@@ -324,8 +323,7 @@ def main(guardado):
 
     import random
     #-----------------------------------------------------------
-        #Configuracion de bolsa puntos y
-        #Imagen de numeros
+        #Configuracion de bolsa puntos y Imagen de numeros
     #-----------------------------------------------------------
     bolsa = {"E":0,"A":0,"I":0,"O":0,"U":0,"S":0,"N":0,"R":0,"L":0,"T":0,"C":0,"D":0,"M":0,"B":0,
         "G":0,"P":0,"F":0,"H":0,"V":0,"J":0,"Y":0,"K":0,"Ñ":0,"Q":0,"W":0,"X":0,"Z":0,"LL":0,"RR":0}
@@ -348,7 +346,6 @@ def main(guardado):
     # ----------------------------------------------------------------------
         #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
         #Abro el tablero correspondiente a la dificultad seleccionada
-        #Abre para windows y linux
     # ----------------------------------------------------------------------
     if (guardado): #Si hay partida guardada carga el tablero guardado
         tab = cm.cargar_tablero("guardado")
@@ -436,7 +433,7 @@ def main(guardado):
     # se decide de forma aleatoria quien comienza la partida si no se abrio el archivo guardado
     if guardado:
         turno_pc = True if config["turno_pc"] == "True" else False
-        turno_jugador = True if config["turno_jugador"] == "True" else False 
+        turno_jugador = True if config["turno_jugador"] == "True" else False
     else:
         turno = random.randint(0,1)
         if turno == 1: # empieza el jugador
@@ -449,7 +446,7 @@ def main(guardado):
         #Loop de ventana
     # ----------------------------------------------------------------------
     while True:
-        # 
+        #
         event, values = window.read(timeout=1000)
         # print("POS: ",event)
         if (cont_tiempo_seg == 0):
@@ -472,7 +469,7 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
-                guardar_partida = salir_del_juego() 
+                guardar_partida = salir_del_juego()
                 if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
@@ -616,7 +613,7 @@ def main(guardado):
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
         if turno_pc:
-            # time.sleep(2)   #maquina pensando la jugarreta
+            time.sleep(1)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,primer_turno)
             fichas_pc = pc.getFichas()
             dar_fichas(fichas_pc, bolsa)

@@ -5,6 +5,8 @@ import sys
 import json
 import ScrabbleAR
 import pathlib
+from GameConfigManager import empezando_la_partida
+from GameConfigManager import botones_especiales
 # ----------------------------------------------------------------------
 #Path making
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
@@ -12,7 +14,6 @@ absolute_path = os.path.join(os.path.dirname(__file__), '..')
 logo = os.path.join(absolute_path, "lib","media","Logo.png")
 jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
-
 # ----------------------------------------------------------------------
 def limpiar_json():
     try:
@@ -31,8 +32,6 @@ def limpiar_json():
         arch.close()
     except (FileNotFoundError):
         pass
-
-
 # ----------------------------------------------------------------------
 def key_orden(cadena):
     cadena = cadena.split()
@@ -82,7 +81,6 @@ def crear_layout(config):
         sg.Radio("Medio", "nivel", tooltip="Sustantivos y verbos", key="medio", default= True if config["dificultad"] == "medio" else False ),
         sg.Radio("Dificil", "nivel", tooltip="Categoria al azar", key="dificil", default= True if config["dificultad"] == "dificil" else False)]
     ]
-
     colum = [
         [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_1_cant"],key="grupo_1_cant")],
         [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_2_cant"],key="grupo_2_cant")],
@@ -95,7 +93,6 @@ def crear_layout(config):
     frame_col = [
         [sg.Frame("Cantidad de letras",layout=colum)]
     ]
-
     frame_1 = [
         [sg.Text("A, E, O, S, I, U, N, L, R, T"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_1"],key="grupo_1")],
         [sg.Text("C, D, G"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_2"],key="grupo_2")],
@@ -105,27 +102,26 @@ def crear_layout(config):
         [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_6"],key="grupo_6")],
         [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_7"],key="grupo_7")]
     ]
-
     frame_2 = [
         [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=round(config["tiempo"] / 60),orientation="horizontal",key="-tiempo-")]])]
     ]
 
     ayuda_config= [
-[sg.Text("""Dificultad: segun la dificultad que se elija, se podran formar
+[sg.Text("""•Dificultad: segun la dificultad que se elija, se podran formar
 distintos tipos de palabras y se jugara con distintos tableros.
 	• Facil: se permiten formar Sustantivos, adjetivos y verbos
 	• Medio: se permiten formar Adjetivos y verbos
 	• Dificil: se permiten formar palabras de tipo aleatorio
 
-Tiempo: Indica cuanto dura la partida de principio a fin, teniendo en cuenta
+•Tiempo: Indica cuanto dura la partida de principio a fin, teniendo en cuenta
 que la maquina tarda un segundo en hacer su jugada.
 
-Puntos por letra: cuantos puntos vale cada letra, al colocar una palabra valida
+•Puntos por letra: cuantos puntos vale cada letra, al colocar una palabra valida
  los puntos de las letras utilizadas se sumaran al puntaje del jugador.
 
-Cantidad de letras: esta opcion permite elegir con cuantas letras se quiere jugar.
+•Cantidad de letras: esta opcion permite elegir con cuantas letras se quiere jugar.
 una partida con pocas letras sera una partida mas corta y mientras menos
-vocales haya sera mas dificil armar palabras""")]
+vocales haya sera mas dificil armar palabras.""")]
     ]
     tab2_layout0 = [
         [sg.Column(frame_2),sg.Frame("Dificultad",layout=frame_0)],
@@ -152,34 +148,19 @@ lo contrario se pierde.""")]
     frame_ayuda_1 = [
         [sg.Text("""Antes de empezar a jugar desde ScrabbleAR recomendamos hechar un vistazo
 a la pestaña "Configuracion de nivel", en ella se tiene la opcion de modificar aspectos
-importantes del juegos como por ej: la duracion de la partida, la dificultad,
-etc. En caso de que no se quiera modificar las configuraciones de partida se pueden dejar
+importantes del juegos como por ej: la duracion de la partida, la dificultad, etc.
+En caso de que no se quiera modificar las configuraciones de partida se pueden dejar
 con estan por defecto.
 Para empezar a jugar nada mas basta con clickear en el boton "JUGAR" que se encuentra en
-la pestaña "Juego" del menu y empezara la partida dandote la opcion de ingresar tu nombre
-de usuario para guardar tu puntaje o jugar como jugador invitado.""")]
-        ]
-
-    frame_ayuda_2 = [
-        [sg.Text("""Una vez empezada la partida se encuentran a disposicion del jugador el tablero
-y el atril con las fichas para poder jugar, para armar las palabras simplemente dando
-un click en la ficha deseada y el casillero del tablero deseado podemos ir armando
-letra a letra la palabra de nuestro turno.""")]]
-
-    frame_ayuda_3 = [
-        [sg.Text(""""Confirmar"
-"Deshacer"
-"Terminar"
-"Cambiar Fichas"
-"Posponer"
-"Pasar Turno"
-""")]]
+la pestaña "Juego" de este menu y empezara la partida dandote la opcion de ingresar tu nombre
+de usuario para guardar tu puntaje o jugar como jugador invitado.""")]]
 
     tab_lista = [
                 [sg.Tab("Introduccion",layout=frame_ayuda_0)],
                  [sg.Tab("Como empezar a jugar",layout=frame_ayuda_1)],
-                 [sg.Tab("Empezando la partida",layout=frame_ayuda_2)],
-                 [sg.Tab("Botones especiales",layout=frame_ayuda_3)]]
+                 [sg.Tab("Empezando la partida",layout= [[sg.Text(empezando_la_partida())]] )],
+                 [sg.Tab("Botones especiales",layout= [[sg.Text(botones_especiales())]] )]
+                 ]
     tab4_layout = [[sg.TabGroup(layout=tab_lista)]]
     tab_grupo = [
         [sg.Tab("Juego", tab1_layout, element_justification='c' , key="-tab1-", background_color="#c5dbf1", title_color="#2c2825", border_width=0),

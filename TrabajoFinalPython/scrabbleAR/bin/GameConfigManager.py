@@ -4,7 +4,7 @@
 #
 #------------------------------------------------------------------------------------
 import os
-import ScrabbleAR 
+import ScrabbleAR
 import json
 import PySimpleGUI as sg
 import csv
@@ -15,7 +15,7 @@ absolute_path = os.path.join(os.path.dirname(__file__), '..')
 def convertirJson(botones):
     dic_aux = {}
     for clave,valor in botones.items():
-        dic_aux[str(clave[0])+","+str(clave[1])] = valor        
+        dic_aux[str(clave[0])+","+str(clave[1])] = valor
     return dic_aux
 
 def convertirDic(botones):
@@ -24,7 +24,7 @@ def convertirDic(botones):
     """
     dic_aux = {}
     for clave,valor in botones.items():
-        dic_aux[tuple(map(int,clave.split(",")))] = valor  
+        dic_aux[tuple(map(int,clave.split(",")))] = valor
     # import pprint
     # p = pprint.PrettyPrinter(indent=4)
     # p.pprint(dic_aux)
@@ -39,7 +39,7 @@ def cargar_tablero(tablero):
         elif tablero == "guardado":
             base = open(os.path.join(absolute_path,"lib","info","saves","guardado.json"),"r")
         else:
-            base = open(os.path.join(absolute_path,"lib","info","boards","dificil.json"),"r")            
+            base = open(os.path.join(absolute_path,"lib","info","boards","dificil.json"),"r")
         tablero = json.load(base)
         tab = convertirDic(tablero)
     except (FileNotFoundError):
@@ -182,3 +182,22 @@ def cargar_colores():
               }
     finally:
         return (dic_col)
+
+def empezando_la_partida():     #estas 2 funciones las importo al menu y al juego
+    return """Una vez empezada la partida se encuentran a disposicion del jugador el tablero
+y el atril con las fichas para poder jugar, para armar las palabras simplemente dando
+un click en la ficha deseada y el casillero del tablero deseado podemos ir armando
+letra a letra la palabra de nuestro turno, de esta forma, formando palabras validas, aprovechando
+los casilleros de bonus y evitando los casilleros de penalizacion, el jugador va sumando puntos.
+El objetivo del juego es obtener mas puntos que la maquina antes de que se acabe el tiempo, se
+acaben las fichas del juego o que ya no se puedan formar palabras"""
+
+def botones_especiales():
+    return """•"Confirmar": Una vez colocada una palabra sobre el tablero, verifica si esa palabra es valida,
+en caso de ser valida se sumaran puntos al puntaje del jugador, de lo contrario las fichas usadas volveran al atril.
+•"Deshacer": Permite devolver al atril las fichas que se hayan puesto en el tablero en este turno.
+•"Terminar": Finaliza la partida
+•"Cambiar Fichas": Permite seleccionar las fichas
+•"Posponer": Guarda el estado del juego hasta el momento (fichas, puntos, palabras jugadas, etc)
+para poder continuar la partida en otro momento
+•"Pasar Turno": Permite cederle el turno a la maquina"""
