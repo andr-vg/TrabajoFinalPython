@@ -205,7 +205,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True),sg.Button("Pasar Turno",key="-paso"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
-                    sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t")]
+                    sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t"), sg.Button("Seleccionar todas las fichas", key="-selec", visible=False), sg.Button("Deshacer selección", key="-deshacer-selec", visible=False)]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
@@ -531,11 +531,13 @@ def main(guardado):
                 window["-t"].update(disabled=True)
                 window.Disable() # desactivamos la ventana del juego durante el popup
                 sg.Popup('Cambio de fichas:',
-                             'Seleccione clickeando las letras que quiere cambiar y ',
-                             'vuelva a clickear en \"Cambiar fichas\" para confirmar ',
-                             'el cambio',keep_on_top=True)
+                             'Seleccione las letras que quiere cambiar o el boton ',
+                             '\"seleccionar todas las fichas\" y vuelva a clickear en ',
+                             '\"Cambiar fichas\" para confirmar el cambio',keep_on_top=True)
                 window.enable()
                 window.BringToFront() # para que no se minimice despues del popup
+                window["-selec"].update(visible=True)
+                window["-deshacer-selec"].update(visible=True)
                 cerro_ventana = False
                 while True:
                     event = window.read()[0]
@@ -545,7 +547,18 @@ def main(guardado):
                     if event in letras.keys():
                         letras_a_cambiar.append(event)
                         window[event].update(disabled=True)
+                    elif event == "-selec":
+                        for ficha in letras.keys():
+                            if ficha not in letras_a_cambiar:
+                                letras_a_cambiar.append(ficha)
+                                window[ficha].update(disabled=True)
+                    elif event == "-deshacer-selec":
+                        for ficha in letras_a_cambiar:
+                            window[ficha].update(disabled=False)
+                        letras_a_cambiar = []
                     elif event == "-cf":
+                        window["-selec"].update(visible=False)
+                        window["-deshacer-selec"].update(visible=False)
                         if letras_a_cambiar:
                             letras=devolver_fichas(letras,letras_a_cambiar,bolsa)
                             dar_fichas(letras,bolsa)
