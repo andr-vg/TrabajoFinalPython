@@ -294,21 +294,27 @@ def salir_del_juego():
     Ventana que pregunta si salir y guardar el juego, retorna booleanos segun la respuesta del jugador
     """
     guardar_partida = False
+    salir = False
 
     layout2 = [[sg.Text('Está saliendo del juego, desea guardarlo?')],
-               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar')]]
+               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar')
+                sg.Button('Continuar partida', key='-seguir')]]
     window_salir = sg.Window('Abandonar partida actual', layout2)
 
     while True:
         event, values = window_salir.read()
-        if event in (None, '-noguardar'):
+        if event in (None, '-seguir'):
             break
         if event == '-guardar':
             guardar_partida = True
+            salir = True
+            break
+        if event == '-noguardar':
+            salir = True
             break
     window_salir.close()
 
-    return guardar_partida
+    return guardar_partida, salir
 
 def preguntar_si_sigue_el_juego():
     """
@@ -481,8 +487,8 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
-                guardar_partida = salir_del_juego()
-                if not guardar_partida:
+                guardar_partida, salir = salir_del_juego()
+                if salir and not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
             # botones del atril del jugador
