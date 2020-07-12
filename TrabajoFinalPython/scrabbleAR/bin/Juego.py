@@ -297,7 +297,7 @@ def salir_del_juego():
     salir = False
 
     layout2 = [[sg.Text('Está saliendo del juego, desea guardarlo?')],
-               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar')
+               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar'),
                 sg.Button('Continuar partida', key='-seguir')]]
     window_salir = sg.Window('Abandonar partida actual', layout2)
 
