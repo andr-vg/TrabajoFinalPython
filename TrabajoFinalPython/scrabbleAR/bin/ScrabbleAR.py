@@ -155,21 +155,17 @@ Para empezar a jugar nada mas basta con clickear en el boton "JUGAR" que se encu
 la pestaña "Juego" de este menu y empezara la partida dandote la opcion de ingresar tu nombre
 de usuario para guardar tu puntaje o jugar como jugador invitado.""")]]
 
-    tab_lista = [
-                [sg.Tab("Introduccion",layout=frame_ayuda_0)],
+    tab_lista = [[sg.Tab("Introduccion",layout=frame_ayuda_0)],
                  [sg.Tab("Como empezar a jugar",layout=frame_ayuda_1)],
                  [sg.Tab("Empezando la partida",layout= [[sg.Text(empezando_la_partida())]] )],
-                 [sg.Tab("Botones especiales",layout= [[sg.Text(botones_especiales())]] )]
-                 ]
+                 [sg.Tab("Botones especiales",layout= [[sg.Text(botones_especiales())]] )]]
     tab4_layout = [[sg.TabGroup(layout=tab_lista)]]
     tab_grupo = [
         [sg.Tab("Juego", tab1_layout, element_justification='c' , key="-tab1-", background_color="#c5dbf1", title_color="#2c2825", border_width=0),
          sg.Tab("Como jugar", tab4_layout, element_justification='c' , key="-tab4-", background_color="#c5dbf1", title_color="#c5dbf1", border_width = 0),
          sg.Tab("Config nivel", tab2_layout, element_justification='c' , key="-tab2-", background_color="#c5dbf1", title_color="#c5dbf1",
                 border_width=0),
-         sg.Tab("Top 10", tab3_layout, element_justification='c' , key="-tab3-", background_color="#c5dbf1", title_color="#c5dbf1", border_width=0)]
-    ]
-
+         sg.Tab("Top 10", tab3_layout, element_justification='c' , key="-tab3-", background_color="#c5dbf1", title_color="#c5dbf1", border_width=0)]]
     layout = [[sg.Image(logo, background_color=("#c5dbf1"))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
     return layout

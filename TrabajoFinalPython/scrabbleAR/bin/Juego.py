@@ -188,15 +188,11 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
        [sg.Text("Tus Puntos:"),sg.T("0",key="p_j",size=(0,1))],
        [sg.Text("Puntos Pc:"),sg.T("0",key="p_pc",size=(0,1))],
        [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))],
-       [sg.Button("Como jugar", key="como_jugar"),sg.Button("Botonera", key="botonera"),sg.Button("Ver configuracion", key="ver_config")]
-    ]
+       [sg.Button("Como jugar", key="como_jugar"),sg.Button("Botones especiales", key="botonera"),sg.Button("Ver configuracion", key="ver_config")]]
 
     columna_datos.extend(colum)
 
-    frame_colum = [
-        [sg.Frame("Info del juego",layout=columna_datos, element_justification='left')]
-    ]
-
+    frame_colum = [[sg.Frame("Info del juego",layout=columna_datos, element_justification='left')]]
     columna_principal = [sg.Column(columna_casilleros, background_color='grey'), sg.Column(frame_colum)]
 
     layout.append(columna_principal)
@@ -332,7 +328,6 @@ def preguntar_si_sigue_el_juego():
         if event == '-si':
             break
     window_salir.close()
-
     return seguir
 
 def main(guardado):
@@ -340,8 +335,6 @@ def main(guardado):
     Desarrollo del juego y tablero principal
     """
     colores = cm.cargar_colores()
-    #------------------------------------------------
-
     import random
     #-----------------------------------------------------------
         #Configuracion de bolsa puntos y Imagen de numeros
@@ -386,8 +379,7 @@ def main(guardado):
     dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
                          'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
-                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]
-                        }
+                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]}
     if dificultad == "dificil":
         tipo_palabra = random.choice(list(dificultad_random.keys()))
         tipo = dificultad_random[tipo_palabra]
@@ -467,7 +459,6 @@ def main(guardado):
         #Loop de ventana
     # ----------------------------------------------------------------------
     while True:
-        #
         event, values = window.read(timeout=1000)
         # print("POS: ",event)
         if (cont_tiempo_seg == 0):
@@ -494,7 +485,6 @@ def main(guardado):
                 if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
-
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
@@ -646,6 +636,10 @@ def main(guardado):
                 window["p_j"].update(str(pj.puntos))
                 window.enable()
                 window.BringToFront()
+            elif event == "como_jugar":
+                sg.popup(cm.empezando_la_partida(),title="Como jugar")
+            elif event == "botonera":
+                sg.popup(cm.botones_especiales(),title="Botones especiales")
         if turno_pc:
             time.sleep(1)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,primer_turno)
