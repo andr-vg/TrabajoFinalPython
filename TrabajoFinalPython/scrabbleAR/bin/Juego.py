@@ -314,6 +314,27 @@ def salir_del_juego():
 
     return guardar_partida
 
+def preguntar_si_sigue_el_juego():
+    """
+    Ventana que pregunta si finalizar realmente el juego, retorna booleanos segun la respuesta del jugador
+    """
+    seguir = False
+
+    layout2 = [[sg.Text('Está seguro que desea finalizar la partida?')],
+               [sg.Button('Si', key='-si'), sg.Button('Continuar partida', key='-no')]]
+    window_salir = sg.Window('Finalizar partida actual', layout2)
+
+    while True:
+        event, values = window_salir.read()
+        if event in (None, '-no'):
+            seguir = True
+            break
+        if event == '-si':
+            break
+    window_salir.close()
+
+    return seguir
+
 def main(guardado):
     """
     Desarrollo del juego y tablero principal
@@ -401,7 +422,7 @@ def main(guardado):
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
     # ----------------------------------------------------------------------
-    window = sg.Window("Ventana de juego", layout)
+    window = sg.Window("Ventana de juego", layout, disable_close=True)
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
     puntos_jugador = dict()
@@ -469,6 +490,7 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
+                print("NONEEEEEEEE", event, values)
                 guardar_partida = salir_del_juego()
                 if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
@@ -518,10 +540,13 @@ def main(guardado):
                 window["-paso"].update(disabled=True)
                 window["-p"].update(disabled=True)
                 window["-t"].update(disabled=True)
+                window.Disable() # desactivamos la ventana del juego durante el popup
                 sg.Popup('Cambio de fichas:',
                              'Seleccione clickeando las letras que quiere cambiar y ',
                              'vuelva a clickear en \"Cambiar fichas\" para confirmar ',
                              'el cambio',keep_on_top=True)
+                window.enable()
+                window.BringToFront() # para que no se minimice despues del popup
                 cerro_ventana = False
                 while True:
                     event = window.read()[0]
@@ -572,38 +597,46 @@ def main(guardado):
                 break
             # boton de terminar partida
             elif event == "-t" or fin_fichas or fin_juego:
-                pj.restar_puntos_finales()
-                pc.restar_puntos_finales()
-                mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
-                if (pj.puntos > pc.puntos):
-                    sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC ",
+                seguir = False
+                if event == "-t": # le preguntamos si realmente quiere finalizar el juego
+                    window.Disable() # desactivamos la ventana del juego pa que no se le ocurra cerrar con la otra ventana activa
+                    seguir = preguntar_si_sigue_el_juego()
+                    window.enable()
+                    window.BringToFront()
+                if not seguir:
+                    pj.restar_puntos_finales()
+                    pc.restar_puntos_finales()
+                    mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
+                    if (pj.puntos > pc.puntos):
+                        sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC ",
                                     "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
                                         " Ganaste!",keep_on_top=True)
-                elif (pj.puntos == pc.puntos):
-                    sg.popup("Termino el juego \nTus puntos vs Puntos PC ",
+                    elif (pj.puntos == pc.puntos):
+                        sg.popup("Termino el juego \nTus puntos vs Puntos PC ",
                                  "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
                                  " EMPATE!",keep_on_top=True)
-                else:
-                    sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC \n",
+                    else:
+                        sg.popup_no_frame("Termino el juego \nTus puntos vs Puntos PC \n",
                                          "     "+str(pj.puntos)+"         |        "+str(pc.puntos),
                                          " Perdiste :(",keep_on_top=True)
-                from datetime import datetime
-                fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
-                # puntos_jugador[fecha] = pj.puntos
-                if nombre != None: # solo guarda si le pone un nombre
-                    datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
-                    lista_puntajes.append(datos)
-                    puntos_jugador["puntos"] = lista_puntajes
-                    cm.guardar_puntuaciones(puntos_jugador)
-                sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None,keep_on_top=True)
-                if (guardado):
-                    #Si termine la partida guardada la borro
-                    os.remove(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"))
-                    os.remove(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"))
-                    os.remove(os.path.join(absolute_path, "lib","info","saves","guardado.csv"))
-                break
+                    from datetime import datetime
+                    fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
+                    # puntos_jugador[fecha] = pj.puntos
+                    if nombre != None: # solo guarda si le pone un nombre
+                        datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
+                        lista_puntajes.append(datos)
+                        puntos_jugador["puntos"] = lista_puntajes
+                        cm.guardar_puntuaciones(puntos_jugador)
+                    sg.popup_no_frame("Volveras al menu",auto_close=True,auto_close_duration=5,button_type=None,keep_on_top=True)
+                    if (guardado):
+                        #Si termine la partida guardada la borro
+                        os.remove(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"))
+                        os.remove(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"))
+                        os.remove(os.path.join(absolute_path, "lib","info","saves","guardado.csv"))
+                    break
             # boton de confirmar palabra
             elif event == "-c":
+                window.Disable()
                 window["-c"].update(disabled=True)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 posiciones_ocupadas_tablero = pc.get_pos_tablero()
@@ -612,6 +645,8 @@ def main(guardado):
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
+                window.enable()
+                window.BringToFront()
         if turno_pc:
             time.sleep(1)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,primer_turno)
