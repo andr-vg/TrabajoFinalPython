@@ -422,7 +422,7 @@ def main(guardado):
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
     # ----------------------------------------------------------------------
-    window = sg.Window("Ventana de juego", layout, disable_close=True)
+    window = sg.Window("Ventana de juego", layout)
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
     puntos_jugador = dict()
@@ -490,7 +490,6 @@ def main(guardado):
         #------------------------------------------------------
         if turno_jugador:
             if event is None:
-                print("NONEEEEEEEE", event, values)
                 guardar_partida = salir_del_juego()
                 if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
