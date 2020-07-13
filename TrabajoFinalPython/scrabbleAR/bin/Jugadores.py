@@ -21,6 +21,9 @@ class Jugadores:
     def getPuntos(self):
         return self.puntaje
 
+    def setPuntos(self, puntos):
+        self.puntaje = puntos
+
     def sumPuntos(self, punt):
         self.puntaje += punt
 
@@ -77,7 +80,7 @@ class Jugadores:
         elif restar_uno and puntos >= 1:
             puntos -= 1
 
-        print(str(puntos))
+        print(puntos)
         self.sumPuntos(puntos)
 
     def restar_puntos_finales(self):
