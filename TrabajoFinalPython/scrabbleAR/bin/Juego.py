@@ -362,7 +362,7 @@ def main(guardado):
                 10: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'diez.png'),
                 11: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 'vacio.png')}
 
-    bolsa , puntos_por_letra, tiempo ,dificultad, config= cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
+    bolsa , puntos_por_letra, tiempo ,dificultad, config, pred= cm.cargar_configuraciones(bolsa,puntos_por_letra,guardado)
     # ----------------------------------------------------------------------
         #Cargo dificultad para despues diferenciar que tablero cargar y mandarselo al objeto
         #Abro el tablero correspondiente a la dificultad seleccionada
@@ -631,7 +631,7 @@ def main(guardado):
                     fecha =  datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
                     # puntos_jugador[fecha] = pj.puntos
                     if nombre != None: # solo guarda si le pone un nombre
-                        datos = nombre+" "+str(fecha)+" "+str(pj.puntos)+" "+ str(dificultad)
+                        datos = nombre+" - "+str(fecha)+" - "+str(pj.puntos)+" - "+ str(dificultad)
                         lista_puntajes.append(datos)
                         puntos_jugador["puntos"] = lista_puntajes
                         cm.guardar_puntuaciones(puntos_jugador)
@@ -659,6 +659,8 @@ def main(guardado):
                 sg.popup(cm.empezando_la_partida(),title="Como jugar")
             elif event == "botonera":
                 sg.popup(cm.botones_especiales(),title="Botones especiales")
+            elif event == "ver_config":
+                sg.popup(cm.get_config_actual(guardado,pred),title="Config del juego")
         if turno_pc:
             time.sleep(1)   #maquina pensando la jugarreta
             primer_turno = pc.jugar(window,primer_turno)
@@ -670,6 +672,6 @@ def main(guardado):
             turno_jugador, turno_pc = cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()
-    # ScrabbleAR.main()
-if __name__ == "__main__":
-    main(True)
+    ScrabbleAR.main()
+# if __name__ == "__main__":
+#     main(True)

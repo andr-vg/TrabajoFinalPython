@@ -277,7 +277,9 @@ def main():
                 sg.popup("Configuraciones reiniciadas")
 
         if (event == "-jugar-"):
-            if ("guardado.csv" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
+            print("Estoy jugando")
+            if ("guardado.json" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
+                print("Entre al if")
                 popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "))
                 if (popup == "   NO   "):
                     window.close()
