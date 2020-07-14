@@ -93,11 +93,14 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
         if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info","config")):
             # print("HAY CONFIG")
             config = cargar_config_usr()
+            pred = False
         else:
             # print("NO HAY CONFIG")
             config = cargar_config_pred()
+            pred = True
     else:
         config = cargar_config_guardada()
+        pred =  False
 
     grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L","R", "T"]
     grupo_2 = ["C", "D", "G"]
@@ -116,7 +119,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
 
     tiempo =  config["tiempo"]
     dificultad = config["dificultad"]
-    return bolsa,puntos_por_letra,tiempo,dificultad,config
+    return bolsa,puntos_por_letra,tiempo,dificultad,config, pred
 
 def cargar_puntuaciones():
     """
@@ -201,3 +204,41 @@ en caso de ser valida se sumaran puntos al puntaje del jugador, de lo contrario 
 •"Posponer": Guarda el estado del juego hasta el momento (fichas, puntos, palabras jugadas, etc)
 para poder continuar la partida en otro momento
 •"Pasar Turno": Permite cederle el turno a la maquina"""
+
+def get_config_actual(guardado,pred):
+    """
+    Retorna en forma de string las configuaciones del juego actual
+    """
+    try:
+        if not(guardado):
+            if (pred):
+                datos = open(os.path.join(absolute_path, "lib","info","config","configPred.json"), "r")
+            else:
+                datos = open(os.path.join(absolute_path, "lib","info","config","configUsuario.json"), "r")
+        else:
+            datos = open(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"), "r")
+        
+        data = json.load(datos)
+        cadena = """Dificultad: {}
+Tiempo: {} minutos
+Cantidad de letras y puntos
+A,E,O,S,I,U,N,L,R,T || cant: {} || punt: {} ||
+C,D,G || cant: {} || punt: {} ||
+M,B,P || cant: {} || punt: {} ||
+F,H,V,Y || cant: {} || punt: {} ||
+J || cant: {} || punt: {} ||
+K,LL,Ñ,Q,RR,W,X || cant: {} punt: {} ||
+Z || cant: {} || punt: {} ||""".format(data["dificultad"],str(round(int(data["tiempo"])/60)),
+                    data["grupo_1"],data["grupo_1_cant"],data["grupo_2"],data["grupo_2_cant"],
+                    data["grupo_3"],data["grupo_3_cant"],data["grupo_4"],data["grupo_4_cant"],
+                    data["grupo_5"],data["grupo_5_cant"],data["grupo_6"],data["grupo_6_cant"],
+                    data["grupo_7"],data["grupo_7_cant"])
+        return cadena
+    except (FileNotFoundError):
+        return "No se encontro arch de configuraciones"
+
+
+
+
+
+
