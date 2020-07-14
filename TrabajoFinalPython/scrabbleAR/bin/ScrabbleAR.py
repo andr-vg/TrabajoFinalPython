@@ -22,8 +22,8 @@ def limpiar_json():
         lista = datos["puntos"]
         lista_final = []
         for cadena in lista:
-            aux = cadena.split()
-            if aux[4] != "0":
+            aux = cadena.split(" - ")
+            if aux[3] != "0":
                 lista_final.append(cadena)
         arch.close()
         arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"w")
@@ -34,8 +34,8 @@ def limpiar_json():
         pass
 # ----------------------------------------------------------------------
 def key_orden(cadena):
-    cadena = cadena.split()
-    aux = cadena[1]+" "+cadena[3]
+    cadena = cadena.split(" - ")
+    aux = cadena[1]+" "+cadena[2]
     return aux
 def cargar_top_10():    #esto podria ir en GameConfigManager?
     """
@@ -53,12 +53,13 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
         list_aux = top_10["puntos"].copy()
         list_aux = list_aux[-10:]
         list_aux = sorted(list_aux,key=key_orden,reverse=True)
-        print("\n LISTA")
+        # print("\n LISTA")
         # pp.pprint(list_aux)
         for punt in list_aux:
-            dato = punt.split()
-            if (dato[4] != "0"):
-                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[4]+" |Nivel: "+dato[5]
+            dato = punt.split(" - ")
+            # print("DATO",dato)
+            if (dato[3] != "0"):
+                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[2]+" |Nivel: "+dato[3]
                 list_final.append(cadena)
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio")
