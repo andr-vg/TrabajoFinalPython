@@ -90,7 +90,7 @@ def main(guardado):
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
     # ----------------------------------------------------------------------
-    window = sg.Window("Ventana de juego", layout, disable_close= True, icon=icono_ventana)
+    window = sg.Window("Ventana de juego", layout, icon=icono_ventana)
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
     puntos_jugador = dict()
@@ -156,9 +156,9 @@ def main(guardado):
             # todos los eventos del tablero
         #------------------------------------------------------
         if turno_jugador:
-            if event == "-salir":
-                guardar_partida, salir = gm.salir_del_juego()
-                if salir and not guardar_partida:
+            if event is None:
+                guardar_partida = gm.salir_del_juego()
+                if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
             # botones del atril del jugador
@@ -310,7 +310,7 @@ def main(guardado):
                         #Si termine la partida guardada la borro
                         os.remove(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"))
                         os.remove(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"))
-                        os.remove(os.path.join(absolute_path, "lib","info","saves","guardado.csv"))
+                        os.remove(os.path.join(absolute_path, "lib","info","saves","guardado.json"))
                     break
             # boton de confirmar palabra
             elif event == "-c":

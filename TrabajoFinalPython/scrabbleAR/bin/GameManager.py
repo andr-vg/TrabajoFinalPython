@@ -176,8 +176,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True),sg.Button("Pasar Turno",key="-paso"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
-                    sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t"), sg.Button("Seleccionar todas las fichas", key="-selec", visible=False), sg.Button("Deshacer selección", key="-deshacer-selec", visible=False),
-                    sg.Button("Salir",key="-salir")]
+                    sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t"), sg.Button("Seleccionar todas las fichas", key="-selec", visible=False), sg.Button("Deshacer selección", key="-deshacer-selec", visible=False)]
     layout.append(fila_botones)
     layout.append(fila_fichas_jugador)
     layout.insert(0,fila_fichas_maquina)
@@ -298,28 +297,18 @@ def salir_del_juego():
     """
     Ventana que pregunta si salir y guardar el juego, retorna booleanos segun la respuesta del jugador
     """
-    guardar_partida = False
-    salir = False
 
     layout2 = [[sg.Text('Está saliendo del juego, desea guardarlo?')],
-               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar'),
-                sg.Button('Continuar partida', key='-seguir')]]
-    window_salir = sg.Window('Abandonar partida actual', layout2)
+               [sg.Button('Guardar y Salir', key='-guardar'), sg.Button('Salir sin guardar', key='-noguardar')]]
+    window_salir = sg.Window('Abandonar partida actual', layout2, no_titlebar = True)
 
-    while True:
-        event, values = window_salir.read()
-        if event in (None, '-seguir'):
-            break
-        if event == '-guardar':
-            guardar_partida = True
-            salir = True
-            break
-        if event == '-noguardar':
-            salir = True
-            break
-    window_salir.close()
-
-    return guardar_partida, salir
+    event, values = window_salir.read()
+    if event == '-guardar':
+        window_salir.close()
+        return True
+    else:
+        window_salir.close()
+        return False
 
 def preguntar_si_sigue_el_juego():
     """
