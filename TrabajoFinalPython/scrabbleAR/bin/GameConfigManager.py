@@ -1,14 +1,16 @@
-#------------------------------------------------------------------------------------
-#
-#En este archivo estan todas las funciones que cargan / guardan configuraciones del juego
-#
-#------------------------------------------------------------------------------------
+"""
+------------------------------------------------------------------------------------------
+
+En este archivo se encuentran las funciones que guardan y cargan la informacion del juego
+
+------------------------------------------------------------------------------------------
+"""
 import os
 import ScrabbleAR
 import json
 import PySimpleGUI as sg
 import csv
-from pathlib import Path
+from pathlib import Path 
 
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
@@ -47,8 +49,6 @@ def cargar_tablero(tablero):
     finally:
         return tab
 
-
-
 def guardar_info_partida(datos):
     """
     Guarda las puntuaciones, tiempo restante
@@ -67,7 +67,6 @@ def guardar_partida(botones):
     botone = convertirJson(botones)
     json.dump(botone,jota,indent=1)
     jota.close()
-
 
 def cargar_config_pred():
     """
