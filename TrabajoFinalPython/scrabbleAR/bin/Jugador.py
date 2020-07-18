@@ -30,7 +30,7 @@ class Jugador(Jugadores):
             datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r")
             self._palabras_usadas = json.load(datos)
         except (FileNotFoundError):
-            sg.popup("No se encontro archivo con palabras del usuario")
+            sg.popup("No se encontro archivo con palabras del usuario",keep_on_top=True)
             self._palabras_usadas = []
 
 
@@ -58,9 +58,9 @@ class Jugador(Jugadores):
             return False
 
     def jugar(self, palabra_nueva, letras_usadas, posiciones_ocupadas_tablero,
-              primer_turno):  
+              primer_turno):
         """
-        Jugada del usuario: se analiza si la palabra fue puesta de forma correcta y si 
+        Jugada del usuario: se analiza si la palabra fue puesta de forma correcta y si
         está incluida en pattern, según la dificultad.
         """
         keys_ordenados = sorted(palabra_nueva.keys())  # los ordeno por columna de menor a mayor
@@ -71,7 +71,7 @@ class Jugador(Jugadores):
         if not self._analizo(keys_ordenados, fila_menor, columna_menor, 0, 1) and not self._analizo(keys_ordenados,
                                                                                                     columna_menor,
                                                                                                     fila_menor, 1, 0):
-            sg.popup_ok('Palabra no válida, por favor ingrese en forma horizontal o vertical')
+            sg.popup_ok('Palabra no válida, por favor ingrese en forma horizontal o vertical',keep_on_top=True)
         else:
             lista_letras_ordenadas = []
             for key in keys_ordenados:
@@ -89,8 +89,8 @@ class Jugador(Jugadores):
                     for k in letras_usadas.keys():  # saco fichas de la bolsa para ponerlas en letras
                         self.fichas[k] = ""
                 elif primer_turno and not al_centro:
-                    sg.popup('La primer palabra debe ir en el centro')
+                    sg.popup('La primer palabra debe ir en el centro',keep_on_top=True)
             else:
-                sg.popup_ok('Palabra no válida, por favor ingrese otra')
+                sg.popup_ok('Palabra no válida, por favor ingrese otra',keep_on_top=True)
 
         return letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero, self._palabras_usadas

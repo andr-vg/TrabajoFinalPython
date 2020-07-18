@@ -63,7 +63,7 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
                 cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[2]+" |Nivel: "+dato[3]
                 list_final.append(cadena)
     except (FileNotFoundError):
-        sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio")
+        sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio",keep_on_top=True)
         list_final = []
     return list_final
 # ----------------------------------------------------------------------
@@ -190,7 +190,7 @@ def cargar_config_pred():
         config = json.load(arch)
         arch.close()
     except (FileNotFoundError):
-        sg.popup("Algo salio mal! no hay config predeterminada :(")
+        sg.popup("Algo salio mal! no hay config predeterminada :(",keep_on_top=True)
         exit()
     return config
 # ----------------------------------------------------------------------
@@ -205,7 +205,7 @@ def cargar_config_usr():
         config = json.load(arch)
         arch.close()
     except (FileNotFoundError):
-        sg.popup("No se encontro configuracion de usuario, se usara la predeterminada")
+        sg.popup("No se encontro configuracion de usuario, se usara la predeterminada",keep_on_top=True)
         config = cargar_config_pred()
     finally:
         return config
@@ -243,7 +243,7 @@ def main():
             limpiar_json()
             break
         if (event == "-salir-"):
-            salir = sg.popup("Salir del juego?", custom_text=("   SI   ","   NO   "))
+            salir = sg.popup("Salir del juego?", custom_text=("   SI   ","   NO   "),keep_on_top=True)
             if (salir == "   SI   "):
                 limpiar_json()
                 break
@@ -275,13 +275,13 @@ def main():
                 window["-pred-"].update(disabled=True)
                 config = cargar_config_pred()
             finally:
-                sg.popup("Configuraciones reiniciadas")
+                sg.popup("Configuraciones reiniciadas",keep_on_top=True)
 
         if (event == "-jugar-"):
             print("Estoy jugando")
             if ("guardado.json" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
                 print("Entre al if")
-                popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "))
+                popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "),keep_on_top=True)
                 if (popup == "   NO   "):
                     window.close()
                     Juego.main(False)
@@ -317,7 +317,7 @@ def main():
                 config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get()) if int(window.FindElement("grupo_"+str(ind)).get()) > 0 else 1
                 config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get()) if int(window.FindElement("grupo_"+str(ind)+"_cant").get()) > 0 else 1
             guardar_configuracion(config)
-            sg.popup("Se han guardado las configuraciones")
+            sg.popup("Se han guardado las configuraciones",keep_on_top=True)
 
     window.close()
 

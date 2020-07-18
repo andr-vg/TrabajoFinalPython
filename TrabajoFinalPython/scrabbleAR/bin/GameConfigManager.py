@@ -10,7 +10,7 @@ import ScrabbleAR
 import json
 import PySimpleGUI as sg
 import csv
-from pathlib import Path 
+from pathlib import Path
 
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
@@ -45,7 +45,7 @@ def cargar_tablero(tablero):
         tablero = json.load(base)
         tab = convertirDic(tablero)
     except (FileNotFoundError):
-        sg.popup("NO SE ENCONTRO TABLERO")
+        sg.popup("NO SE ENCONTRO TABLERO",keep_on_top=True)
     finally:
         return tab
 
@@ -79,7 +79,7 @@ def cargar_config_pred():
         config = json.load(arch)
         arch.close()
     except (FileNotFoundError):
-        sg.popup("No se encontro el archivo de configuraciones predetermiadas \n el juego se cerrara")
+        sg.popup("No se encontro el archivo de configuraciones predetermiadas \n el juego se cerrara",keep_on_top=True)
         exit()
     return config
 
@@ -128,7 +128,7 @@ def cargar_puntuaciones():
         arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"), "r") #ACA PUEDE IR UNA EXCEPCION HERMOSA DE QUE PASA SI NO ESTA ;D
         top_10 = json.load(arch)
     except (FileNotFoundError):
-        sg.popup("No se encontraron puntuaciones guardadas")
+        sg.popup("No se encontraron puntuaciones guardadas",keep_on_top=True)
         top_10 = {}
         return top_10
     return top_10
@@ -151,7 +151,7 @@ def cargar_config_usr():
         config = json.load(arch)
         arch.close()
     except (FileNotFoundError):
-        sg.popup("No se encontro la configuracion de usuario \n se usara la predeterminada")
+        sg.popup("No se encontro la configuracion de usuario \n se usara la predeterminada",keep_on_top=True)
         config = cargar_config_pred()
 
     return config
@@ -167,7 +167,7 @@ def cargar_config_guardada():
         arch.close()
         return config
     except (FileNotFoundError):
-        sg.popup("No se encontraron datos de una partida guardada, inicie una nueva partida")
+        sg.popup("No se encontraron datos de una partida guardada, inicie una nueva partida",keep_on_top=True)
         ScrabbleAR.main()
         # Se me quedan 2 menus abiertos y no es la idea...
 
@@ -177,7 +177,7 @@ def cargar_colores():
         dic_col = json.load(col)
         col.close()
     except (FileNotFoundError):
-        sg.popup("No se encontro colores.json \n usando colores predeterminados")
+        sg.popup("No se encontro colores.json \n usando colores predeterminados",keep_on_top=True)
         dic_col = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', "+++": "#efcfe8", "++++": "#c1a4ff", '-' : '#008080', '--' : '#005555', '---' : '#000000'},
                'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', "+++": "#efcfe8", "++++": "#c1a4ff", '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
                'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', "+++": "#efcfe8", "++++": "#c1a4ff", '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
@@ -216,7 +216,7 @@ def get_config_actual(guardado,pred):
                 datos = open(os.path.join(absolute_path, "lib","info","config","configUsuario.json"), "r")
         else:
             datos = open(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"), "r")
-        
+
         data = json.load(datos)
         cadena = """Dificultad: {}
 Tiempo: {} minutos
@@ -235,9 +235,3 @@ Z || cant: {} || punt: {} ||""".format(data["dificultad"],str(round(int(data["ti
         return cadena
     except (FileNotFoundError):
         return "No se encontro arch de configuraciones"
-
-
-
-
-
-

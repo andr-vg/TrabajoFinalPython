@@ -3,7 +3,7 @@ import time
 import os
 import ScrabbleAR   #-----------------> Menu del juego
 import GameConfigManager as cm #---------> Manejo de configuraciones
-import GameManager as gm 
+import GameManager as gm
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 icono_ventana = b"iVBORw0KGgoAAAANSUhEUgAAAEkAAABJCAYAAABxcwvcAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAS2SURBVHja7Jw/bBRHFIe/tXwKnIRQTIEgGwGRQL4IIgFCchpMQcGfigLSXJEWOY3BDhIFvVPQIFoarqOgIkoiClsIBVDcOCffwUlGkRwllSVksJAoTHGzsF5mZnd2Z/aOu3nSSqfZ29vd377vvZk3ewNq+xr4CXgErAObA7j9DzwQ9xliYHuBhwMqStr2UNy/1s4NqTjJ7VxWgZ4D3wPbGGzbJu7zeZpQYeILs0DAcFkAzCR02BKnnsV2XGO4bTamxV9R4/4EYsGQixQArZgmBwCuxhpO4g0RoyJNZgAexxq2e30+BPNIk8cAr2IN3j5apMl6kBAn8NpsEQmAEa9FunmRvEh2bNTS71Q1w5e3wIbD31fZOvDOdhQvkt3mUwaMRRPCXIHB6l2gbloKSepSVKRqhgut9VCk+DZvcC0fjrMRkyYzfOdMn4SXSWBZiB6Uidt8xqcY9IEnJTEMysCtqnBp28jNKW5yTLGFwIT4jk6os2WIdFZxYtnFTVsWaS7jsWMp3l5xLZLs5FXxFG0iV0SkaLilEmrCZeCuSoL2gugTLSqOGe/hOKyuKYs463FPKp44ohPX6LMstwq8lLQfc5ndVKhFZhO5orilZUknuIUa1CLrN+RU9tIVbqc0qNHHyMkmHu+5wm0lBTXbyNnArWLYVyqEW4iYQUi4rGykv9RHyJ1WtD91gZsMtRuK726IWNVr5GrAr5L2BrDmAjcZaqFhr9wUuby4BZrzq0LEJ7qMWkJtVXPMgga5VsEgPKbYd0h0Em9qjv/WpBho4kl1ydOo5+xTTRf0pLzbSsbBdu6xmylqtpCzJVJdM6C1IlKoeCpFqpe1EkRaEV2RiiHOuboAJlmtn7LcAeCCjRFymicFiqdkUlwvglyW7BaI66lrPKri0pPGFWOeVYOT/u24Y7kprqchMpfMo+7k+eGsIsmwuGWpVPGjA8RaCqHqmiJbIdwC7NWsVShULOBmEvArtnFT4bBMvhkKmR13FLRVQv5gG7cyMtCUo99dA36RtN817RLocAso793piqNSyZimY2kFtzJLGsf71ZtGc6C2kKUGk2IXJQPlKeCJw9j0syI2NYrgZjOrFc1yNiqTppkuE24q1NoWRJovGblCmU4nkqyTdwU7b+n+W3KWi2JTI29skuGmKppPWLzoaQP3tzXvVjPIdKm4qdx+0aJIv/UAuZaiGqH1phEDt29g8R1ETWxziRzA5TyxKYlbGaiZImcLt3jiSDuvFrcyUOslcsbe5P82oSfMqJ401OZF8iJ5kbxIXiQvkhfJi+RNbqPAf8CeQbqpw+MHa8BOMZTaTXf6+xXwD7BP7FsCvgNotjtPJCORyF6PsHX6eSDWBWi2Oy26M8Y7gCPAC+B6s93ZEPu+pPuK9SIwdXj8YHJA/UXs89II8Ees4cSAeFIAhM12Z43u2zBV4HexL6RbU9olBtK3JVWHo7HP9wO6a5VEc/RtunPom5+5SHPAfeFBh2K7VunO1PwpPh8BdjXbnUYCtWU+1vi/iXbEV72ZHfI4LV31Bvz6SZEHaddPAjiPX4krfv/nVQdcxK/ntglcSlP2K4Z7dUCj9QP2C0YfAW8GVJQ34v5mxP1K7f0A2wJqfDSaFUAAAAAASUVORK5CYII="
 def main(guardado):
@@ -205,12 +205,14 @@ def main(guardado):
                 window["-paso"].update(disabled=True)
                 window["-p"].update(disabled=True)
                 window["-t"].update(disabled=True)
-                window.Disable() # desactivamos la ventana del juego durante el popup
+                #window.Disable() # desactivamos la ventana del juego durante el popup
+                #window.Disappear() #alternativa a disable() y enable() si no se puede hacer funcionar esas funciones en linux
                 sg.Popup('Cambio de fichas:',
                              'Seleccione las letras que quiere cambiar o el boton ',
                              '\"seleccionar todas las fichas\" y vuelva a clickear en ',
                              '\"Cambiar fichas\" para confirmar el cambio',keep_on_top=True)
-                window.enable()
+                #window.enable()
+                #window.Reappear()
                 window.BringToFront() # para que no se minimice despues del popup
                 window["-selec"].update(visible=True)
                 window["-deshacer-selec"].update(visible=True)
@@ -248,7 +250,7 @@ def main(guardado):
                                 window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
                             # print("Cambio de letras realizado.")
                         #else:
-                        #    # print("No se selecciono ninguna letra, no se realizo ningun cambio.")
+                        #      print("No se selecciono ninguna letra, no se realizo ningun cambio.")
                         #    pass
                         break
                 if not cerro_ventana:
@@ -277,9 +279,9 @@ def main(guardado):
             elif event == "-t" or fin_fichas or fin_juego:
                 seguir = False
                 if event == "-t": # le preguntamos si realmente quiere finalizar el juego
-                    window.Disable() # desactivamos la ventana del juego pa que no se le ocurra cerrar con la otra ventana activa
+                    #window.Disable() # desactivamos la ventana del juego pa que no se le ocurra cerrar con la otra ventana activa
                     seguir = gm.preguntar_si_sigue_el_juego()
-                    window.enable()
+                    #window.enable()
                     window.BringToFront()
                 if not seguir:
                     pj.restar_puntos_finales()
@@ -314,7 +316,7 @@ def main(guardado):
                     break
             # boton de confirmar palabra
             elif event == "-c":
-                window.Disable()
+                #window.Disable()
                 window["-c"].update(disabled=True)
                 # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 posiciones_ocupadas_tablero = pc.get_pos_tablero()
@@ -323,7 +325,7 @@ def main(guardado):
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
-                window.enable()
+                #window.enable()
                 window.BringToFront()
             elif event == "como_jugar":
                 sg.popup(cm.empezando_la_partida(),title="Como jugar")
