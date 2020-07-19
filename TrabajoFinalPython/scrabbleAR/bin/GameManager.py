@@ -223,7 +223,7 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     colores = cm.cargar_colores()
 
     for val in keys:
-        window[val].update(disabled=False)  # reactivamos las fichas
+        window[val].update(disabled=False, button_color=('white', '#006699'))  # reactivamos las fichas
     for val in palabra_nueva:
         window[val].update("", disabled=False,button_color= ("black",colores[dificultad][botones[val]])) # eliminamos del tablero las fichas
     letras_usadas = dict()

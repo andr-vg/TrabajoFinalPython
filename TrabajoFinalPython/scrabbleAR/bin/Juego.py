@@ -165,6 +165,8 @@ def main(guardado):
             # botones del atril del jugador
             if event in letras.keys():
                 window['-d'].update(disabled=False)
+                for botoncito in ['-c','-cf','-p','-t','-paso','como_jugar','botonera','ver_config']:
+                    window[botoncito].update(disabled=True)
                 box = event  # letra seleccionada
                 letras_usadas[box] = letras[box]
                 window[box].update(button_color=('white', '#55a4fc'))    #al seleccionado se le cambia el color
@@ -191,10 +193,12 @@ def main(guardado):
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B
+                    for botoncito in ['-cf','-p','-t','-paso','como_jugar','botonera','ver_config']:
+                        window[botoncito].update(disabled=False)
                 if event is None:
                     terminar = True
             # boton de deshacer las palabras puestas en el tablero
-            elif event == "-d":
+            if event == "-d":
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad)
             # boton de pasar el turno a la pc
             elif event == "-paso":
