@@ -19,6 +19,7 @@ class PC(Jugadores):
         self._colores = cm.cargar_colores()
         if (guardada):
             self._cargar_estado()
+            sg.Print(self._posiciones_ocupadas_tablero)
 # ---------------------------------------------------------------------
     def reinicioFichas(self, palabra):
         """
@@ -62,12 +63,21 @@ class PC(Jugadores):
         # p = pprint.PrettyPrinter(indent=4)
         # p.pprint(dic_aux)
         return dic_aux
+    
+# ---------------------------------------------------------------------
+    def convertir_lista_tupla(self,lista):
+        lista_final = []
+        for pos in lista:
+            aux = (pos[0], pos[1]) 
+            lista_final.append(aux)
+        return lista_final
 # ---------------------------------------------------------------------
     def guardar_estado(self):
         """
         Guarda el estado interno del jugador PC
         """
         arch = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "w")
+        print(self._posiciones_ocupadas_tablero)
         datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._posiciones_ocupadas_tablero}
         json.dump(datos,arch,indent = 4)
         arch.close()
@@ -82,7 +92,7 @@ class PC(Jugadores):
         self._fichas = data["fichas"]
         self._botones = self._convertirDic(data["botones"])
         self._palabras_usadas = data["palabras_usadas"]
-        self._posiciones_ocupadas_tablero = data["pos_usadas"]
+        self._posiciones_ocupadas_tablero = self.convertir_lista_tupla(data["pos_usadas"])
 # ----------------------------------------------------------------------
     def _obtenerPalabra(self, long_max):
         """

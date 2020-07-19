@@ -80,17 +80,21 @@ def main(guardado):
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
+    
     # ----------------------------------------------------------------------
         # Manejo de puntajes, si hay partida guardada setea los puntos
         #Sino es 0
     # ----------------------------------------------------------------------
+    window = sg.Window("Ventana de juego", layout, icon=icono_ventana,finalize=True)
     if (guardado):
             pj.puntos = config["puntos_j"]
             pc.puntos = config["puntos_pc"]
+            gm.cargar_fichas_jugador(window)
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
     # ----------------------------------------------------------------------
-    window = sg.Window("Ventana de juego", layout, icon=icono_ventana)
+    
+    
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
     puntos_jugador = dict()

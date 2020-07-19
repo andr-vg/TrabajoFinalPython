@@ -338,3 +338,16 @@ def preguntar_si_sigue_el_juego():
             break
     window_salir.close()
     return seguir
+
+
+
+def cargar_fichas_jugador(window):
+    try:
+        fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r")
+        fichas_j = json.load(fichas)
+        fichas_j_valores = list(fichas_j.values())
+        for key in range(7):
+            window[key].update(fichas_j_valores[key])
+        return True #-----> Puede cargar
+    except (FileNotFoundError):
+        return False #----> No pude cargar

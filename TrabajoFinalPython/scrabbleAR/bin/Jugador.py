@@ -15,22 +15,42 @@ class Jugador(Jugadores):
         else:
             self._palabras_usadas = []
 
+    def _guardar_fichas(self):
+        """
+        Guarda las fichas del jugador en .json
+        """
+        fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"w")
+        json.dump(self.fichas,fichas)
+    
+    def _cargar_fichas(self):
+        try:
+            fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r")
+            self.fichas = json.load(fichas)
+        except (FileNotFoundError):
+            self.fichas = []        
+
+
+
     def guardar_info(self):
         """
         Guarda la lista de palabras que formo el jugador
         """
+        self._guardar_fichas()
         datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"w")
         json.dump(self._palabras_usadas,datos)
+
+    def get_palabras_usadas(self):
+        return self._palabras_usadas
 
     def _cargar_datos(self):
         """
         Carga la lista de palabras usadas por el jugador
         """
+        self._cargar_fichas()
         try:
             datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r")
-            self._palabras_usadas = json.load(datos)
+            self._palabras_usadas = list(json.load(datos))
         except (FileNotFoundError):
-            sg.popup("No se encontro archivo con palabras del usuario",keep_on_top=True)
             self._palabras_usadas = []
 
 
