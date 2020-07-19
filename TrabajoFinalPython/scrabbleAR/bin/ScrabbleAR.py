@@ -228,9 +228,7 @@ def main():
                                         'SCROLL': '#2a6daf',
                                         'BUTTON': ('white', '#2a6daf'),
                                         'PROGRESS': ('#2a6daf', '#2a6daf'),
-                                        'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
-                                        }
-
+                                        'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,}
     sg.theme("MyNewTheme")
     # sg.theme("lightblue")
     layout = crear_layout(config)
@@ -249,7 +247,6 @@ def main():
                 break
             else:
                 pass
-
         if (event == "-pred-"):
             try:
                 os.remove(os.path.join(absolute_path, "lib","info","config","configUsuario.json"))
@@ -318,8 +315,6 @@ def main():
                 config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get()) if int(window.FindElement("grupo_"+str(ind)+"_cant").get()) > 0 else 1
             guardar_configuracion(config)
             sg.popup("Se han guardado las configuraciones",keep_on_top=True)
-
     window.close()
-
 if __name__ == "__main__":
     main()

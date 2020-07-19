@@ -80,7 +80,7 @@ def main(guardado):
     pj = Jugador(letras,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     pc = PC(letras_pc,long_tablero,botones,puntos_por_letra,dificultad,tipo,guardado)
     botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
-    
+
     # ----------------------------------------------------------------------
         # Manejo de puntajes, si hay partida guardada setea los puntos
         #Sino es 0
@@ -93,8 +93,8 @@ def main(guardado):
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
     # ----------------------------------------------------------------------
-    
-    
+
+
     letras_usadas = {}  # pares (clave, valor) de las letras seleccionadas del atril
     palabra_nueva = {}  # pares (clave, valor) de las letras colocadas en el tablero
     puntos_jugador = dict()
@@ -181,7 +181,7 @@ def main(guardado):
                     cont_tiempo_min -= 1
                 else:
                     cont_tiempo_seg -= 1
-                
+
                 event, values = window.read()
                 if event in botones.keys():
                 # refresco la tabla en la casilla seleccionada con la letra elegida antes
@@ -219,14 +219,10 @@ def main(guardado):
                 window["-paso"].update(disabled=True)
                 window["-p"].update(disabled=True)
                 window["-t"].update(disabled=True)
-                #window.Disable() # desactivamos la ventana del juego durante el popup
-                #window.Disappear() #alternativa a disable() y enable() si no se puede hacer funcionar esas funciones en linux
                 sg.Popup('Cambio de fichas:',
                              'Seleccione las letras que quiere cambiar o el boton ',
                              '\"seleccionar todas las fichas\" y vuelva a clickear en ',
                              '\"Cambiar fichas\" para confirmar el cambio',keep_on_top=True)
-                #window.enable()
-                #window.Reappear()
                 event, values = window.read()
                 if not event is None:
                     window.BringToFront() # para que no se minimice despues del popup
@@ -295,9 +291,7 @@ def main(guardado):
             elif event == "-t" or fin_fichas or fin_juego:
                 seguir = False
                 if event == "-t": # le preguntamos si realmente quiere finalizar el juego
-                    #window.Disable() # desactivamos la ventana del juego pa que no se le ocurra cerrar con la otra ventana activa
                     seguir = gm.preguntar_si_sigue_el_juego()
-                    #window.enable()
                     window.BringToFront()
                 if not seguir:
                     pj.restar_puntos_finales()
@@ -332,16 +326,13 @@ def main(guardado):
                     break
             # boton de confirmar palabra
             elif event == "-c":
-                #window.Disable()
                 window["-c"].update(disabled=True)
-                # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
-                posiciones_ocupadas_tablero = pc.get_pos_tablero()
+                posiciones_ocupadas_tablero = pc.get_pos_tablero() # vamos a analizar si la palabra fue posicionada correctamente (misma fila y columnas contiguas):
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = gm.confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, bolsa, primer_turno, img_nros, botones_aux, dificultad, pc)
                 pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
                 if primer_turno and turno_pc:  # si le da confirmar y está mal la palabra, no deja de ser su primer turno
                     primer_turno = False
                 window["p_j"].update(str(pj.puntos))
-                #window.enable()
                 window.BringToFront()
             elif event == "como_jugar":
                 sg.popup(cm.empezando_la_partida(),title="Como jugar")
@@ -356,7 +347,6 @@ def main(guardado):
             gm.dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)
             fin_fichas = gm.pocas_fichas(pc.getFichas())
-            # finaliza y actualizamos los turnos: turno_pc = False, turno_jugador = True
             turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador ,turno_pc, window)
 
     window.close()

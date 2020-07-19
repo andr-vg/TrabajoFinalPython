@@ -327,7 +327,7 @@ def preguntar_si_sigue_el_juego():
 
     layout2 = [[sg.Text('Está seguro que desea finalizar la partida?')],
                [sg.Button('Si', key='-si'), sg.Button('Continuar partida', key='-no')]]
-    window_salir = sg.Window('Finalizar partida actual', layout2)
+    window_salir = sg.Window('Finalizar partida actual', layout2, modal=True)
 
     while True:
         event, values = window_salir.read()
