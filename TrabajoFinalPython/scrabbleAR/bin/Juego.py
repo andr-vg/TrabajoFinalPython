@@ -187,9 +187,11 @@ def main(guardado):
                     if len(palabra_nueva.keys()) > 1:
                         window["-c"].update(disabled=False) # recien ahora puede confirmar
                     window[ind].update(letras[box], disabled=True, button_color = ("black",colores["letra_jugador"]))  # actualizo la casilla y la desactivo
-                    botones = pc.get_botones().copy()
-                    botones[ind] = letras[box] + "/"
-                    pc.actualiza_botones(botones)
+                    #botones = pc.get_botones().copy()
+                    #print("botones",botones)
+                    #print(palabra_nueva)
+                    #botones[ind] = letras[box] + "/"
+                    #pc.actualiza_botones(botones)
                     for val in letras.keys():
                         if val not in letras_usadas.keys():
                             window[val].update(disabled=False)  # refresco la tabla B

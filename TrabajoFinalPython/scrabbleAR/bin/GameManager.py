@@ -254,6 +254,15 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
     letras_usadas, palabra_nueva, actualizar_juego, posiciones_ocupadas_tablero, palabras_usadas = pj.jugar(palabra_nueva, letras_usadas, posiciones_ocupadas_tablero, primer_turno)
     pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
     if actualizar_juego:
+
+        # aca actualizamos el tablero de botones con las letras que formo el jugador para despues guardarlas si se pospone la partida
+        posiciones_tablero_actualizar = pc.get_botones().copy()
+        print("botones",posiciones_tablero_actualizar)
+        print(palabra_nueva)
+        for posicion, letra in palabra_nueva.items():
+            posiciones_tablero_actualizar[posicion] = letra + "/"
+        pc.actualiza_botones(posiciones_tablero_actualizar)
+
         window['-d'].update(disabled=True)
         window["-pal-"].update(None,input_palabra(palabras_usadas)) # actualizamos el listbox de palabras si lo ubico correctamente
         letras = pj.getFichas()
