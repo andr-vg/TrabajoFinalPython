@@ -89,7 +89,6 @@ class PC(Jugadores):
         datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r")
         data = {}
         data = json.load(datos)
-        self._fichas = data["fichas"]
         self._botones = self._convertirDic(data["botones"])
         self._palabras_usadas = data["palabras_usadas"]
         self._posiciones_ocupadas_tablero = self.convertir_lista_tupla(data["pos_usadas"])

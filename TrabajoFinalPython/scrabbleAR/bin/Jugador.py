@@ -21,15 +21,6 @@ class Jugador(Jugadores):
         """
         fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"w")
         json.dump(self.fichas,fichas)
-    
-    def _cargar_fichas(self):
-        try:
-            fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r")
-            self.fichas = json.load(fichas)
-        except (FileNotFoundError):
-            self.fichas = []        
-
-
 
     def guardar_info(self):
         """
@@ -46,7 +37,6 @@ class Jugador(Jugadores):
         """
         Carga la lista de palabras usadas por el jugador
         """
-        self._cargar_fichas()
         try:
             datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r")
             self._palabras_usadas = list(json.load(datos))

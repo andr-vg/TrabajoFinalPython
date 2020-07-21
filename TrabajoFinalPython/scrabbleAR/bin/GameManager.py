@@ -16,7 +16,7 @@ import string
 
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
-def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas):
+def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas, guardado):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -134,11 +134,21 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
 
     letras_jugador= {0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}
     letras_maquina= {10: '', 11: '', 12: '',13: '', 14: '', 15: '',16: ''}
-    if hay_fichas(fichas_por_jugador, bolsa):
-        dar_fichas(letras_maquina, bolsa)
+    if guardado:
+        fichas_jugador = cargar_fichas_jugador()
+        fichas_maquina = cargar_fichas_maquina()
+        if fichas_jugador != None and fichas_maquina != None:
+            for nro, letra in letras_jugador.items():
+                letras_jugador[nro] = fichas_jugador[str(nro)]
+                letras_maquina[nro+10] = fichas_maquina[str(nro+10)]
+        else:
+            guardado = False # si no existieran los archivos 
+    if not guardado:
+        if hay_fichas(fichas_por_jugador, bolsa):
+            dar_fichas(letras_maquina, bolsa)
 
-    if hay_fichas(fichas_por_jugador, bolsa):
-        dar_fichas(letras_jugador, bolsa)
+        if hay_fichas(fichas_por_jugador, bolsa):
+            dar_fichas(letras_jugador, bolsa)
 
     ############## Creacion del tablero y datos a mostrar #####################
 
@@ -339,15 +349,21 @@ def preguntar_si_sigue_el_juego():
     window_salir.close()
     return seguir
 
+def cargar_fichas_maquina():
+    try:
+        datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r")
+        data = {}
+        data = json.load(datos)
+        fichas = data["fichas"]
+        return fichas
+    except (FileNotFoundError):
+        return None
 
 
-def cargar_fichas_jugador(window):
+def cargar_fichas_jugador():
     try:
         fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r")
         fichas_j = json.load(fichas)
-        fichas_j_valores = list(fichas_j.values())
-        for key in range(7):
-            window[key].update(fichas_j_valores[key])
-        return True #-----> Puede cargar
+        return fichas_j #-----> Puede cargar
     except (FileNotFoundError):
-        return False #----> No pude cargar
+        return None #----> No pude cargar
