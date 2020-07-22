@@ -267,8 +267,6 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
 
         # aca actualizamos el tablero de botones con las letras que formo el jugador para despues guardarlas si se pospone la partida
         posiciones_tablero_actualizar = pc.get_botones().copy()
-        print("botones",posiciones_tablero_actualizar)
-        print(palabra_nueva)
         for posicion, letra in palabra_nueva.items():
             posiciones_tablero_actualizar[posicion] = letra + "/"
         pc.actualiza_botones(posiciones_tablero_actualizar)
