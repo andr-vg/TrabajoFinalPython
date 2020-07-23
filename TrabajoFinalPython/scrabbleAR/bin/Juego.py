@@ -110,6 +110,7 @@ def main(guardado):
     # cambios de fichas
     if guardado:
         cambios_de_fichas = int(config["cambios_fichas"])
+        window["cfichas"].update(cambios_de_fichas)
         if cambios_de_fichas == 0:
             window["-cf"].update(disabled=True)
     else:
@@ -231,53 +232,53 @@ def main(guardado):
                              'Seleccione las letras que quiere cambiar o el boton ',
                              '\"seleccionar todas las fichas\" y vuelva a clickear en ',
                              '\"Cambiar fichas\" para confirmar el cambio',keep_on_top=True)
-                event, values = window.read()
-                if not event is None:
-                    window.BringToFront() # para que no se minimice despues del popup
-                    window["-selec"].update(visible=True)
-                    window["-deshacer-selec"].update(visible=True)
-                    cerro_ventana = False
-                    while True:
-                        event = window.read()[0]
-                        if event is None:
-                            cerro_ventana = True
-                            break
-                        if event in letras.keys():
-                            letras_a_cambiar.append(event)
-                            window[event].update(disabled=True)
-                        elif event == "-selec":
-                            for ficha in letras.keys():
-                                if ficha not in letras_a_cambiar:
-                                    letras_a_cambiar.append(ficha)
-                                    window[ficha].update(disabled=True)
-                        elif event == "-deshacer-selec":
-                            for ficha in letras_a_cambiar:
-                                window[ficha].update(disabled=False)
-                            letras_a_cambiar = []
-                        elif event == "-cf":
-                            window["-selec"].update(visible=False)
-                            window["-deshacer-selec"].update(visible=False)
-                            if letras_a_cambiar:
-                                letras= gm.devolver_fichas(letras,letras_a_cambiar,bolsa)
-                                gm.dar_fichas(letras,bolsa)
-                                pj.setFichas(letras)
-                                for f in letras_a_cambiar:
-                                    window[f].update(letras[f], image_size=(50, 50), image_subsample=21, image_filename=img_nros[puntos_por_letra[letras[f]]], disabled=False)
-                                cambios_de_fichas -= 1
-                                window["cfichas"].update(str(cambios_de_fichas))
-                                if cambios_de_fichas == 0:
-                                    window["-cf"].update(disabled=True)
-                                    window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
-                                # print("Cambio de letras realizado.")
-                            #else:
-                            #      print("No se selecciono ninguna letra, no se realizo ningun cambio.")
-                            #    pass
-                            break
-                    if not cerro_ventana:
-                        turno_jugador,turno_pc= gm.cambiar_turno(turno_jugador,turno_pc, window)
-                        window["-paso"].update(disabled=False)
-                        window["-p"].update(disabled=False)
-                        window["-t"].update(disabled=False)
+                #event, values = window.read()
+                #if not event is None:
+                window.BringToFront() # para que no se minimice despues del popup
+                window["-selec"].update(visible=True)
+                window["-deshacer-selec"].update(visible=True)
+                cerro_ventana = False
+                while True:
+                    event = window.read()[0]
+                    if event is None:
+                        cerro_ventana = True
+                        break
+                    if event in letras.keys():
+                        letras_a_cambiar.append(event)
+                        window[event].update(disabled=True)
+                    elif event == "-selec":
+                        for ficha in letras.keys():
+                            if ficha not in letras_a_cambiar:
+                                letras_a_cambiar.append(ficha)
+                                window[ficha].update(disabled=True)
+                    elif event == "-deshacer-selec":
+                        for ficha in letras_a_cambiar:
+                            window[ficha].update(disabled=False)
+                        letras_a_cambiar = []
+                    elif event == "-cf":
+                        window["-selec"].update(visible=False)
+                        window["-deshacer-selec"].update(visible=False)
+                        if letras_a_cambiar:
+                            letras= gm.devolver_fichas(letras,letras_a_cambiar,bolsa)
+                            gm.dar_fichas(letras,bolsa)
+                            pj.setFichas(letras)
+                            for f in letras_a_cambiar:
+                                window[f].update(letras[f], image_size=(50, 50), image_subsample=21, image_filename=img_nros[puntos_por_letra[letras[f]]], disabled=False)
+                            cambios_de_fichas -= 1
+                            window["cfichas"].update(str(cambios_de_fichas))
+                            if cambios_de_fichas == 0:
+                                window["-cf"].update(disabled=True)
+                                window["-cf"].set_tooltip('Ya realizaste 3 cambios de fichas.')
+                            # print("Cambio de letras realizado.")
+                        #else:
+                        #      print("No se selecciono ninguna letra, no se realizo ningun cambio.")
+                        #    pass
+                        break
+                if not cerro_ventana:
+                    turno_jugador,turno_pc= gm.cambiar_turno(turno_jugador,turno_pc, window)
+                    window["-paso"].update(disabled=False)
+                    window["-p"].update(disabled=False)
+                    window["-t"].update(disabled=False)
             # boton de guardar partida
             elif event == "-p" or guardar_partida:
                 boton = pc.get_botones()
