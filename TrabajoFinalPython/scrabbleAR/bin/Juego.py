@@ -55,9 +55,9 @@ def main(guardado):
     dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
                          'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
-                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]}
+                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]} 
     if dificultad == "dificil":
-        tipo_palabra = random.choice(list(dificultad_random.keys()))
+        tipo_palabra = random.choice(list(dificultad_random.keys())) if not guardado else config["tipo"]
         tipo = dificultad_random[tipo_palabra]
     elif dificultad == 'facil':
         tipo_palabra = ""
@@ -86,9 +86,11 @@ def main(guardado):
         #Sino es 0
     # ----------------------------------------------------------------------
     window = sg.Window("Ventana de juego", layout, icon=icono_ventana,finalize=True)
-    if (guardado):
-            pj.puntos = config["puntos_j"]
-            pc.puntos = config["puntos_pc"]
+    if guardado:
+        pj.puntos = int(config["puntos_j"])
+        pc.puntos = int(config["puntos_pc"])
+        window["p_pc"].update(pc.getPuntos())
+        window["p_j"].update(pj.getPuntos())
             
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
@@ -105,7 +107,13 @@ def main(guardado):
         primer_turno = False
     else:
         primer_turno = True
-    cambios_de_fichas = 3
+    # cambios de fichas
+    if guardado:
+        cambios_de_fichas = int(config["cambios_fichas"])
+        if cambios_de_fichas == 0:
+            window["-cf"].update(disabled=True)
+    else:
+        cambios_de_fichas = 3 
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero
     fin_fichas = False
     fin_juego = False
@@ -276,12 +284,14 @@ def main(guardado):
                 cm.guardar_partida(boton)
                 datos = dict()
                 datos = config
+                datos["tipo"] = tipo_palabra
                 datos["tiempo"] = tiempo_str
                 datos["puntos_j"] = pj.puntos
                 datos["puntos_pc"] = pc.puntos
                 datos["nombre"] = nombre
                 datos["turno_jugador"] = str(turno_jugador)
                 datos["turno_pc"] = str(turno_pc)
+                datos["cambios_fichas"] = cambios_de_fichas
                 pc.guardar_estado()
                 pj.guardar_info()
                 cm.guardar_info_partida(datos)

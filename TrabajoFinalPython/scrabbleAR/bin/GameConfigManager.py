@@ -118,7 +118,7 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
 
     tiempo =  config["tiempo"]
     dificultad = config["dificultad"]
-    return bolsa,puntos_por_letra,tiempo,dificultad,config, pred
+    return bolsa, puntos_por_letra, tiempo, dificultad, config, pred
 
 def cargar_puntuaciones():
     """
