@@ -153,7 +153,11 @@ def main(guardado):
         # print("POS: ",event)
         if (cont_tiempo_seg == 0):
             cont_tiempo_seg = 59
-            cont_tiempo_min -= 1 if cont_tiempo_min -1 > 0 else 0
+            if cont_tiempo_min -1 <= 0:
+                cont_tiempo_min =0 
+                print(cont_tiempo_min)
+            else:
+                cont_tiempo_min -= 1
         else:
             cont_tiempo_seg -= 1
         if (cont_tiempo_seg < 10):

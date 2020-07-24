@@ -19,7 +19,6 @@ class PC(Jugadores):
         self._colores = cm.cargar_colores()
         if (guardada):
             self._cargar_estado()
-            sg.Print(self._posiciones_ocupadas_tablero)
 # ---------------------------------------------------------------------
     def reinicioFichas(self, palabra):
         """
