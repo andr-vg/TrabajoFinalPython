@@ -142,7 +142,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
                 letras_jugador[nro] = fichas_jugador[str(nro)]
                 letras_maquina[nro+10] = fichas_maquina[str(nro+10)]
         else:
-            guardado = False # si no existieran los archivos 
+            guardado = False # si no existieran los archivos
     if not guardado:
         if hay_fichas(fichas_por_jugador, bolsa):
             dar_fichas(letras_maquina, bolsa)
@@ -168,7 +168,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
         [sg.T("Cambios de fichas"),sg.T("3",key="cfichas")],
        [sg.Text("Tus Puntos:"),sg.T("0",key="p_j",size=(0,1))],
        [sg.Text("Puntos Pc:"),sg.T("0",key="p_pc",size=(0,1))],
-       [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(10,1))],
+       [sg.Text("Turno actual:",size=(13,1)),sg.Text("",key="turno",size=(20,1))],
        [sg.Button("Como jugar", key="como_jugar"),sg.Button("Botones especiales", key="botonera"),sg.Button("Ver configuracion", key="ver_config")]]
 
     columna_datos.extend(colum)
@@ -356,8 +356,6 @@ def cargar_fichas_maquina():
         return fichas
     except (FileNotFoundError):
         return None
-
-
 def cargar_fichas_jugador():
     try:
         fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r")

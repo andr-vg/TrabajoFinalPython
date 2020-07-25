@@ -55,7 +55,7 @@ def main(guardado):
     dificultad_random = {'sust': ["NC", "NN", "NCS", "NCP", "NNS", "NP", "NNP", "W"],
                          'adj': ["JJ", "AO", "AQ", "DI", "DT"],
                          'verbo': ["VAG", "VBG", "VAI", "VAN", "MD", "VAS", "VMG", "VMI",
-                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]} 
+                          "VB", "VMM", "VMN", "VMP", "VBN", "VMS", "VSG", "VSI", "VSN", "VSP", "VSS"]}
     if dificultad == "dificil":
         tipo_palabra = random.choice(list(dificultad_random.keys())) if not guardado else config["tipo"]
         tipo = dificultad_random[tipo_palabra]
@@ -91,7 +91,7 @@ def main(guardado):
         pc.puntos = int(config["puntos_pc"])
         window["p_pc"].update(pc.getPuntos())
         window["p_j"].update(pj.getPuntos())
-            
+
     # ----------------------------------------------------------------------
         #Configuracion de ventana y turnos
     # ----------------------------------------------------------------------
@@ -114,7 +114,7 @@ def main(guardado):
         if cambios_de_fichas == 0:
             window["-cf"].update(disabled=True)
     else:
-        cambios_de_fichas = 3 
+        cambios_de_fichas = 3
     posiciones_ocupadas_tablero = []  # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero
     fin_fichas = False
     fin_juego = False
@@ -138,13 +138,10 @@ def main(guardado):
         turno_pc = True if config["turno_pc"] == "True" else False
         turno_jugador = True if config["turno_jugador"] == "True" else False
     else:
-        turno = random.randint(0,1)
-        if turno == 1: # empieza el jugador
-            turno_jugador = True
-            turno_pc = False
-        else:  # empieza la compu
-            turno_jugador = False
-            turno_pc = True
+        turno= random.choice([True, False])
+        turno_jugador,turno_pc= gm.cambiar_turno(turno,not(turno), window)
+        sg.popup("Se eligio aleatoriamente que {} coloque sus fichas en el primer turno.".format("la maquina" if turno_pc else "el jugador \""+nombre+"\""),
+        "¡A jugar!",title="Empieza la partida",line_width=100)
     # ----------------------------------------------------------------------
         #Loop de ventana
     # ----------------------------------------------------------------------
@@ -154,7 +151,7 @@ def main(guardado):
         if (cont_tiempo_seg == 0):
             cont_tiempo_seg = 59
             if cont_tiempo_min -1 <= 0:
-                cont_tiempo_min =0 
+                cont_tiempo_min =0
                 print(cont_tiempo_min)
             else:
                 cont_tiempo_min -= 1
