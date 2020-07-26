@@ -118,16 +118,20 @@ class PC(Jugadores):
                             l.append(evaluation)
 
         l = list(set(l))
+        print(l)
         valido = False
-
-        try:
-            palabra = max(l, key=lambda x: len(x))
-        except:
-            palabra = ""
-        if not palabra in self._palabras_usadas:
-            valido = self.es_palabra_valida(palabra)
-            if valido:
-                self._palabras_usadas.append(palabra)
+        hay_palabras = True
+        while not valido and hay_palabras:
+            try:
+                palabra = max(l, key=lambda x: len(x))
+                l.remove(palabra)
+            except:  # caso en que la lista no tiene palabras
+                palabra = ""
+                hay_palabras = False      
+            if not palabra in self._palabras_usadas: # no puede formar palabras que ya formo antes
+                valido = self.es_palabra_valida(palabra)            
+        if valido:
+            self._palabras_usadas.append(palabra)
         return palabra.upper() if valido else ""
 # ----------------------------------------------------------------------
     def _mapeoHorizontal(self, i, j):
