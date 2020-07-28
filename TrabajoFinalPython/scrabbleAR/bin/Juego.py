@@ -166,6 +166,10 @@ def main(guardado):
         if (cont_tiempo_min == 0) and (cont_tiempo_seg == 0):
             sg.popup("Se termino el tiempo",keep_on_top=True)
             fin_juego = True
+            # para que entre al if de terminar juego
+            # dentro de turno_jugador
+            turno_jugador = True
+            turno_pc = False
         #------------------------------------------------------
             # mientras sea el turno del jugador, podrá realizar
             # todos los eventos del tablero
@@ -326,6 +330,7 @@ def main(guardado):
                     # puntos_jugador[fecha] = pj.puntos
                     if nombre != None: # solo guarda si le pone un nombre
                         datos = nombre+" - "+str(fecha)+" - "+str(pj.puntos)+" - "+ str(dificultad)
+                        print(lista_puntajes)
                         lista_puntajes.append(datos)
                         puntos_jugador["puntos"] = lista_puntajes
                         cm.guardar_puntuaciones(puntos_jugador)

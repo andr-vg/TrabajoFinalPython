@@ -60,7 +60,7 @@ def cargar_top_10():    #esto podria ir en GameConfigManager?
             dato = punt.split(" - ")
             # print("DATO",dato)
             if (dato[3] != "0"):
-                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[2]+" |Nivel: "+dato[3]
+                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" - "+dato[2]+" |Puntos: "+dato[3]+" |Nivel: "+dato[4]
                 list_final.append(cadena)
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio",keep_on_top=True)
