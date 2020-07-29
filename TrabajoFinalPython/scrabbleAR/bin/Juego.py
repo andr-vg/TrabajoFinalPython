@@ -228,20 +228,20 @@ def main(guardado):
             elif (event == "-cf") and (cambios_de_fichas != 0):
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, letras.keys(), palabra_nueva, botones_aux, dificultad) #si ya hay fichas jugadas en el tablero volveran al atril
                 letras_a_cambiar=[]
-                window["-c"].update(disabled=True)  #los desactivo para que no se toque nada que no sean las fichas a cambiar
+                window["-c"].update(disabled=True)
                 window["-d"].update(disabled=True)  #-c y -d no los vuelvo a activar porque los quiero desactivados cuando empiece el sigueinte turno
                 window["-paso"].update(disabled=True)
                 window["-p"].update(disabled=True)
                 window["-t"].update(disabled=True)
+                window["-selec"].update(visible=True)
+                window["-deshacer-selec"].update(visible=True)
+                #event, values = window.read()
+                #if not event is None:
                 sg.Popup('Cambio de fichas:',
                              'Seleccione las letras que quiere cambiar o el boton ',
                              '\"seleccionar todas las fichas\" y vuelva a clickear en ',
                              '\"Cambiar fichas\" para confirmar el cambio',keep_on_top=True)
-                #event, values = window.read()
-                #if not event is None:
                 window.BringToFront() # para que no se minimice despues del popup
-                window["-selec"].update(visible=True)
-                window["-deshacer-selec"].update(visible=True)
                 cerro_ventana = False
                 while True:
                     event = window.read()[0]

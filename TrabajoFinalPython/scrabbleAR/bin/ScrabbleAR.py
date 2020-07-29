@@ -18,7 +18,7 @@ salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
 # ----------------------------------------------------------------------
 def limpiar_json():
     """
-    Elimina los puntajes que son 0 
+    Elimina los puntajes que son 0
     """
     try:
         arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"r")
@@ -45,7 +45,7 @@ def key_orden(cadena):
     cadena = cadena.split(" - ")
     aux = int(cadena[3])
     return aux
-def cargar_top_10():   
+def cargar_top_10():
     """
     Cargamos los puntajes del top 10
     """
@@ -70,7 +70,7 @@ def cargar_top_10():
                     list_dificil.append(cadena)
         list_facil = list_facil[-10:]
         list_medio = list_medio[-10:]
-        list_dificil = list_dificil[-10:]   
+        list_dificil = list_dificil[-10:]
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio",keep_on_top=True)
     finally:
