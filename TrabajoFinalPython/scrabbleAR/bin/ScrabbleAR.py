@@ -17,6 +17,9 @@ jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
 # ----------------------------------------------------------------------
 def limpiar_json():
+    """
+    Elimina los puntajes que son 0 
+    """
     try:
         arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"r")
         datos = json.load(arch)
@@ -31,47 +34,53 @@ def limpiar_json():
         datos["puntos"] = lista_final
         json.dump(datos,arch,indent=4)
         arch.close()
+
     except (FileNotFoundError):
         pass
 # ----------------------------------------------------------------------
 def key_orden(cadena):
+    """
+    Key de orden para la lista del top 10
+    """
     cadena = cadena.split(" - ")
-    aux = cadena[1]+" "+cadena[2]
+    aux = int(cadena[3])
     return aux
-def cargar_top_10():    #esto podria ir en GameConfigManager?
+def cargar_top_10():   
     """
     Cargamos los puntajes del top 10
     """
+    list_facil = list()
+    list_medio = list()
+    list_dificil = list()
     try:
         arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"r")
-        list_aux = []
-        list_final = []
         top_10 = json.load(arch)
-        # list_aux = sorted(top_10["puntos"],reverse=True)
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(list_aux)
         list_aux = top_10["puntos"].copy()
-        list_aux = list_aux[-10:]
+        # list_aux = list_aux[-10:]
         list_aux = sorted(list_aux,key=key_orden,reverse=True)
-        # print("\n LISTA")
-        # pp.pprint(list_aux)
         for punt in list_aux:
             dato = punt.split(" - ")
-            # print("DATO",dato)
             if (dato[3] != "0"):
-                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" - "+dato[2]+" |Puntos: "+dato[3]+" |Nivel: "+dato[4]
-                list_final.append(cadena)
+                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[3]
+                if (dato[4] == "facil"):
+                    list_facil.append(cadena)
+                elif (dato[4] == "medio"):
+                    list_medio.append(cadena)
+                elif (dato[4] == "dificil"):
+                    list_dificil.append(cadena)
+        list_facil = list_facil[-10:]
+        list_medio = list_medio[-10:]
+        list_dificil = list_dificil[-10:]   
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio",keep_on_top=True)
-        list_final = []
-    return list_final
+    finally:
+        return list_facil,list_medio,list_dificil
 # ----------------------------------------------------------------------
 def crear_layout(config):
     """
     Crea el layout de la ventana menu
     """
-    top_10 = cargar_top_10()
+    list_facil,list_medio,list_dificil = cargar_top_10()
 
     tab1_layout = [
         [sg.Button("", key="-jugar-", image_filename=jugar, border_width = 0,button_color=("#c5dbf1","#c5dbf1")) ],
@@ -134,7 +143,9 @@ vocales haya sera mas dificil armar palabras.""")]
 
     ]
     frame_top_10 = [
-         [sg.Listbox(["Aun no se ha jugado"] if len(top_10) == 0 else top_10, size=(100, 10), background_color="#c5dbf1")]
+         [sg.Radio("Facil",group_id="top",default=True,key="t_Facil"),sg.Radio("Medio",group_id="top",key="t_Medio"),sg.Radio("Dificil",group_id="top",key="t_Dificil"),
+         sg.B("Actualizar",key="act")],
+         [sg.Listbox(["Aun no se ha jugado"] if len(list_facil) == 0 else list_facil, size=(100, 10), background_color="#c5dbf1",key="top_10")]
     ]
     tab3_layout = [
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
@@ -170,7 +181,7 @@ de usuario para guardar tu puntaje o jugar como jugador invitado.""")]]
          sg.Tab("Top 10", tab3_layout, element_justification='c' , key="-tab3-", background_color="#c5dbf1", title_color="#c5dbf1", border_width=0)]]
     layout = [[sg.Image(logo, background_color=("#c5dbf1"))],
               [sg.TabGroup(tab_grupo, enable_events=True, key="-tabgrupo-")]]
-    return layout
+    return layout , list_facil, list_medio, list_dificil
 # ----------------------------------------------------------------------
 def guardar_configuracion(config):
     """
@@ -231,7 +242,7 @@ def main():
                                         'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,}
     sg.theme("MyNewTheme")
     # sg.theme("lightblue")
-    layout = crear_layout(config)
+    layout, list_facil, list_medio, list_dificil = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,element_justification='c', resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True,icon=icono_ventana)
 
     while True:
@@ -290,8 +301,16 @@ def main():
             else:
                 window.close()
                 Juego.main(False)
+        if (event == "act"):
+            if (window["t_Facil"].get()):
+                window["top_10"].update(list_facil if len(list_facil) != 0 else ["No hay juegos registrados"])
+            elif (window["t_Medio"].get()):
+                window["top_10"].update(list_medio if len(list_medio) != 0 else ["No hay juegos registrados"])
+            elif (window["t_Dificil"]):
+                window["top_10"].update(list_dificil if len(list_dificil) != 0 else ["No hay juegos registrados"])
+            window.refresh()
 
-        if (event == "-tab3-" ):
+        if (event == "-tabgrupo-")and(values["-tabgrupo-"] == "-tab3-"):
             window.refresh()
         if (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
