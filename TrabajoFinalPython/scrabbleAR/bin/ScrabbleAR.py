@@ -5,12 +5,13 @@ import sys
 import json
 import ScrabbleAR
 import pathlib
+import Icono
 from GameConfigManager import empezando_la_partida
 from GameConfigManager import botones_especiales
 # ----------------------------------------------------------------------
 #Path making
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
-icono_ventana = b"iVBORw0KGgoAAAANSUhEUgAAAEkAAABJCAYAAABxcwvcAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAS2SURBVHja7Jw/bBRHFIe/tXwKnIRQTIEgGwGRQL4IIgFCchpMQcGfigLSXJEWOY3BDhIFvVPQIFoarqOgIkoiClsIBVDcOCffwUlGkRwllSVksJAoTHGzsF5mZnd2Z/aOu3nSSqfZ29vd377vvZk3ewNq+xr4CXgErAObA7j9DzwQ9xliYHuBhwMqStr2UNy/1s4NqTjJ7VxWgZ4D3wPbGGzbJu7zeZpQYeILs0DAcFkAzCR02BKnnsV2XGO4bTamxV9R4/4EYsGQixQArZgmBwCuxhpO4g0RoyJNZgAexxq2e30+BPNIk8cAr2IN3j5apMl6kBAn8NpsEQmAEa9FunmRvEh2bNTS71Q1w5e3wIbD31fZOvDOdhQvkt3mUwaMRRPCXIHB6l2gbloKSepSVKRqhgut9VCk+DZvcC0fjrMRkyYzfOdMn4SXSWBZiB6Uidt8xqcY9IEnJTEMysCtqnBp28jNKW5yTLGFwIT4jk6os2WIdFZxYtnFTVsWaS7jsWMp3l5xLZLs5FXxFG0iV0SkaLilEmrCZeCuSoL2gugTLSqOGe/hOKyuKYs463FPKp44ohPX6LMstwq8lLQfc5ndVKhFZhO5orilZUknuIUa1CLrN+RU9tIVbqc0qNHHyMkmHu+5wm0lBTXbyNnArWLYVyqEW4iYQUi4rGykv9RHyJ1WtD91gZsMtRuK726IWNVr5GrAr5L2BrDmAjcZaqFhr9wUuby4BZrzq0LEJ7qMWkJtVXPMgga5VsEgPKbYd0h0Em9qjv/WpBho4kl1ydOo5+xTTRf0pLzbSsbBdu6xmylqtpCzJVJdM6C1IlKoeCpFqpe1EkRaEV2RiiHOuboAJlmtn7LcAeCCjRFymicFiqdkUlwvglyW7BaI66lrPKri0pPGFWOeVYOT/u24Y7kprqchMpfMo+7k+eGsIsmwuGWpVPGjA8RaCqHqmiJbIdwC7NWsVShULOBmEvArtnFT4bBMvhkKmR13FLRVQv5gG7cyMtCUo99dA36RtN817RLocAso793piqNSyZimY2kFtzJLGsf71ZtGc6C2kKUGk2IXJQPlKeCJw9j0syI2NYrgZjOrFc1yNiqTppkuE24q1NoWRJovGblCmU4nkqyTdwU7b+n+W3KWi2JTI29skuGmKppPWLzoaQP3tzXvVjPIdKm4qdx+0aJIv/UAuZaiGqH1phEDt29g8R1ETWxziRzA5TyxKYlbGaiZImcLt3jiSDuvFrcyUOslcsbe5P82oSfMqJ401OZF8iJ5kbxIXiQvkhfJi+RNbqPAf8CeQbqpw+MHa8BOMZTaTXf6+xXwD7BP7FsCvgNotjtPJCORyF6PsHX6eSDWBWi2Oy26M8Y7gCPAC+B6s93ZEPu+pPuK9SIwdXj8YHJA/UXs89II8Ees4cSAeFIAhM12Z43u2zBV4HexL6RbU9olBtK3JVWHo7HP9wO6a5VEc/RtunPom5+5SHPAfeFBh2K7VunO1PwpPh8BdjXbnUYCtWU+1vi/iXbEV72ZHfI4LV31Bvz6SZEHaddPAjiPX4krfv/nVQdcxK/ntglcSlP2K4Z7dUCj9QP2C0YfAW8GVJQ34v5mxP1K7f0A2wJqfDSaFUAAAAAASUVORK5CYII="
+icono_ventana = Icono.obtener_logo()
 # print("ABSOLUTE PATH: ",absolute_path)
 logo = os.path.join(absolute_path, "lib","media","Logo.png")
 jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
@@ -45,10 +46,13 @@ def key_orden(cadena):
     cadena = cadena.split(" - ")
     aux = int(cadena[3])
     return aux
+# ----------------------------------------------------------------------
 def cargar_top_10():
     """
     Cargamos los puntajes del top 10
     """
+    # las sigs listas contienen listas que corresponderan
+    # a las filas de la tabla del top 10
     list_facil = list()
     list_medio = list()
     list_dificil = list()
@@ -61,13 +65,15 @@ def cargar_top_10():
         for punt in list_aux:
             dato = punt.split(" - ")
             if (dato[3] != "0"):
-                cadena = "|Usuario: "+dato[0]+" |Fecha: "+dato[1]+" |Puntos: "+dato[3]
+                # agregamos una fila con nombre del usuario,
+                # de la fecha y el puntaje obtenido
+                jugada = [dato[0], dato[1], dato[3]]
                 if (dato[4] == "facil"):
-                    list_facil.append(cadena)
+                    list_facil.append(jugada)
                 elif (dato[4] == "medio"):
-                    list_medio.append(cadena)
+                    list_medio.append(jugada)
                 elif (dato[4] == "dificil"):
-                    list_dificil.append(cadena)
+                    list_dificil.append(jugada)
         list_facil = list_facil[-10:]
         list_medio = list_medio[-10:]
         list_dificil = list_dificil[-10:]
@@ -80,7 +86,7 @@ def crear_layout(config):
     """
     Crea el layout de la ventana menu
     """
-    list_facil,list_medio,list_dificil = cargar_top_10()
+    list_facil, list_medio, list_dificil = cargar_top_10()
 
     tab1_layout = [
         [sg.Button("", key="-jugar-", image_filename=jugar, border_width = 0,button_color=("#c5dbf1","#c5dbf1")) ],
@@ -140,12 +146,21 @@ vocales haya sera mas dificil armar palabras.""")]
         [sg.Button("Guardar", key="-guardar-"),sg.Button("Config predeterminada",key="-pred-")]
                    ]
     tab2_layout = [[sg.Column(tab2_layout0),sg.Column(ayuda_config)]
-
     ]
+
+    sin_datos = [['' for i in range(10)] for j in range(10)]
+
+    headings = ['    USUARIO    ', '    FECHA    ', '    PUNTOS    ']
+
     frame_top_10 = [
          [sg.Radio("Facil",group_id="top",default=True,key="t_Facil"),sg.Radio("Medio",group_id="top",key="t_Medio"),sg.Radio("Dificil",group_id="top",key="t_Dificil"),
          sg.B("Actualizar",key="act")],
-         [sg.Listbox(["Aun no se ha jugado"] if len(list_facil) == 0 else list_facil, size=(100, 10), background_color="#c5dbf1",key="top_10")]
+         [sg.Table(values= list_facil if len(list_facil) != 0 else sin_datos,
+          headings=headings, max_col_width=400, auto_size_columns=True, 
+          text_color='black', justification='right', 
+          num_rows=10, font='Courier 12', pad=(12,2), background_color="#c5dbf1",
+          alternating_row_color='#8fa8bf', key='top_10', def_col_width=30)]
+         
     ]
     tab3_layout = [
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
@@ -244,6 +259,7 @@ def main():
     # sg.theme("lightblue")
     layout, list_facil, list_medio, list_dificil = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,element_justification='c', resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True,icon=icono_ventana)
+    sin_datos = [['' for i in range(10)] for j in range(10)]
 
     while True:
         event, values = window.read()
@@ -303,11 +319,11 @@ def main():
                 Juego.main(False)
         if (event == "act"):
             if (window["t_Facil"].get()):
-                window["top_10"].update(list_facil if len(list_facil) != 0 else ["No hay juegos registrados"])
+                window["top_10"].update(list_facil if len(list_facil) != 0 else sin_datos)
             elif (window["t_Medio"].get()):
-                window["top_10"].update(list_medio if len(list_medio) != 0 else ["No hay juegos registrados"])
+                window["top_10"].update(list_medio if len(list_medio) != 0 else sin_datos)
             elif (window["t_Dificil"]):
-                window["top_10"].update(list_dificil if len(list_dificil) != 0 else ["No hay juegos registrados"])
+                window["top_10"].update(list_dificil if len(list_dificil) != 0 else sin_datos)
             window.refresh()
 
         if (event == "-tabgrupo-")and(values["-tabgrupo-"] == "-tab3-"):
