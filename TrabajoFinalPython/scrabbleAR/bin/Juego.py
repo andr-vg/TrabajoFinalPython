@@ -13,7 +13,234 @@ icono_ventana = Icono.obtener_logo()
     # Funciones a usar en el main
 # --------------------------------------------------------------
 
+def contar_tiempo(cont_tiempo_min, cont_tiempo_seg):
+    """
+    Devuelve los tiempos actuales del juego
+    """
+    if cont_tiempo_seg == 0:
+        cont_tiempo_seg = 59
+        if cont_tiempo_min - 1 <= 0:
+            cont_tiempo_min =0
+            print(cont_tiempo_min)
+        else:
+            cont_tiempo_min -= 1
+    else:
+        cont_tiempo_seg -= 1
+    if cont_tiempo_seg < 10:
+        tiempo_seg_final = '0' + str(cont_tiempo_seg)
+    else:
+        tiempo_seg_final = cont_tiempo_seg
+    return cont_tiempo_min, cont_tiempo_seg, tiempo_seg_final
 
+def seleccion_de_fichas(window, event, letras_usadas, palabra_nueva, letras, botones,
+                        terminar, cont_tiempo_seg, cont_tiempo_min, colores):
+    """
+    El jugador selecciona las fichas que quiere formar y las dispone
+    en el tablero.
+    """
+    window['-d'].update(disabled=False)
+    for botoncito in ['-c', '-cf', '-p', '-t', '-paso', 'como_jugar', 
+                        'botonera', 'ver_config']:
+        window[botoncito].update(disabled=True)
+    box = event  # letra seleccionada
+    letras_usadas[box] = letras[box]
+    # al seleccionado se le cambia el color
+    window[box].update(button_color=('white', '#55a4fc'))    
+    # desactivo los botones de las fichas
+    for val in letras.keys():
+        window[val].update(disabled=True)  
+    if cont_tiempo_seg == 0:
+        cont_tiempo_seg = 59
+        cont_tiempo_min -= 1
+    else:
+        cont_tiempo_seg -= 1
+
+    event, values = window.read()
+    if event in botones.keys():
+        # refresco la tabla en la casilla seleccionada
+        # con la letra elegida antes
+        # se le devuelve el color
+        window[box].update(button_color=('white', '#006699'))     
+        ind = event  # casilla seleccionada
+        palabra_nueva[ind] = letras[box]
+        if len(palabra_nueva.keys()) > 1:
+            # recien ahora puede confirmar
+            window['-c'].update(disabled=False) 
+        # actualizo la casilla y la desactivo
+        window[ind].update(letras[box], disabled=True, 
+        button_color = ('black', colores['letra_jugador']))  
+                    
+        for val in letras.keys():
+            if val not in letras_usadas.keys():
+                # refresco la tabla B
+                window[val].update(disabled=False)  
+        for botoncito in ['-cf', '-p', '-t', '-paso', 'como_jugar', 
+                        'botonera','ver_config']:
+            window[botoncito].update(disabled=False)
+    # si cierra abruptamente nos dirigimos directamente a terminar
+    if event is None:
+        terminar = True
+    return cont_tiempo_seg, cont_tiempo_min, terminar
+
+def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa, 
+                    img_nros, puntos_por_letra, turno_pc, turno_jugador):
+    """
+    Se realizan los cambios de fichas que desea el jugador y éste pierde un turno
+    """
+    letras_a_cambiar=[]
+    for elem in ['-c', '-d', '-paso', '-p', '-t']:
+        window[elem].update(disabled=True)
+    for elem in ['-selec', '-deshacer-selec']:
+        window[elem].update(visible=True)
+                
+    sg.Popup('Cambio de fichas:',
+        'Seleccione las letras que quiere cambiar o el boton ',
+        '\"seleccionar todas las fichas\" y vuelva a clickear',
+        'en ', '\"Cambiar fichas\" para confirmar el cambio',
+        keep_on_top=True)
+    # para que no se minimice despues del popup
+    window.BringToFront() 
+    cerro_ventana = False
+    while True:
+        event = window.read()[0]
+        if event is None:
+            cerro_ventana = True
+            break
+        if event in letras.keys():
+            letras_a_cambiar.append(event)
+            window[event].update(disabled=True)
+        elif event == '-selec':
+            for ficha in letras.keys():
+                if ficha not in letras_a_cambiar:
+                    letras_a_cambiar.append(ficha)
+                    window[ficha].update(disabled=True)
+        elif event == '-deshacer-selec':
+            for ficha in letras_a_cambiar:
+                window[ficha].update(disabled=False)
+            letras_a_cambiar = []
+        elif event == '-cf':
+            window['-selec'].update(visible=False)
+            window['-deshacer-selec'].update(visible=False)
+            if letras_a_cambiar:
+                letras = gm.devolver_fichas(letras, letras_a_cambiar, bolsa)
+                gm.dar_fichas(letras,bolsa)
+                pj.setFichas(letras)
+                for f in letras_a_cambiar:
+                    window[f].update(letras[f],  disabled=False, 
+                        image_size=(50, 50), image_subsample=21, 
+                        image_filename=img_nros[puntos_por_letra[letras[f]]])
+                cambios_de_fichas -= 1
+                window['cfichas'].update(str(cambios_de_fichas))
+                if cambios_de_fichas == 0:
+                    window['-cf'].update(disabled=True)
+                    window['-cf'].set_tooltip(
+                        'Ya realizaste 3 cambios de fichas.')
+            break
+    if not cerro_ventana:
+        turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador, turno_pc, 
+                                    window)
+        window['-paso'].update(disabled=False)
+        window['-p'].update(disabled=False)
+        window['-t'].update(disabled=False)
+    return cambios_de_fichas, turno_pc, turno_jugador
+
+def guardar_datos(config, tipo_palabra, tiempo_str, pj_puntos, pc_puntos, 
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas):
+    """
+    Función que guarda los datos al posponer partida
+    """
+    #datos = dict()
+    datos = config
+    datos['tipo'] = tipo_palabra
+    datos['tiempo'] = tiempo_str
+    datos['puntos_j'] = pj_puntos
+    datos['puntos_pc'] = pc_puntos
+    datos['nombre'] = nombre
+    datos['turno_jugador'] = str(turno_jugador)
+    datos['turno_pc'] = str(turno_pc)
+    datos['cambios_fichas'] = cambios_de_fichas
+    return datos
+
+def posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas):
+    """
+    funcion de posponer y guardar partida
+    """
+    boton = pc.get_botones()
+    cm.guardar_partida(boton)
+    datos = guardar_datos(config, tipo_palabra, tiempo_str, pj.puntos, 
+            pc.puntos, nombre, turno_jugador, turno_pc, cambios_de_fichas)
+    pc.guardar_estado()
+    pj.guardar_info()
+    cm.guardar_info_partida(datos)
+    sg.popup_no_border('Partida guardada', keep_on_top=True, 
+                        auto_close_duration=2)
+
+def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
+        dificultad, lista_puntajes, puntos_jugador, guardado, absolute_path):
+    """
+    Funcion que se ocupa de realizar los calculos finales y guardar en top_10
+    al finalizar la partida
+    """
+    pj.restar_puntos_finales()
+    pc.restar_puntos_finales()
+    gm.mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
+    if pj.puntos > pc.puntos:
+        sg.popup_no_frame('Termino el juego \nTus puntos vs Puntos PC ',
+                        '     '+str(pj.puntos)+'         |        '+
+                        str(pc.puntos),' Ganaste!',keep_on_top=True)
+    elif pj.puntos == pc.puntos:
+        sg.popup('Termino el juego \nTus puntos vs Puntos PC ',
+                '     '+str(pj.puntos)+'         |        '+str(pc.puntos),
+                ' EMPATE!',keep_on_top=True)
+    else:
+        sg.popup_no_frame('Termino el juego \nTus puntos vs Puntos PC \n', 
+                '     '+str(pj.puntos)+'         |        '+str(pc.puntos), 
+                ' Perdiste :(',keep_on_top=True)
+    from datetime import datetime
+    fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+    if nombre != None: # solo guarda si le pone un nombre
+        datos = nombre + ' - ' + str(fecha) + ' - ' + str(pj.puntos) + \
+                         ' - ' + str(dificultad)
+        print(lista_puntajes)
+        lista_puntajes.append(datos)
+        puntos_jugador['puntos'] = lista_puntajes
+        cm.guardar_puntuaciones(puntos_jugador)
+    sg.popup_no_frame('Volveras al menu', auto_close=True, 
+                auto_close_duration=5, button_type=None,
+                keep_on_top=True)
+    if guardado:
+        # Si termine la partida guardada la borro
+        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves', 
+                                'datos_guardados.json'))
+        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves', 
+                                'datos_pc.json'))
+        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves', 
+                                'guardado.json'))
+
+def analizar_palabra(window, letras, botones, palabra_nueva, letras_usadas, 
+                    puntos_por_letra, pj, pc, bolsa, primer_turno, img_nros,
+                    botones_aux, turno_pc, dificultad):
+    """
+    Acá analizamos si la palabra que confirmo el jugador es correcta
+    tanto en ubicación como en el tipo pedido segun dificultad
+    """
+    window['-c'].update(disabled=True)
+    # vamos a analizar si la palabra fue posicionada
+    # correctamente (misma fila y columnas contiguas):
+    posiciones_ocupadas_tablero = pc.get_pos_tablero() 
+    # confirmamos que sea correcta o no la palabra y lugares:
+    letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = \
+        gm.confirmar_palabra(window, letras, botones, palabra_nueva, 
+        letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, 
+        bolsa, primer_turno, img_nros, botones_aux, dificultad, pc)
+    pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
+    # si le da confirmar y está mal la palabra, no deja de ser su primer turno
+    if primer_turno and turno_pc:  
+        primer_turno = False
+    window['p_j'].update(str(pj.puntos))
+    window.BringToFront()
+    return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas, primer_turno
 
 # --------------------------------------------------------------
     # Main del juego
@@ -164,7 +391,7 @@ def main(guardado):
     else:
         cambios_de_fichas = 3
     # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero:
-    posiciones_ocupadas_tablero = []  
+    # posiciones_ocupadas_tablero = []  
 
     fin_fichas = False
     fin_juego = False
@@ -201,27 +428,17 @@ def main(guardado):
     # ----------------------------------------------------------------------
     while True:
         event, values = window.read(timeout=1000)
-        if cont_tiempo_seg == 0:
-            cont_tiempo_seg = 59
-            if cont_tiempo_min -1 <= 0:
-                cont_tiempo_min =0
-                print(cont_tiempo_min)
-            else:
-                cont_tiempo_min -= 1
-        else:
-            cont_tiempo_seg -= 1
-        if cont_tiempo_seg < 10:
-            tiempo_seg_final = '0' + str(cont_tiempo_seg)
-        else:
-            tiempo_seg_final = cont_tiempo_seg
+        # actualizamos el tiempo:
+        cont_tiempo_min, cont_tiempo_seg, tiempo_seg_final = contar_tiempo(
+                        cont_tiempo_min, cont_tiempo_seg)
         tiempo_str = '{}:{}'.format(cont_tiempo_min, tiempo_seg_final)
         window['tiempo'].update(tiempo_str)
+        # chequeamos que no se acabe el tiempo:
         if (cont_tiempo_min == 0) and (cont_tiempo_seg == 0):
             sg.popup('Se termino el tiempo', keep_on_top=True)
-            fin_juego = True
             # para que entre al if de terminar juego
             # dentro del if del turno_jugador
-            turno_jugador = True
+            fin_juego = turno_jugador = True
             turno_pc = False
         #------------------------------------------------------
             # mientras sea el turno del jugador, podrá realizar
@@ -233,50 +450,12 @@ def main(guardado):
                 if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
-            # botones del atril del jugador
+            # si selecciona botones del atril del jugador
             if event in letras.keys():
-                window['-d'].update(disabled=False)
-                for botoncito in ['-c', '-cf', '-p', '-t', '-paso', 
-                                  'como_jugar', 'botonera', 'ver_config']:
-                    window[botoncito].update(disabled=True)
-                box = event  # letra seleccionada
-                letras_usadas[box] = letras[box]
-                # al seleccionado se le cambia el color
-                window[box].update(button_color=('white', '#55a4fc'))    
-                # desactivo los botones de las fichas
-                for val in letras.keys():
-                    window[val].update(disabled=True)  
-                if cont_tiempo_seg == 0:
-                    cont_tiempo_seg = 59
-                    cont_tiempo_min -= 1
-                else:
-                    cont_tiempo_seg -= 1
-
-                event, values = window.read()
-                if event in botones.keys():
-                    # refresco la tabla en la casilla seleccionada
-                    # con la letra elegida antes
-                    # se le devuelve el color
-                    window[box].update(button_color=('white', '#006699'))     
-                    ind = event  # casilla seleccionada
-                    palabra_nueva[ind] = letras[box]
-                    if len(palabra_nueva.keys()) > 1:
-                        # recien ahora puede confirmar
-                        window['-c'].update(disabled=False) 
-                    # actualizo la casilla y la desactivo
-                    window[ind].update(letras[box], disabled=True, 
-                    button_color = ('black', colores['letra_jugador']))  
-                    
-                    for val in letras.keys():
-                        if val not in letras_usadas.keys():
-                            # refresco la tabla B
-                            window[val].update(disabled=False)  
-                    for botoncito in ['-cf', '-p', '-t','-paso','como_jugar',
-                                      'botonera','ver_config']:
-                        window[botoncito].update(disabled=False)
-                # si cierra abruptamente nos dirigimos directamente a terminar
-                if event is None:
-                    terminar = True
+                cont_tiempo_seg, cont_tiempo_min, terminar = \
+                    seleccion_de_fichas(window, event, letras_usadas, 
+                                palabra_nueva, letras, botones, terminar,
+                                cont_tiempo_seg, cont_tiempo_min, colores)                
             # boton de deshacer las palabras puestas en el tablero
             if event == '-d':
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, 
@@ -292,81 +471,13 @@ def main(guardado):
                 # si ya hay fichas jugadas en el tablero volveran al atril
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, 
                         letras.keys(), palabra_nueva, botones_aux, dificultad)
-                letras_a_cambiar=[]
-                for elem in ['-c', '-d', '-paso', '-p', '-t']:
-                    window[elem].update(disabled=True)
-                for elem in ['-selec', '-deshacer-selec']:
-                    window[elem].update(visible=True)
-                
-                sg.Popup('Cambio de fichas:',
-                    'Seleccione las letras que quiere cambiar o el boton ',
-                    '\"seleccionar todas las fichas\" y vuelva a clickear',
-                    'en ', '\"Cambiar fichas\" para confirmar el cambio',
-                    keep_on_top=True)
-                # para que no se minimice despues del popup
-                window.BringToFront() 
-                cerro_ventana = False
-                while True:
-                    event = window.read()[0]
-                    if event is None:
-                        cerro_ventana = True
-                        break
-                    if event in letras.keys():
-                        letras_a_cambiar.append(event)
-                        window[event].update(disabled=True)
-                    elif event == '-selec':
-                        for ficha in letras.keys():
-                            if ficha not in letras_a_cambiar:
-                                letras_a_cambiar.append(ficha)
-                                window[ficha].update(disabled=True)
-                    elif event == '-deshacer-selec':
-                        for ficha in letras_a_cambiar:
-                            window[ficha].update(disabled=False)
-                        letras_a_cambiar = []
-                    elif event == '-cf':
-                        window['-selec'].update(visible=False)
-                        window['-deshacer-selec'].update(visible=False)
-                        if letras_a_cambiar:
-                            letras = gm.devolver_fichas(letras, 
-                                     letras_a_cambiar, bolsa)
-                            gm.dar_fichas(letras,bolsa)
-                            pj.setFichas(letras)
-                            for f in letras_a_cambiar:
-                                window[f].update(letras[f],  disabled=False, 
-                                image_size=(50, 50), image_subsample=21, 
-                                image_filename=img_nros[puntos_por_letra[letras[f]]])
-                            cambios_de_fichas -= 1
-                            window['cfichas'].update(str(cambios_de_fichas))
-                            if cambios_de_fichas == 0:
-                                window['-cf'].update(disabled=True)
-                                window['-cf'].set_tooltip('Ya realizaste 3 \
-                                              cambios de fichas.')
-                        break
-                if not cerro_ventana:
-                    turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
-                                              turno_pc, window)
-                    window['-paso'].update(disabled=False)
-                    window['-p'].update(disabled=False)
-                    window['-t'].update(disabled=False)
+                cambios_de_fichas, turno_pc, turno_jugador = cambio_de_fichas(
+                            window, letras, cambios_de_fichas, gm, pj, bolsa, 
+                            img_nros, puntos_por_letra, turno_pc, turno_jugador)
             # boton de guardar partida
             elif event == '-p' or guardar_partida:
-                boton = pc.get_botones()
-                cm.guardar_partida(boton)
-                datos = dict()
-                datos = config
-                datos['tipo'] = tipo_palabra
-                datos['tiempo'] = tiempo_str
-                datos['puntos_j'] = pj.puntos
-                datos['puntos_pc'] = pc.puntos
-                datos['nombre'] = nombre
-                datos['turno_jugador'] = str(turno_jugador)
-                datos['turno_pc'] = str(turno_pc)
-                datos['cambios_fichas'] = cambios_de_fichas
-                pc.guardar_estado()
-                pj.guardar_info()
-                cm.guardar_info_partida(datos)
-                sg.popup_no_border('Partida guardada', keep_on_top=True,
-                                    auto_close_duration=2)
+                posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas)
                 break
             # boton de terminar partida
             elif event == '-t' or fin_fichas or fin_juego:
@@ -376,66 +487,18 @@ def main(guardado):
                     seguir = gm.preguntar_si_sigue_el_juego()
                     window.BringToFront()
                 if not seguir:
-                    pj.restar_puntos_finales()
-                    pc.restar_puntos_finales()
-                    gm.mostrar_fichas_compu(window, pc.getFichas(), img_nros,
-                                            puntos_por_letra)
-                    if pj.puntos > pc.puntos:
-                        sg.popup_no_frame('Termino el juego \nTus puntos vs \
-                                    Puntos PC ',
-                                    '     '+str(pj.puntos)+'         |        '+
-                                    str(pc.puntos),
-                                    ' Ganaste!',keep_on_top=True)
-                    elif pj.puntos == pc.puntos:
-                        sg.popup('Termino el juego \nTus puntos vs Puntos PC ',
-                                 '     '+str(pj.puntos)+'         |        '+
-                                 str(pc.puntos),
-                                 ' EMPATE!',keep_on_top=True)
-                    else:
-                        sg.popup_no_frame('Termino el juego \nTus puntos \
-                                         vs Puntos PC \n', '     '+
-                                         str(pj.puntos)+'         |        '+
-                                         str(pc.puntos), 
-                                         ' Perdiste :(',keep_on_top=True)
-                    from datetime import datetime
-                    fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-                    if nombre != None: # solo guarda si le pone un nombre
-                        datos = nombre + ' - ' + str(fecha) + ' - ' + \
-                                str(pj.puntos) + ' - ' + str(dificultad)
-                        print(lista_puntajes)
-                        lista_puntajes.append(datos)
-                        puntos_jugador['puntos'] = lista_puntajes
-                        cm.guardar_puntuaciones(puntos_jugador)
-                    sg.popup_no_frame('Volveras al menu', auto_close=True, 
-                        auto_close_duration=5, button_type=None,
-                        keep_on_top=True)
-                    if guardado:
-                        # Si termine la partida guardada la borro
-                        os.remove(os.path.join(absolute_path, 'lib', 'info',
-                                            'saves', 'datos_guardados.json'))
-                        os.remove(os.path.join(absolute_path, 'lib', 'info',
-                                                    'saves', 'datos_pc.json'))
-                        os.remove(os.path.join(absolute_path, 'lib', 'info',
-                                                    'saves', 'guardado.json'))
+                    finalizar_juego(pj, pc, gm, cm, window, img_nros, 
+                    puntos_por_letra, nombre, dificultad, lista_puntajes,
+                    puntos_jugador, guardado, absolute_path)
                     break
             # boton de confirmar palabra
             elif event == '-c':
-                window['-c'].update(disabled=True)
-                # vamos a analizar si la palabra fue posicionada
-                # correctamente (misma fila y columnas contiguas):
-                posiciones_ocupadas_tablero = pc.get_pos_tablero() 
-                # confirmamos que sea correcta o no la palabra y lugares:
-                letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = \
-                    gm.confirmar_palabra(window, letras, botones, palabra_nueva, 
-                    letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, 
-                    bolsa, primer_turno, img_nros, botones_aux, dificultad, pc)
-                pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
-                # si le da confirmar y está mal la palabra, 
-                # no deja de ser su primer turno
-                if primer_turno and turno_pc:  
-                    primer_turno = False
-                window['p_j'].update(str(pj.puntos))
-                window.BringToFront()
+                letras_usadas, palabra_nueva, turno_jugador, turno_pc, \
+                fin_fichas, primer_turno = analizar_palabra(
+                    window, letras, botones, palabra_nueva, letras_usadas, 
+                    puntos_por_letra, pj, pc, bolsa, primer_turno, img_nros,
+                    botones_aux, turno_pc, dificultad)
+                
             elif event == 'como_jugar':
                 sg.popup(cm.empezando_la_partida(), title='Como jugar')
             elif event == 'botonera':
