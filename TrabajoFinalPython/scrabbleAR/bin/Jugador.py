@@ -8,12 +8,25 @@ absolute_path = os.path.join(os.path.dirname(__file__), '..')
 # ----------------------------------------------------------------------
 
 class Jugador(Jugadores):
-    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardado):
+    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardado, window):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         if(guardado):
             self._cargar_datos()
+            self._cargar_palabras_usadas(window)
         else:
             self._palabras_usadas = []
+            
+
+    def _input_palabra(self,lista):
+        lista_final = list()
+        for pal in lista:
+            lista_final.append(pal.replace("\n",""))
+        return lista_final
+    
+    def _cargar_palabras_usadas(self,window):
+        pal_final = self._input_palabra(self._palabras_usadas)
+        window["-pal-"].update(None,pal_final)
+        print("Teoricamente actualice",pal_final)
 
     def _guardar_fichas(self):
         """
@@ -27,8 +40,8 @@ class Jugador(Jugadores):
         Guarda la lista de palabras que formo el jugador
         """
         self._guardar_fichas()
-        datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"w")
-        json.dump(self._palabras_usadas,datos)
+        datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"w",encoding='utf8')
+        json.dump(self._palabras_usadas,datos,ensure_ascii=False)
 
     def get_palabras_usadas(self):
         return self._palabras_usadas
@@ -38,7 +51,7 @@ class Jugador(Jugadores):
         Carga la lista de palabras usadas por el jugador
         """
         try:
-            datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r")
+            datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r",encoding='utf8')
             self._palabras_usadas = list(json.load(datos))
         except (FileNotFoundError):
             self._palabras_usadas = []

@@ -348,9 +348,10 @@ def main(guardado):
 
     from JugadorPC import PC
     from Jugador import Jugador
-
+    window = sg.Window('Ventana de juego', layout, icon=icono_ventana, 
+                        finalize=True)
     pj = Jugador(letras, long_tablero, botones, puntos_por_letra, dificultad, 
-                 tipo, guardado)
+                 tipo, guardado, window)
     pc = PC(letras_pc, long_tablero, botones, puntos_por_letra, dificultad,
             tipo, guardado)
     botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
@@ -359,8 +360,7 @@ def main(guardado):
         # Manejo de puntajes, si hay partida guardada setea los puntos
         # Sino es 0
     # ----------------------------------------------------------------------
-    window = sg.Window('Ventana de juego', layout, icon=icono_ventana, 
-                        finalize=True)
+
     if guardado:
         pj.puntos = int(config['puntos_j'])
         pc.puntos = int(config['puntos_pc'])
@@ -398,8 +398,8 @@ def main(guardado):
 
     # Configuracion del tiempo
     if not guardado:
-        cont_tiempo_min_config = tiempo
-        cont_tiempo_min = round(cont_tiempo_min_config / 60)
+        tiempo = tiempo.split(":")
+        cont_tiempo_min = int(tiempo[0])
         if cont_tiempo_min > 0:
             cont_tiempo_seg = 59
             cont_tiempo_min -= 1
@@ -426,6 +426,7 @@ def main(guardado):
     while True:
         event, values = window.read(timeout=1000)
         # actualizamos el tiempo:
+        print(event)
         cont_tiempo_min, cont_tiempo_seg, tiempo_seg_final = contar_tiempo(
                         cont_tiempo_min, cont_tiempo_seg)
         tiempo_str = '{}:{}'.format(cont_tiempo_min, tiempo_seg_final)
@@ -501,8 +502,7 @@ def main(guardado):
             elif event == 'botonera':
                 sg.popup(cm.botones_especiales(), title='Botones especiales')
             elif event == 'ver_config':
-                sg.popup(cm.get_config_actual(guardado,pred), 
-                        title='Config del juego')
+                cm.get_config_actual(guardado,pred)
         if turno_pc:
             time.sleep(1)   # maquina pensando la jugarreta
             primer_turno = pc.jugar(window, primer_turno)

@@ -74,17 +74,17 @@ class PC(Jugadores):
         """
         Guarda el estado interno del jugador PC
         """
-        arch = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "w")
+        arch = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "w",encoding='utf8')
         print(self._posiciones_ocupadas_tablero)
         datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._posiciones_ocupadas_tablero}
-        json.dump(datos,arch,indent = 4)
+        json.dump(datos,arch,indent = 4,ensure_ascii=False)
         arch.close()
 # ----------------------------------------------------------------------
     def _cargar_estado(self):
         """
         Si la partida esta guardada carga el estado guardado en un json
         """
-        datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r")
+        datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r",encoding='utf8')
         data = {}
         data = json.load(datos)
         self._botones = self._convertirDic(data["botones"])

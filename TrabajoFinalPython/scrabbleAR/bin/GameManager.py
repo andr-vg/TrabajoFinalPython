@@ -118,7 +118,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
                 fichas.append(casillero('---', key))
                 botones[key] = "---"
             # casilleros que ya están ocupados por letras (caso de partida previamente guardada)
-            elif (tab[key][0] in string.ascii_uppercase) and (tab[key] != " "):
+            elif ((tab[key][0] in string.ascii_uppercase) or tab[key][0] in ('ñ','Ñ') )and (tab[key] != " "):
                 if (len(tab[key])> 1):
                     if tab[key][1] == "*":
                         fichas.append(ficha_pc(tab[key][0],key)) # casillas ocupadas por la maquina en una partida previa fueron guardadas con *
@@ -349,7 +349,7 @@ def preguntar_si_sigue_el_juego():
 
 def cargar_fichas_maquina():
     try:
-        datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r")
+        datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r",encoding='utf8')
         data = {}
         data = json.load(datos)
         fichas = data["fichas"]
@@ -358,7 +358,7 @@ def cargar_fichas_maquina():
         return None
 def cargar_fichas_jugador():
     try:
-        fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r")
+        fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r",encoding='utf8')
         fichas_j = json.load(fichas)
         return fichas_j #-----> Puede cargar
     except (FileNotFoundError):
