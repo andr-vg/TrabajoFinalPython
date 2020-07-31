@@ -1,6 +1,6 @@
 {
-  "tiempo": "0:24",
-  "dificultad": "medio",
+  "tiempo": "2:40",
+  "dificultad": "facil",
   "grupo_1": 1,
   "grupo_2": 2,
   "grupo_3": 3,
@@ -16,10 +16,10 @@
   "grupo_6_cant": 1,
   "grupo_7_cant": 1,
   "tipo": "",
-  "puntos_j": 18,
-  "puntos_pc": 17,
+  "puntos_j": 0,
+  "puntos_pc": 3,
   "nombre": "Invitado",
   "turno_jugador": "True",
   "turno_pc": "False",
-  "cambios_fichas": 1
+  "cambios_fichas": 3
 }

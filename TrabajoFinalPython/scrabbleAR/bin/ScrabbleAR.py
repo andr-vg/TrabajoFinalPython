@@ -256,6 +256,7 @@ def main():
                                         'PROGRESS': ('#2a6daf', '#2a6daf'),
                                         'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,}
     sg.theme("MyNewTheme")
+    sg.set_options(font=('verdana', 10))
     # sg.theme("lightblue")
     layout, list_facil, list_medio, list_dificil = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,element_justification='c', resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True,icon=icono_ventana)

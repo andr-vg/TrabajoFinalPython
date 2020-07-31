@@ -27,7 +27,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     if dificultad == 'dificil':
         tipo = tipo_palabra[tipo]
     elif dificultad == 'facil':
-        tipo = 'Sustantivos, adjetivos y verbos'
+        tipo = 'Sustantivos, adjetivos\n y verbos'
     else:
         tipo = 'Adjetivos y verbos'
 
@@ -69,10 +69,11 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
                                         'SCROLL': '#2a6daf',
                                         'BUTTON': ('white', '#2a6daf'),
                                         'PROGRESS': ('#2a6daf', '#2a6daf'),
-                                        'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
+                                        'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0
                                         }
 
     sg.theme("MyNewTheme")
+    
     layout = []
     botones = {}
 
