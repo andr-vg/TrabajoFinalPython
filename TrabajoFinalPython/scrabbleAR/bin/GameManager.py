@@ -73,7 +73,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
                                         }
 
     sg.theme("MyNewTheme")
-    
+
     layout = []
     botones = {}
 
@@ -184,7 +184,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)]]
     fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")] + [sg.Frame("Palabras Usadas",layout=frame_palabras_usadas)]
-    fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)]+ [sg.Text("",key="turnopc", size=(15, 1))]
+    fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)] + [sg.Text("",key="turnopc", size=(25, 1))] 
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True),sg.Button("Pasar Turno",key="-paso"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
                     sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t"), sg.Button("Seleccionar todas las fichas", key="-selec", visible=False), sg.Button("Deshacer selección", key="-deshacer-selec", visible=False)]

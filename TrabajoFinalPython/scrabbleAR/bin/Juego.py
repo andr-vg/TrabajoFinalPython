@@ -4,7 +4,7 @@ import os
 import ScrabbleAR   #-----------------> Menu del juego
 import GameConfigManager as cm #---------> Manejo de configuraciones
 import GameManager as gm
-import Icono 
+import Icono
 
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 icono_ventana = Icono.obtener_logo()
@@ -39,16 +39,16 @@ def seleccion_de_fichas(window, event, letras_usadas, palabra_nueva, letras, bot
     en el tablero.
     """
     window['-d'].update(disabled=False)
-    for botoncito in ['-c', '-cf', '-p', '-t', '-paso', 'como_jugar', 
+    for botoncito in ['-c', '-cf', '-p', '-t', '-paso', 'como_jugar',
                         'botonera', 'ver_config']:
         window[botoncito].update(disabled=True)
     box = event  # letra seleccionada
     letras_usadas[box] = letras[box]
     # al seleccionado se le cambia el color
-    window[box].update(button_color=('white', '#55a4fc'))    
+    window[box].update(button_color=('white', '#55a4fc'))
     # desactivo los botones de las fichas
     for val in letras.keys():
-        window[val].update(disabled=True)  
+        window[val].update(disabled=True)
     if cont_tiempo_seg == 0:
         cont_tiempo_seg = 59
         cont_tiempo_min -= 1
@@ -60,21 +60,21 @@ def seleccion_de_fichas(window, event, letras_usadas, palabra_nueva, letras, bot
         # refresco la tabla en la casilla seleccionada
         # con la letra elegida antes
         # se le devuelve el color
-        window[box].update(button_color=('white', '#006699'))     
+        window[box].update(button_color=('white', '#006699'))
         ind = event  # casilla seleccionada
         palabra_nueva[ind] = letras[box]
         if len(palabra_nueva.keys()) > 1:
             # recien ahora puede confirmar
-            window['-c'].update(disabled=False) 
+            window['-c'].update(disabled=False)
         # actualizo la casilla y la desactivo
-        window[ind].update(letras[box], disabled=True, 
-        button_color = ('black', colores['letra_jugador']))  
-                    
+        window[ind].update(letras[box], disabled=True,
+        button_color = ('black', colores['letra_jugador']))
+
         for val in letras.keys():
             if val not in letras_usadas.keys():
                 # refresco la tabla B
-                window[val].update(disabled=False)  
-        for botoncito in ['-cf', '-p', '-t', '-paso', 'como_jugar', 
+                window[val].update(disabled=False)
+        for botoncito in ['-cf', '-p', '-t', '-paso', 'como_jugar',
                         'botonera','ver_config']:
             window[botoncito].update(disabled=False)
     # si cierra abruptamente nos dirigimos directamente a terminar
@@ -82,7 +82,7 @@ def seleccion_de_fichas(window, event, letras_usadas, palabra_nueva, letras, bot
         terminar = True
     return cont_tiempo_seg, cont_tiempo_min, terminar
 
-def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa, 
+def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
                     img_nros, puntos_por_letra, turno_pc, turno_jugador):
     """
     Se realizan los cambios de fichas que desea el jugador y éste pierde un turno
@@ -92,21 +92,20 @@ def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
         window[elem].update(disabled=True)
     for elem in ['-selec', '-deshacer-selec']:
         window[elem].update(visible=True)
-                
     sg.Popup('Cambio de fichas:',
         'Seleccione las letras que quiere cambiar o el boton ',
         '\"seleccionar todas las fichas\" y vuelva a clickear',
         'en ', '\"Cambiar fichas\" para confirmar el cambio',
         keep_on_top=True)
     # para que no se minimice despues del popup
-    window.BringToFront() 
+    window.BringToFront()
     cerro_ventana = False
     while True:
         event = window.read()[0]
         if event is None:
             cerro_ventana = True
             break
-        if event in letras.keys():
+        elif event in letras.keys():
             letras_a_cambiar.append(event)
             window[event].update(disabled=True)
         elif event == '-selec':
@@ -126,8 +125,8 @@ def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
                 gm.dar_fichas(letras,bolsa)
                 pj.setFichas(letras)
                 for f in letras_a_cambiar:
-                    window[f].update(letras[f],  disabled=False, 
-                        image_size=(50, 50), image_subsample=21, 
+                    window[f].update(letras[f],  disabled=False,
+                        image_size=(50, 50), image_subsample=21,
                         image_filename=img_nros[puntos_por_letra[letras[f]]])
                 cambios_de_fichas -= 1
                 window['cfichas'].update(str(cambios_de_fichas))
@@ -137,14 +136,14 @@ def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
                         'Ya realizaste 3 cambios de fichas.')
             break
     if not cerro_ventana:
-        turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador, turno_pc, 
+        turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador, turno_pc,
                                     window)
         window['-paso'].update(disabled=False)
         window['-p'].update(disabled=False)
         window['-t'].update(disabled=False)
     return cambios_de_fichas, turno_pc, turno_jugador
 
-def guardar_datos(config, tipo_palabra, tiempo_str, pj_puntos, pc_puntos, 
+def guardar_datos(config, tipo_palabra, tiempo_str, pj_puntos, pc_puntos,
                     nombre, turno_jugador, turno_pc, cambios_de_fichas):
     """
     Función que guarda los datos al posponer partida
@@ -168,12 +167,12 @@ def posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
     """
     boton = pc.get_botones()
     cm.guardar_partida(boton)
-    datos = guardar_datos(config, tipo_palabra, tiempo_str, pj.puntos, 
+    datos = guardar_datos(config, tipo_palabra, tiempo_str, pj.puntos,
             pc.puntos, nombre, turno_jugador, turno_pc, cambios_de_fichas)
     pc.guardar_estado()
     pj.guardar_info()
     cm.guardar_info_partida(datos)
-    sg.popup_no_border('Partida guardada', keep_on_top=True, 
+    sg.popup_no_border('Partida guardada', keep_on_top=True,
                         auto_close_duration=2)
 
 def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
@@ -194,8 +193,8 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
                 '     '+str(pj.puntos)+'         |        '+str(pc.puntos),
                 ' EMPATE!',keep_on_top=True)
     else:
-        sg.popup_no_frame('Termino el juego \nTus puntos vs Puntos PC \n', 
-                '     '+str(pj.puntos)+'         |        '+str(pc.puntos), 
+        sg.popup_no_frame('Termino el juego \nTus puntos vs Puntos PC \n',
+                '     '+str(pj.puntos)+'         |        '+str(pc.puntos),
                 ' Perdiste :(',keep_on_top=True)
     from datetime import datetime
     fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
@@ -206,19 +205,19 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
         lista_puntajes.append(datos)
         puntos_jugador['puntos'] = lista_puntajes
         cm.guardar_puntuaciones(puntos_jugador)
-    sg.popup_no_frame('Volveras al menu', auto_close=True, 
+    sg.popup_no_frame('Volveras al menu', auto_close=True,
                 auto_close_duration=5, button_type=None,
                 keep_on_top=True)
     if guardado:
         # Si termine la partida guardada la borro
-        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves', 
+        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves',
                                 'datos_guardados.json'))
-        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves', 
+        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves',
                                 'datos_pc.json'))
-        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves', 
+        os.remove(os.path.join(absolute_path, 'lib', 'info', 'saves',
                                 'guardado.json'))
 
-def analizar_palabra(window, letras, botones, palabra_nueva, letras_usadas, 
+def analizar_palabra(window, letras, botones, palabra_nueva, letras_usadas,
                     puntos_por_letra, pj, pc, bolsa, primer_turno, img_nros,
                     botones_aux, turno_pc, dificultad):
     """
@@ -228,20 +227,19 @@ def analizar_palabra(window, letras, botones, palabra_nueva, letras_usadas,
     window['-c'].update(disabled=True)
     # vamos a analizar si la palabra fue posicionada
     # correctamente (misma fila y columnas contiguas):
-    posiciones_ocupadas_tablero = pc.get_pos_tablero() 
+    posiciones_ocupadas_tablero = pc.get_pos_tablero()
     # confirmamos que sea correcta o no la palabra y lugares:
     letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas = \
-        gm.confirmar_palabra(window, letras, botones, palabra_nueva, 
-        letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero, 
+        gm.confirmar_palabra(window, letras, botones, palabra_nueva,
+        letras_usadas, puntos_por_letra, pj, posiciones_ocupadas_tablero,
         bolsa, primer_turno, img_nros, botones_aux, dificultad, pc)
     pc.actualizar_pos_tablero(posiciones_ocupadas_tablero)
     # si le da confirmar y está mal la palabra, no deja de ser su primer turno
-    if primer_turno and turno_pc:  
+    if primer_turno and turno_pc:
         primer_turno = False
     window['p_j'].update(str(pj.puntos))
     window.BringToFront()
     return letras_usadas, palabra_nueva, turno_jugador, turno_pc, fin_fichas, primer_turno
-
 # --------------------------------------------------------------
     # Main del juego
 # --------------------------------------------------------------
@@ -260,40 +258,40 @@ def main(guardado):
              'F': 0, 'H': 0, 'V': 0, 'J': 0, 'Y': 0, 'K': 0, 'Ñ': 0, 'Q': 0,
              'W': 0, 'X': 0, 'Z': 0, 'LL': 0, 'RR': 0}
 
-    puntos_por_letra = {'E': 0, 'A': 0, 'I': 0, 'O': 0, 'U': 0, 'S': 0, 
+    puntos_por_letra = {'E': 0, 'A': 0, 'I': 0, 'O': 0, 'U': 0, 'S': 0,
                         'N': 0, 'R': 0, 'L': 0, 'T': 0, 'C': 0, 'D': 0,
                         'M': 0, 'B': 0, 'G': 0, 'P': 0, 'F': 0, 'H': 0,
                         'V': 0, 'J': 0, 'Y': 0, 'K': 0, 'Ñ': 0, 'Q': 0,
                         'W': 0, 'X': 0, 'Z': 0, 'LL': 0, 'RR': 0}
 
-    img_nros = {1: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+    img_nros = {1: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'uno.png'),
                 2: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'dos.png'),
-                3: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                3: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'tres.png'),
-                4: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                4: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'cuatro.png'),
-                5: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                5: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'cinco.png'),
-                6: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                6: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'seis.png'),
-                7: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                7: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'siete.png'),
-                8: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                8: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'ocho.png'),
-                9: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                9: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'nueve.png'),
-                10: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                10: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'diez.png'),
-                11: os.path.join(absolute_path, 'lib', 'media', 'nros_png', 
+                11: os.path.join(absolute_path, 'lib', 'media', 'nros_png',
                 'vacio.png')}
 
     # cargamos las configuraciones correspondientes
     bolsa, puntos_por_letra, tiempo, dificultad, config, pred = \
     cm.cargar_configuraciones(bolsa, puntos_por_letra, guardado)
     # ----------------------------------------------------------------------
-        # Cargo dificultad para despues diferenciar que tablero cargar y 
+        # Cargo dificultad para despues diferenciar que tablero cargar y
         # mandarselo al objeto
         # Abro el tablero correspondiente a la dificultad seleccionada
     # ----------------------------------------------------------------------
@@ -315,8 +313,8 @@ def main(guardado):
     dificultad_random = {
                 'sust': ['NC', 'NN', 'NCS', 'NCP', 'NNS', 'NP', 'NNP', 'W'],
                 'adj': ['JJ', 'AO', 'AQ', 'DI', 'DT'],
-                'verbo': ['VAG', 'VBG', 'VAI', 'VAN', 'MD', 'VAS', 'VMG', 
-                          'VMI', 'VB', 'VMM', 'VMN', 'VMP', 'VBN', 'VMS', 
+                'verbo': ['VAG', 'VBG', 'VAI', 'VAN', 'MD', 'VAS', 'VMG',
+                          'VMI', 'VB', 'VMM', 'VMN', 'VMP', 'VBN', 'VMS',
                           'VSG', 'VSI', 'VSN', 'VSP', 'VSS']}
     if dificultad == 'dificil':
         tipo_palabra = random.choice(list(dificultad_random.keys())) \
@@ -329,7 +327,6 @@ def main(guardado):
     else:
         tipo_palabra = ''
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
-
     if not guardado:
         nombre = sg.popup_get_text('ScrabbleAR está por comenzar,ingrese su nombre de jugador', title='Ingrese su nombre',
                 default_text='Invitado', size=(None, None), keep_on_top=True)
@@ -339,17 +336,15 @@ def main(guardado):
         nombre = config['nombre']
     # ----------------------------------------------------------------------
     # Instanciacion de objetos y creacion del layout
-
+    # ----------------------------------------------------------------------
     palabras_usadas = []
-    # botones es un diccionario de pares (tupla, valor)
-    layout, letras, letras_pc, botones, long_tablero = gm.crear_layout(bolsa, 
-    tab, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre, 
-    palabras_usadas, guardado)  
+    layout, letras, letras_pc, botones, long_tablero = gm.crear_layout(bolsa,
+    tab, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre,
+    palabras_usadas, guardado)
 
     from JugadorPC import PC
     from Jugador import Jugador
-
-    pj = Jugador(letras, long_tablero, botones, puntos_por_letra, dificultad, 
+    pj = Jugador(letras, long_tablero, botones, puntos_por_letra, dificultad,
                  tipo, guardado)
     pc = PC(letras_pc, long_tablero, botones, puntos_por_letra, dificultad,
             tipo, guardado)
@@ -359,7 +354,7 @@ def main(guardado):
         # Manejo de puntajes, si hay partida guardada setea los puntos
         # Sino es 0
     # ----------------------------------------------------------------------
-    window = sg.Window('Ventana de juego', layout, icon=icono_ventana, 
+    window = sg.Window('Ventana de juego', layout, icon=icono_ventana,
                         finalize=True)
     if guardado:
         pj.puntos = int(config['puntos_j'])
@@ -390,7 +385,7 @@ def main(guardado):
     else:
         cambios_de_fichas = 3
     # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero:
-    # posiciones_ocupadas_tablero = []  
+    # posiciones_ocupadas_tablero = []
 
     fin_fichas = False
     fin_juego = False
@@ -410,7 +405,7 @@ def main(guardado):
         cont_tiempo_min = int(aux_tiempo[0])
         cont_tiempo_seg = int(aux_tiempo[1])
     window.finalize()
-    # se decide de forma aleatoria quien comienza la partida si no se abrio 
+    # se decide de forma aleatoria quien comienza la partida si no se abrio
     # el archivo guardado
     if guardado:
         turno_pc = True if config['turno_pc'] == 'True' else False
@@ -418,7 +413,7 @@ def main(guardado):
     else:
         turno = random.choice([True, False])
         turno_jugador,turno_pc = gm.cambiar_turno(turno,not(turno), window)
-        sg.popup("Se eligio aleatoriamente que {} coloque sus fichas en el primer turno.".format('la maquina' if turno_pc else 'el jugador \''+nombre+'\''), 
+        sg.popup("Se eligio aleatoriamente que {} coloque sus fichas en el primer turno.".format('la maquina' if turno_pc else 'el jugador \''+nombre+'\''),
                  '¡A jugar!', title='Empieza la partida', line_width=100)
     # ----------------------------------------------------------------------
         #Loop de ventana
@@ -448,28 +443,28 @@ def main(guardado):
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
             # si selecciona botones del atril del jugador
-            if event in letras.keys():
+            elif event in letras.keys():
                 cont_tiempo_seg, cont_tiempo_min, terminar = \
-                    seleccion_de_fichas(window, event, letras_usadas, 
+                    seleccion_de_fichas(window, event, letras_usadas,
                                 palabra_nueva, letras, botones, terminar,
-                                cont_tiempo_seg, cont_tiempo_min, colores)                
+                                cont_tiempo_seg, cont_tiempo_min, colores)
             # boton de deshacer las palabras puestas en el tablero
-            if event == '-d':
-                letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, 
+            elif event == '-d':
+                letras_usadas, palabra_nueva = gm.sacar_del_tablero(window,
                 letras.keys(), palabra_nueva, botones_aux, dificultad)
             # boton de pasar el turno a la pc
             elif event == '-paso':
-                turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador, 
+                turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
                                           turno_pc, window)
-                letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, 
+                letras_usadas, palabra_nueva = gm.sacar_del_tablero(window,
                         letras.keys(), palabra_nueva, botones_aux, dificultad)
             # boton cambio de fichas
             elif (event == '-cf') and (cambios_de_fichas != 0):
                 # si ya hay fichas jugadas en el tablero volveran al atril
-                letras_usadas, palabra_nueva = gm.sacar_del_tablero(window, 
+                letras_usadas, palabra_nueva = gm.sacar_del_tablero(window,
                         letras.keys(), palabra_nueva, botones_aux, dificultad)
                 cambios_de_fichas, turno_pc, turno_jugador = cambio_de_fichas(
-                            window, letras, cambios_de_fichas, gm, pj, bolsa, 
+                            window, letras, cambios_de_fichas, gm, pj, bolsa,
                             img_nros, puntos_por_letra, turno_pc, turno_jugador)
             # boton de guardar partida
             elif event == '-p' or guardar_partida:
@@ -479,12 +474,12 @@ def main(guardado):
             # boton de terminar partida
             elif event == '-t' or fin_fichas or fin_juego:
                 seguir = False
-                if event == '-t': 
+                if event == '-t':
                     # le preguntamos si realmente quiere finalizar el juego
                     seguir = gm.preguntar_si_sigue_el_juego()
                     window.BringToFront()
                 if not seguir:
-                    finalizar_juego(pj, pc, gm, cm, window, img_nros, 
+                    finalizar_juego(pj, pc, gm, cm, window, img_nros,
                     puntos_por_letra, nombre, dificultad, lista_puntajes,
                     puntos_jugador, guardado, absolute_path)
                     break
@@ -492,27 +487,24 @@ def main(guardado):
             elif event == '-c':
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, \
                 fin_fichas, primer_turno = analizar_palabra(
-                    window, letras, botones, palabra_nueva, letras_usadas, 
+                    window, letras, botones, palabra_nueva, letras_usadas,
                     puntos_por_letra, pj, pc, bolsa, primer_turno, img_nros,
                     botones_aux, turno_pc, dificultad)
-                
             elif event == 'como_jugar':
                 sg.popup(cm.empezando_la_partida(), title='Como jugar')
             elif event == 'botonera':
                 sg.popup(cm.botones_especiales(), title='Botones especiales')
             elif event == 'ver_config':
-                sg.popup(cm.get_config_actual(guardado,pred), 
+                sg.popup(cm.get_config_actual(guardado,pred),
                         title='Config del juego')
         if turno_pc:
-            time.sleep(1)   # maquina pensando la jugarreta
+            time.sleep(0.5)   # maquina pensando la jugarreta
             primer_turno = pc.jugar(window, primer_turno)
             fichas_pc = pc.getFichas()
             gm.dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)
             fin_fichas = gm.pocas_fichas(pc.getFichas())
-            turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador, 
+            turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
                                                     turno_pc, window)
-
     window.close()
     ScrabbleAR.main()
-
