@@ -1,8 +1,6 @@
 """
 ------------------------------------------------------------------------------------------
-
 En este archivo se encuentran las funciones que guardan y cargan la informacion del juego
-
 ------------------------------------------------------------------------------------------
 """
 import os
@@ -153,7 +151,6 @@ def cargar_config_usr():
     except (FileNotFoundError):
         sg.popup("No se encontro la configuracion de usuario \n se usara la predeterminada",keep_on_top=True)
         config = cargar_config_pred()
-
     return config
 
 def cargar_config_guardada():

@@ -123,7 +123,6 @@ def crear_layout(config):
     frame_2 = [
         [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=tiempo[0],orientation="horizontal",key="-tiempo-")]])]
     ]
-
     ayuda_config= [
 [sg.Text("""•Dificultad: segun la dificultad que se elija, se podran formar
 distintos tipos de palabras y se jugara con distintos tableros.
@@ -148,7 +147,6 @@ vocales haya sera mas dificil armar palabras.""")]
                    ]
     tab2_layout = [[sg.Column(tab2_layout0),sg.Column(ayuda_config)]
     ]
-
     sin_datos = [['' for i in range(10)] for j in range(10)]
 
     headings = ['    USUARIO    ', '    FECHA    ', '    PUNTOS    ']
@@ -157,11 +155,10 @@ vocales haya sera mas dificil armar palabras.""")]
          [sg.Radio("Facil",group_id="top",default=True,key="t_Facil"),sg.Radio("Medio",group_id="top",key="t_Medio"),sg.Radio("Dificil",group_id="top",key="t_Dificil"),
          sg.B("Actualizar",key="act")],
          [sg.Table(values= list_facil if len(list_facil) != 0 else sin_datos,
-          headings=headings, max_col_width=400, auto_size_columns=True, 
-          text_color='black', justification='right', 
+          headings=headings, max_col_width=400, auto_size_columns=True,
+          text_color='black', justification='right',
           num_rows=10, font='Courier 12', pad=(12,2), background_color="#c5dbf1",
           alternating_row_color='#8fa8bf', key='top_10', def_col_width=30)]
-         
     ]
     tab3_layout = [
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
@@ -173,7 +170,6 @@ para sumar puntos.
 Si se consiguen mas puntos que la maquina al final de la partida se gana el juego, de
 lo contrario se pierde.""")]
     ]
-
     frame_ayuda_1 = [
         [sg.Text("""Antes de empezar a jugar desde ScrabbleAR recomendamos hechar un vistazo
 a la pestaña "Configuracion de nivel", en ella se tiene la opcion de modificar aspectos
@@ -257,6 +253,7 @@ def main():
                                         'PROGRESS': ('#2a6daf', '#2a6daf'),
                                         'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,}
     sg.theme("MyNewTheme")
+    sg.set_options(font=('verdana', 10))
     # sg.theme("lightblue")
     layout, list_facil, list_medio, list_dificil = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,element_justification='c', resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True,icon=icono_ventana)
@@ -268,14 +265,14 @@ def main():
         if (event == None):
             limpiar_json()
             break
-        if (event == "-salir-"):
+        elif (event == "-salir-"):
             salir = sg.popup("Salir del juego?", custom_text=("   SI   ","   NO   "),keep_on_top=True)
             if (salir == "   SI   "):
                 limpiar_json()
                 break
             else:
                 pass
-        if (event == "-pred-"):
+        elif (event == "-pred-"):
             try:
                 os.remove(os.path.join(absolute_path, "lib","info","config","configUsuario.json"))
                 window["-pred-"].update(disabled=True)
@@ -301,8 +298,7 @@ def main():
                 config = cargar_config_pred()
             finally:
                 sg.popup("Configuraciones reiniciadas",keep_on_top=True)
-
-        if (event == "-jugar-"):
+        elif (event == "-jugar-"):
             print("Estoy jugando")
             if ("guardado.json" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
                 print("Entre al if")
@@ -318,7 +314,7 @@ def main():
             else:
                 window.close()
                 Juego.main(False)
-        if (event == "act"):
+        elif (event == "act"):
             if (window["t_Facil"].get()):
                 window["top_10"].update(list_facil if len(list_facil) != 0 else sin_datos)
             elif (window["t_Medio"].get()):
@@ -326,10 +322,9 @@ def main():
             elif (window["t_Dificil"]):
                 window["top_10"].update(list_dificil if len(list_dificil) != 0 else sin_datos)
             window.refresh()
-
-        if (event == "-tabgrupo-")and(values["-tabgrupo-"] == "-tab3-"):
+        elif (event == "-tabgrupo-")and(values["-tabgrupo-"] == "-tab3-"):
             window.refresh()
-        if (event == "-guardar-"):
+        elif (event == "-guardar-"):
             window["-pred-"].update(disabled=False)
             if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info","config")):
                 config = cargar_config_usr()
