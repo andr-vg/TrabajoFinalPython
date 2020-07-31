@@ -1,12 +1,12 @@
 {
-  "tiempo": "0:24",
-  "dificultad": "medio",
+  "tiempo": "30:39",
+  "dificultad": "facil",
   "grupo_1": 1,
   "grupo_2": 2,
   "grupo_3": 3,
-  "grupo_4": 5,
-  "grupo_5": 10,
-  "grupo_6": 10,
+  "grupo_4": 4,
+  "grupo_5": 6,
+  "grupo_6": 8,
   "grupo_7": 10,
   "grupo_1_cant": 11,
   "grupo_2_cant": 4,
@@ -16,10 +16,10 @@
   "grupo_6_cant": 1,
   "grupo_7_cant": 1,
   "tipo": "",
-  "puntos_j": 18,
+  "puntos_j": 51,
   "puntos_pc": 17,
   "nombre": "Invitado",
   "turno_jugador": "True",
   "turno_pc": "False",
-  "cambios_fichas": 1
+  "cambios_fichas": 2
 }
