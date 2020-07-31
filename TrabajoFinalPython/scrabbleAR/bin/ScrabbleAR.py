@@ -119,8 +119,9 @@ def crear_layout(config):
         [sg.Text("K, LL, Ñ, Q, RR, W, X"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_6"],key="grupo_6")],
         [sg.Text("Z"),sg.Spin(values=[1,2,3,4,5,6,7,8,9,10],initial_value=config["grupo_7"],key="grupo_7")]
     ]
+    tiempo = config["tiempo"].split(":")
     frame_2 = [
-        [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=round(config["tiempo"] / 60),orientation="horizontal",key="-tiempo-")]])]
+        [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=tiempo[0],orientation="horizontal",key="-tiempo-")]])]
     ]
 
     ayuda_config= [
@@ -287,7 +288,7 @@ def main():
                     ind = i + 1 if i < 7 else 7
                     window["grupo_"+str(ind)].update(config["grupo_"+str(ind)])
                     window["grupo_"+str(ind)+"_cant"].update(config["grupo_"+str(ind)+"_cant"])
-                window["-tiempo-"].update(value = round(config["tiempo"] / 60))
+                window["-tiempo-"].update(value = int(config["tiempo"].split(":")[0]))
                 if (config["dificultad"] == "facil"):
                     window["facil"].update(True)
                 elif (config["dificultad" == "medio"]):
@@ -334,7 +335,7 @@ def main():
                 config = cargar_config_usr()
             else:
                 config = cargar_config_pred()
-            config["tiempo"] = values["-tiempo-"]*60
+            config["tiempo"] = str(int(values["-tiempo-"]))+":00"
             if (window["facil"].get()):
                 config["dificultad"] = "facil"
             elif (window["medio"].get()):
