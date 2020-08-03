@@ -1,12 +1,36 @@
 ![Logo](https://github.com/andr-vg/TrabajoFinalPython/blob/master/TrabajoFinalPython/scrabbleAR/lib/media/Logo.png?raw=true)
 
+## Dependencias
+-    [Python 3.8.2](https://www.python.org/downloads/)
+-    [Pattern 3.6](https://github.com/clips/pattern#installation)
+-    [PySimpleGUI 4.25.0](https://github.com/PySimpleGUI)
 
-#### Alumnos: 
-*  Andrea Verónica Goyechea
-*  Juan Sebastian Montalivet
-*  Julián Feregotti
+### Instalacion:
+- Por separado:
 
-#### Instrucciones:
-Ejecutando el archivo "ScrabbleAR.py" desde python se abrira el menu de juego en donde usted podrá elegir
-si comenzar una nueva partida de Scrabble (cambiando o no la configuración de dificultad de la partida) o continuar
-alguna partida que haya sido pospuesta previamente, además de poder visualizar el top 10 de puntuaciones alcanzadas.
+  `python3 -m pip install pysimplegui`
+  
+
+  `python3 -m pip install pattern3`
+
+- Usando requeriments.txt:
+
+  `python3 -m pip install -r requirements.txt`
+
+## Instrucciones:
+- Clonar el repositorio
+
+  `git clone https://github.com/andr-vg/TrabajoFinalPython.git`
+ 
+- Para jugar primero tendremos que localizar el archivo ScrabbleAR.py ya sea buscando en la carpeta bin o usando:
+  
+    `cd TrabajoFinalPython/scrabbleAR/bin`
+- Luego ejecutarlo con la siguiente linea en la consola
+    
+    `python ScrabbleAR.py`
+  
+  
+## Alumnos: 
+*  [Andrea Verónica Goyechea](https://github.com/andr-vg)
+*  [Juan Sebastian Montalivet](https://github.com/juan4171)
+*  [Julián Feregotti](https://github.com/julianfere)
