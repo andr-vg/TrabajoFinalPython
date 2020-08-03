@@ -3,7 +3,6 @@ import Juego #Programa Principal
 import os
 import sys
 import json
-import ScrabbleAR
 import pathlib
 import Icono
 from GameConfigManager import empezando_la_partida
@@ -260,7 +259,7 @@ def main():
 
     while True:
         event, values = window.read()
-        print("Evento",event)
+        # print("Evento",event)
         if (event == None):
             limpiar_json()
             break
@@ -339,12 +338,23 @@ def main():
             #-----------------------------------
             #Guardando las configs
             #-----------------------------------
+            valido = False
             for i in range(7):
                 ind = i+1
-                config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get()) if int(window.FindElement("grupo_"+str(ind)).get()) > 0 else 1
-                config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get()) if int(window.FindElement("grupo_"+str(ind)+"_cant").get()) > 0 else 1
-            guardar_configuracion(config)
-            sg.popup("Se han guardado las configuraciones",keep_on_top=True)
+                valor_punt = int(window["grupo_"+str(ind)].get())
+                valor_cant = int(window["grupo_"+str(ind)+"_cant"].get())
+                if (valor_cant > 0) and (valor_punt > 0):
+                    config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get()) 
+                    config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get()) 
+                    valido = True
+                else:
+                    sg.Popup('La cantidad de letras o los puntos por letra no pueden ser 0',title="Erorr",)
+                    valido = False
+                    print('validuchi',valido)
+                    break
+            if (valido):
+                guardar_configuracion(config)
+                sg.popup("Se han guardado las configuraciones",keep_on_top=True)
     window.close()
 if __name__ == "__main__":
     main()
