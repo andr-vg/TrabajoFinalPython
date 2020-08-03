@@ -183,23 +183,23 @@ def cargar_colores():
         return (dic_col)
 
 def empezando_la_partida():     #estas 2 funciones las importo al menu y al juego
-    return """Una vez empezada la partida se encuentran a disposicion del jugador el tablero
-y el atril con las fichas para poder jugar, para armar las palabras simplemente dando
-un click en la ficha deseada y el casillero del tablero deseado podemos ir armando
-letra a letra la palabra de nuestro turno, de esta forma, formando palabras validas, aprovechando
-los casilleros de bonus y evitando los casilleros de penalizacion, el jugador va sumando puntos.
-El objetivo del juego es obtener mas puntos que la maquina antes de que se acabe el tiempo, se
-acaben las fichas del juego o que ya no se puedan formar palabras"""
+    return """Una vez empezada la partida se encuentran a disposición del jugador el tablero
+y el atril con las fichas para poder jugar, simplemente dando
+click en la ficha deseada y el casillero del tablero deseado podemos ir armando
+letra a letra la palabra de nuestro turno, de esta forma, formando palabras válidas, aprovechando
+los casilleros de bonus y evitando los casilleros de penalización, el jugador va sumando puntos.
+El objetivo del juego es obtener más puntos que la maquina antes de que se acabe el tiempo, se
+acaben las fichas del juego o que ya no se puedan formar palabras."""
 
 def botones_especiales():
-    return """•"Confirmar": Una vez colocada una palabra sobre el tablero, verifica si esa palabra es valida,
-en caso de ser valida se sumaran puntos al puntaje del jugador, de lo contrario las fichas usadas volveran al atril.
+    return """•"Confirmar": Una vez colocada una palabra sobre el tablero, verifica si esa palabra es válida,
+en caso de serlo se sumarán puntos al puntaje del jugador, de lo contrario las fichas usadas volverán al atril.
 •"Deshacer": Permite devolver al atril las fichas que se hayan puesto en el tablero en este turno.
-•"Terminar": Finaliza la partida
-•"Cambiar Fichas": Permite seleccionar las fichas
+•"Terminar": Finaliza la partida.
+•"Cambiar Fichas": Permite seleccionar las fichas.
 •"Posponer": Guarda el estado del juego hasta el momento (fichas, puntos, palabras jugadas, etc)
-para poder continuar la partida en otro momento
-•"Pasar Turno": Permite cederle el turno a la maquina"""
+para poder continuar la partida en otro momento.
+•"Pasar Turno": Permite cederle el turno a la máquina."""
 
 def get_config_actual(guardado,pred):
     """
@@ -215,7 +215,7 @@ def get_config_actual(guardado,pred):
             datos = open(os.path.join(absolute_path, "lib","info","saves","datos_guardados.json"), "r",encoding='utf8')
 
         data = json.load(datos)
-        table_data = [['A,E,O,S,I,U,N,L,R,T', data["grupo_1_cant"],data["grupo_1"]], ['C,D,G', data["grupo_2_cant"], data["grupo_2"]], 
+        table_data = [['A,E,O,S,I,U,N,L,R,T', data["grupo_1_cant"],data["grupo_1"]], ['C,D,G', data["grupo_2_cant"], data["grupo_2"]],
             ['M,B,P', data["grupo_3_cant"], data["grupo_3"]], ['F,H,V,Y', data["grupo_4_cant"], data["grupo_4"]],
             ['J',data["grupo_5_cant"],data["grupo_5"]],['K,LL,Ñ,Q,RR,W,X',data["grupo_6_cant"],data["grupo_6"]],
             ['Z',data["grupo_7_cant"],data["grupo_7"]]
@@ -240,6 +240,6 @@ def get_config_actual(guardado,pred):
                 break
 
         window.close()
-        
+
     except (FileNotFoundError):
         sg.Popup("No se encontro arch de configuraciones")

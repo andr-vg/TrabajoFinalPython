@@ -15,14 +15,13 @@ class Jugador(Jugadores):
             self._cargar_palabras_usadas(window)
         else:
             self._palabras_usadas = []
-            
 
     def _input_palabra(self,lista):
         lista_final = list()
         for pal in lista:
             lista_final.append(pal.replace("\n",""))
         return lista_final
-    
+
     def _cargar_palabras_usadas(self,window):
         pal_final = self._input_palabra(self._palabras_usadas)
         window["-pal-"].update(None,pal_final)

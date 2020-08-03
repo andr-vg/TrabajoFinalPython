@@ -328,7 +328,7 @@ def main(guardado):
         tipo_palabra = ''
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
     if not guardado:
-        nombre = sg.popup_get_text('ScrabbleAR está por comenzar,ingrese su nombre de jugador', title='Ingrese su nombre',
+        nombre = sg.popup_get_text('ScrabbleAR está por comenzar, ingrese su nombre de jugador', title='Ingrese su nombre',
                 default_text='Invitado', size=(None, None), keep_on_top=True)
         if nombre in (None, ''):
             nombre = 'Invitado'
@@ -344,9 +344,9 @@ def main(guardado):
 
     from JugadorPC import PC
     from Jugador import Jugador
-    window = sg.Window('Ventana de juego', layout, icon=icono_ventana, 
+    window = sg.Window('Ventana de juego', layout, icon=icono_ventana,
                         finalize=True)
-    pj = Jugador(letras, long_tablero, botones, puntos_por_letra, dificultad, 
+    pj = Jugador(letras, long_tablero, botones, puntos_por_letra, dificultad,
                  tipo, guardado, window)
     pc = PC(letras_pc, long_tablero, botones, puntos_por_letra, dificultad,
             tipo, guardado)
@@ -413,7 +413,7 @@ def main(guardado):
     else:
         turno = random.choice([True, False])
         turno_jugador,turno_pc = gm.cambiar_turno(turno,not(turno), window)
-        sg.popup("Se eligio aleatoriamente que {} coloque sus fichas en el primer turno.".format('la maquina' if turno_pc else 'el jugador \''+nombre+'\''),
+        sg.popup("Se eligió aleatoriamente que {} coloque sus fichas en el primer turno.".format('la maquina' if turno_pc else 'el jugador \''+nombre+'\''),
                  '¡A jugar!', title='Empieza la partida', line_width=100)
     # ----------------------------------------------------------------------
         #Loop de ventana

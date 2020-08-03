@@ -1,3 +1,5 @@
-* Python 3.8.2
-* PySimpleGUI 4.25.0
-* Pattern
+*Sistema operativo= windows 10, linux.
+
+*Ejecutar juego con= Python 3.6 o superior (recomendamos Python version 3.8.2).
+
+*Tener instalado= PySimpleGUI 4.25.0 o superior y Pattern.

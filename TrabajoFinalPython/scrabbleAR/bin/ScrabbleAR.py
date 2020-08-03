@@ -35,7 +35,6 @@ def limpiar_json():
         datos["puntos"] = lista_final
         json.dump(datos,arch,indent=4)
         arch.close()
-
     except (FileNotFoundError):
         pass
 # ----------------------------------------------------------------------
@@ -124,21 +123,21 @@ def crear_layout(config):
         [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=tiempo[0],orientation="horizontal",key="-tiempo-")]])]
     ]
     ayuda_config= [
-[sg.Text("""•Dificultad: segun la dificultad que se elija, se podran formar
-distintos tipos de palabras y se jugara con distintos tableros.
-	• Facil: se permiten formar Sustantivos, adjetivos y verbos
+[sg.Text("""•Dificultad: según la dificultad que se elija, se podrán formar
+distintos tipos de palabras y se jugará con distintos tableros.
+	• Fácil: se permiten formar Sustantivos, adjetivos y verbos
 	• Medio: se permiten formar Adjetivos y verbos
-	• Dificil: se permiten formar palabras de tipo aleatorio
+	• Difícil: se permiten formar palabras de tipo aleatorio
 
-•Tiempo: Indica cuanto dura la partida de principio a fin, teniendo en cuenta
-que la maquina tarda un segundo en hacer su jugada.
+•Tiempo: Indica cuánto dura la partida de principio a fin, teniendo en cuenta
+que la máquina tarda un segundo en hacer su jugada.
 
-•Puntos por letra: cuantos puntos vale cada letra, al colocar una palabra valida
+•Puntos por letra: cuántos puntos vale cada letra, al colocar una palabra válida
  los puntos de las letras utilizadas se sumaran al puntaje del jugador.
 
-•Cantidad de letras: esta opcion permite elegir con cuantas letras se quiere jugar.
-una partida con pocas letras sera una partida mas corta y mientras menos
-vocales haya sera mas dificil armar palabras.""")]
+•Cantidad de letras: esta opción permite elegir con cuántas letras se quiere jugar.
+Una partida con pocas letras será una partida mas corta y mientras menos
+vocales haya será más difícil armar palabras.""")]
     ]
     tab2_layout0 = [
         [sg.Column(frame_2),sg.Frame("Dificultad",layout=frame_0)],
@@ -164,20 +163,20 @@ vocales haya sera mas dificil armar palabras.""")]
         [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
     ]
     frame_ayuda_0 = [
-        [sg.T("""ScrabbleAR es un juego de estrategia en el cual se juega Jugador vs Maquina por turnos,
+        [sg.T("""ScrabbleAR es un juego de estrategia en el cual se juega Jugador vs Máquina por turnos,
 con el objetivo de formar palabras colocando letras en los casilleros de un tablero
 para sumar puntos.
-Si se consiguen mas puntos que la maquina al final de la partida se gana el juego, de
+Si se consiguen más puntos que la máquina al final de la partida se gana el juego, de
 lo contrario se pierde.""")]
     ]
     frame_ayuda_1 = [
-        [sg.Text("""Antes de empezar a jugar desde ScrabbleAR recomendamos hechar un vistazo
-a la pestaña "Configuracion de nivel", en ella se tiene la opcion de modificar aspectos
-importantes del juegos como por ej: la duracion de la partida, la dificultad, etc.
+        [sg.Text("""Antes de empezar a jugar desde ScrabbleAR recomendamos echar un vistazo
+a la pestaña "Configuración de nivel", en ella se tiene la opción de modificar aspectos
+importantes del juegos como por ej: la duración de la partida, la dificultad, etc.
 En caso de que no se quiera modificar las configuraciones de partida se pueden dejar
 con estan por defecto.
-Para empezar a jugar nada mas basta con clickear en el boton "JUGAR" que se encuentra en
-la pestaña "Juego" de este menu y empezara la partida dandote la opcion de ingresar tu nombre
+Para empezar a jugar nada más basta con clickear en el botón "JUGAR" que se encuentra en
+la pestaña "Juego" de este menú y empezará la partida dandote la opcion de ingresar tu nombre
 de usuario para guardar tu puntaje o jugar como jugador invitado.""")]]
 
     tab_lista = [[sg.Tab("Introduccion",layout=frame_ayuda_0)],
