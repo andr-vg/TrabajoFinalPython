@@ -348,9 +348,10 @@ def main(guardado):
     # Instanciacion de objetos y creacion del layout
     # ----------------------------------------------------------------------
     palabras_usadas = []
+    palabras_usadas_pc = []
     layout, letras, letras_pc, botones, long_tablero = gm.crear_layout(bolsa,
     tab, dificultad, tipo_palabra, img_nros, puntos_por_letra, nombre,
-    palabras_usadas, guardado)
+    palabras_usadas, palabras_usadas_pc, guardado)
 
     from JugadorPC import PC
     from Jugador import Jugador
@@ -359,7 +360,7 @@ def main(guardado):
     pj = Jugador(letras, long_tablero, botones, puntos_por_letra, dificultad,
                  tipo, guardado, window)
     pc = PC(letras_pc, long_tablero, botones, puntos_por_letra, dificultad,
-            tipo, guardado)
+            tipo, guardado,window)
     botones_aux = botones.copy() #-----> Botones_aux lo uso para el boton deshacer
 
     # ----------------------------------------------------------------------

@@ -12,13 +12,25 @@ absolute_path = os.path.join(os.path.dirname(__file__), '..')
 # ----------------------------------------------------------------------
 
 class PC(Jugadores):
-    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada):
+    def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada,window):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         self._palabras_usadas = []
         self._posiciones_ocupadas_tablero = []
         self._colores = cm.cargar_colores()
         if (guardada):
             self._cargar_estado()
+            self._cargar_palabras_usadas(window)
+# ---------------------------------------------------------------------
+    def _input_palabra(self,lista):
+        lista_final = list()
+        for pal in lista:
+            lista_final.append(pal.replace("\n",""))
+        return lista_final
+
+    def _cargar_palabras_usadas(self,window):
+        pal_final = self._input_palabra(self._palabras_usadas)
+        window["-palpc-"].update(self._palabras_usadas[0],pal_final)
+        print("Teoricamente actualice",pal_final)
 # ---------------------------------------------------------------------
     def reinicioFichas(self, palabra):
         """
@@ -131,7 +143,7 @@ class PC(Jugadores):
             if not palabra in self._palabras_usadas: # no puede formar palabras que ya formo antes
                 valido = self.es_palabra_valida(palabra)            
         if valido:
-            self._palabras_usadas.append(palabra)
+            self._palabras_usadas.append(palabra.upper())
         return palabra.upper() if valido else ""
 # ----------------------------------------------------------------------
     def _mapeoHorizontal(self, i, j):
@@ -226,8 +238,12 @@ class PC(Jugadores):
             return long_max_tablero
 # ---------------------------------------------------------------------
     def _actualizar_tablero(self, window, posiciones_finales, mejor_palabra):
+        """
+        Pone las fichas en el tablero y actualiza la lista de palabras usadas
+        """
         palabra_nueva = dict()
         letra = 0
+        window['-palpc-'].update(self._palabras_usadas[0],self._input_palabra(self._palabras_usadas))
         for pos in posiciones_finales:
             self._posiciones_ocupadas_tablero.append(pos)
             window[pos].update(mejor_palabra[letra], disabled=True,button_color=("black",self._colores["letra_pc"])) 
@@ -284,7 +300,8 @@ class PC(Jugadores):
                     
 
             ## actualizamos tablero fichas y puntos:
-            self._calculamos_puntos(palabra_nueva, mejor_palabra, window)           
+            self._calculamos_puntos(palabra_nueva, mejor_palabra, window)
+            window["-palpc-"].update(self._palabras_usadas[0],self._input_palabra(self._palabras_usadas))     
 
         else:
             self._pasar_turno()

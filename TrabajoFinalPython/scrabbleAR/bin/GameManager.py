@@ -16,7 +16,7 @@ import string
 
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
-def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas, guardado):
+def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre, palabras_usadas, palabras_usadas_pc,guardado):
     """
     Creacion del Layout, interpretando los caracteres del csv traduciendo a botones
     """
@@ -155,7 +155,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
 
     premio_y_descuento = {'': 'Simple', '+': 'Duplica puntaje por letra', '++': 'Triplica puntaje por letra', '+++': 'Duplica puntaje por palabra', '++++': 'Triplica puntaje por palabra', '-': 'Resta 1 pto', '--': 'Resta 2 ptos', '---': 'Resta 3 ptos'}
 
-    columna_datos = [[sg.Text('Nivel: '+dificultad)],
+    columna_datos = [[sg.Text('Nivel: '+dificultad.capitalize())],
                      [sg.Text('Tipos de palabras a formar: '+tipo)],
                     ]
 
@@ -176,13 +176,13 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
 
     frame_colum = [[sg.Frame("Info del juego",layout=columna_datos, element_justification='left')]]
     columna_principal = [sg.Column(columna_casilleros, background_color='grey'), sg.Column(frame_colum)]
-
+    frame_palabras_usadas_pc = [[sg.InputCombo(palabras_usadas_pc,key='-palpc-',size=(15,1),readonly=True)]]
     layout.append(columna_principal)
     frame_palabras_usadas = [[sg.InputCombo(palabras_usadas,key="-pal-",size=(15,1), readonly=True)]]
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
                              button_color=('white', colores["atril"]),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
-                             button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)]]
+                             button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)] + [sg.Frame('Palabras Usadas',layout=frame_palabras_usadas_pc)]]
     fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")] + [sg.Frame("Palabras Usadas",layout=frame_palabras_usadas)]
     fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)] + [sg.Text("",key="turnopc", size=(25, 1))] 
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True),sg.Button("Pasar Turno",key="-paso"),
@@ -273,7 +273,7 @@ def confirmar_palabra(window, letras, botones, palabra_nueva, letras_usadas, pun
         pc.actualiza_botones(posiciones_tablero_actualizar)
 
         window['-d'].update(disabled=True)
-        window["-pal-"].update(None,input_palabra(palabras_usadas)) # actualizamos el listbox de palabras si lo ubico correctamente
+        window["-pal-"].update(palabras_usadas[0],input_palabra(palabras_usadas)) # actualizamos el listbox de palabras si lo ubico correctamente
         letras = pj.getFichas()
         dar_fichas(letras, bolsa)
         pj.setFichas(letras)
