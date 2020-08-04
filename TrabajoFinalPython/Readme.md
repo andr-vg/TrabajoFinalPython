@@ -1,7 +1,7 @@
 ![Logo](https://github.com/andr-vg/TrabajoFinalPython/blob/master/TrabajoFinalPython/scrabbleAR/lib/media/Logo.png?raw=true)
 
 ## Dependencias
--    [Python 3.8.2](https://www.python.org/downloads/)
+-    [Python 3.6.8](https://www.python.org/downloads/)
 -    [Pattern 3.6](https://github.com/clips/pattern#installation)
 -    [PySimpleGUI 4.25.0](https://github.com/PySimpleGUI)
 
