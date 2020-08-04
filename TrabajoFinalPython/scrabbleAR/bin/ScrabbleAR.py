@@ -344,8 +344,8 @@ def main():
                 valor_punt = int(window["grupo_"+str(ind)].get())
                 valor_cant = int(window["grupo_"+str(ind)+"_cant"].get())
                 if (valor_cant > 0) and (valor_punt > 0):
-                    config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get()) 
-                    config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get()) 
+                    config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get())
+                    config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get())
                     valido = True
                 else:
                     sg.Popup('La cantidad de letras o los puntos por letra no pueden ser 0',title="Erorr",)

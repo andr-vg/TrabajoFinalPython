@@ -82,8 +82,16 @@ def seleccion_de_fichas(window, event, letras_usadas, palabra_nueva, letras, bot
         terminar = True
     return cont_tiempo_seg, cont_tiempo_min, terminar
 
+def mostrar_popups_info (event,guardado,pred):
+    if event == 'como_jugar':
+        sg.popup(cm.empezando_la_partida(), title='Como jugar')
+    elif event == 'botonera':
+        sg.popup(cm.botones_especiales(), title='Botones especiales')
+    elif event == 'ver_config':
+        cm.get_config_actual(guardado,pred)
+
 def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
-                    img_nros, puntos_por_letra, turno_pc, turno_jugador):
+                    img_nros, puntos_por_letra, turno_pc, turno_jugador, guardado, pred):
     """
     Se realizan los cambios de fichas que desea el jugador y éste pierde un turno
     """
@@ -135,6 +143,8 @@ def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
                     window['-cf'].set_tooltip(
                         'Ya realizaste 3 cambios de fichas.')
             break
+        else:
+            mostrar_popups_info(event,guardado,pred)
     if not cerro_ventana:
         turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador, turno_pc,
                                     window)
@@ -466,7 +476,7 @@ def main(guardado):
                         letras.keys(), palabra_nueva, botones_aux, dificultad)
                 cambios_de_fichas, turno_pc, turno_jugador = cambio_de_fichas(
                             window, letras, cambios_de_fichas, gm, pj, bolsa,
-                            img_nros, puntos_por_letra, turno_pc, turno_jugador)
+                            img_nros, puntos_por_letra, turno_pc, turno_jugador, guardado, pred)
             # boton de guardar partida
             elif event == '-p' or guardar_partida:
                 posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
@@ -491,12 +501,8 @@ def main(guardado):
                     window, letras, botones, palabra_nueva, letras_usadas,
                     puntos_por_letra, pj, pc, bolsa, primer_turno, img_nros,
                     botones_aux, turno_pc, dificultad)
-            elif event == 'como_jugar':
-                sg.popup(cm.empezando_la_partida(), title='Como jugar')
-            elif event == 'botonera':
-                sg.popup(cm.botones_especiales(), title='Botones especiales')
-            elif event == 'ver_config':
-                cm.get_config_actual(guardado,pred)
+            else:
+                mostrar_popups_info(event,guardado,pred)
         if turno_pc:
             time.sleep(0.5)   # maquina pensando la jugarreta
             primer_turno = pc.jugar(window, primer_turno)
