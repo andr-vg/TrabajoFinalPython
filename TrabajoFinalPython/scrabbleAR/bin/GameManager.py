@@ -178,7 +178,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     columna_principal = [sg.Column(columna_casilleros, background_color='grey'), sg.Column(frame_colum)]
 
     layout.append(columna_principal)
-    frame_palabras_usadas = [[sg.InputCombo(palabras_usadas,key="-pal-",size=(15,1))]]
+    frame_palabras_usadas = [[sg.InputCombo(palabras_usadas,key="-pal-",size=(15,1), readonly=True)]]
     frame_fichas_jugador = [[sg.Button(button_text=list(letras_jugador.values())[i], key=list(letras_jugador.keys())[i], font=('Gadugi', 25),
                              button_color=('white', colores["atril"]),border_width=0, image_filename=img_nros[puntos_por_letra[letras_jugador[i]]], image_size=(50, 50), image_subsample=21) for i in range(fichas_por_jugador)]]
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,

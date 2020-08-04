@@ -338,19 +338,25 @@ def main():
             #-----------------------------------
             #Guardando las configs
             #-----------------------------------
-            valido = False
+            valido = True
             for i in range(7):
                 ind = i+1
-                valor_punt = int(window["grupo_"+str(ind)].get())
-                valor_cant = int(window["grupo_"+str(ind)+"_cant"].get())
-                if (valor_cant > 0) and (valor_punt > 0):
-                    config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get())
-                    config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get())
-                    valido = True
-                else:
-                    sg.Popup('La cantidad de letras o los puntos por letra no pueden ser 0',title="Erorr",)
+                try:
+                    valor_punt = int(window["grupo_"+str(ind)].get())
+                    valor_cant = int(window["grupo_"+str(ind)+"_cant"].get())
+                    if valor_cant > 0 and valor_cant < 11 and valor_punt > 0 and valor_punt < 11:
+                        config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get())
+                        config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get())
+                    else:
+                        sg.Popup('Solo puede ingresar numeros del 1 al 10',
+                                  'por favor intente nuevamente', title="Error")
+                        valido = False
+                        break
+                except ValueError:
+                    print('haber')
+                    sg.Popup('Solo puede ingresar numeros del 1 al 10',
+                                'por favor intente nuevamente', title="Error")
                     valido = False
-                    print('validuchi',valido)
                     break
             if (valido):
                 guardar_configuracion(config)
