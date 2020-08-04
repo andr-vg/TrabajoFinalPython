@@ -87,9 +87,9 @@ def crear_layout(config):
     list_facil, list_medio, list_dificil = cargar_top_10()
 
     tab1_layout = [
-        [sg.Button("", key="-jugar-", image_filename=jugar, border_width = 0,button_color=("#c5dbf1","#c5dbf1")) ],
+        [sg.Button("", key="-jugar-", pad=(None,30),image_filename=jugar, border_width = 0,button_color=("#c5dbf1","#c5dbf1")) ],
         # [sg.Button("Continuar partida pospuesta",visible=False,key="-continuar-",size=(50,4), pad=(150,2))],
-        [sg.Button("", key="-salir-", image_filename=salir, border_width = 0,button_color=("#c5dbf1","#c5dbf1"))]
+        [sg.Button("", key="-salir-", pad=(None,0), image_filename=salir, border_width = 0,button_color=("#c5dbf1","#c5dbf1"))]
     ]
     frame_0 = [
         [sg.Radio("Facil", "nivel", tooltip="Adjetivos, sustantivos y verbos", key="facil", default= True if config["dificultad"] == "facil" else False),
