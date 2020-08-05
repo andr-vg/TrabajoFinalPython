@@ -345,18 +345,20 @@ def main():
                 try:
                     valor_punt = int(window["grupo_"+str(ind)].get())
                     valor_cant = int(window["grupo_"+str(ind)+"_cant"].get())
-                    if valor_cant > 0 and valor_cant < 11 and valor_punt > 0 and valor_punt < 11:
+                    if valor_cant > 0 and valor_cant < 12 and valor_punt > 0 and valor_punt < 11:
                         config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get())
                         config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get())
                     else:
-                        sg.Popup('Solo puede ingresar numeros del 1 al 10',
-                                  'por favor intente nuevamente', title="Error")
+                        sg.Popup('Solo puede ingresar puntajes de 1 a 10',
+                                 'y cantidades de 1 a 11',
+                                 'por favor intente nuevamente', title="Error")
                         valido = False
                         break
                 except ValueError:
                     print('haber')
-                    sg.Popup('Solo puede ingresar numeros del 1 al 10',
-                                'por favor intente nuevamente', title="Error")
+                    sg.Popup('Solo puede ingresar puntajes de 1 al 10',
+                             'y cantidades de 1 a 11',
+                             'por favor intente nuevamente', title="Error")
                     valido = False
                     break
             if (valido):
