@@ -34,3 +34,5 @@
 *  [Andrea Verónica Goyechea](https://github.com/andr-vg)
 *  [Juan Sebastian Montalivet](https://github.com/juan4171)
 *  [Julián Feregotti](https://github.com/julianfere)
+
+>Los archivos multimedia utilizados son contenido original del proyecto 
