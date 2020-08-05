@@ -58,7 +58,7 @@ def cargar_top_10():
         arch = open(os.path.join(absolute_path, "lib","info","saves","top_10.json"),"r")
         top_10 = json.load(arch)
         list_aux = top_10["puntos"].copy()
-        # list_aux = list_aux[-10:]
+        # ordenamos por puntos la lista
         list_aux = sorted(list_aux,key=key_orden,reverse=True)
         for punt in list_aux:
             dato = punt.split(" - ")
@@ -72,9 +72,9 @@ def cargar_top_10():
                     list_medio.append(jugada)
                 elif (dato[4] == "dificil"):
                     list_dificil.append(jugada)
-        list_facil = list_facil[-10:]
-        list_medio = list_medio[-10:]
-        list_dificil = list_dificil[-10:]
+        list_facil = list_facil[:10]
+        list_medio = list_medio[:10]
+        list_dificil = list_dificil[:10]
     except (FileNotFoundError):
         sg.popup("No se encontro el archivo de puntuaciones, se iniciara vacio",keep_on_top=True)
     finally:
