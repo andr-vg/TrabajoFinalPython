@@ -357,6 +357,7 @@ def cargar_fichas_maquina():
         return fichas
     except (FileNotFoundError):
         return None
+
 def cargar_fichas_jugador():
     try:
         fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r",encoding='utf8')
@@ -364,3 +365,19 @@ def cargar_fichas_jugador():
         return fichas_j #-----> Puede cargar
     except (FileNotFoundError):
         return None #----> No pude cargar
+
+def mostrar_puntajes_finales(puntos_jugador, puntos_pc, mensaje_final):
+    table_data = [[puntos_jugador, puntos_pc]]
+    headings = ['  TUS PUNTOS  ', '  PUNTOS PC  ']
+    tablita = [[sg.Table(values=table_data, headings=headings, row_height=1,
+          auto_size_columns=True, text_color='black',font='Courier 14',
+          justification='center', num_rows=4, background_color="#c5dbf1",
+          alternating_row_color='#8fa8bf', key='table', def_col_width=15)]]
+    layout = [[sg.Frame("Terminó el juego",layout=tablita)],
+              [sg.T(mensaje_final, justification='center', pad=(140, None))],
+              [sg.B("OK",key="ok",pad=(156,None))]]
+
+    window = sg.Window('Puntaje final', layout, grab_anywhere=False, no_titlebar=True)
+    window.Read(close=True)
+    window.finalize()
+    

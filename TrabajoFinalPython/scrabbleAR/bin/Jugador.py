@@ -24,7 +24,8 @@ class Jugador(Jugadores):
 
     def _cargar_palabras_usadas(self,window):
         pal_final = self._input_palabra(self._palabras_usadas)
-        window["-pal-"].update(self._palabras_usadas[0],pal_final)
+        lista_pal = [] if self._palabras_usadas == [] else self._palabras_usadas[0] 
+        window["-pal-"].update(lista_pal, pal_final)
         print("Teoricamente actualice",pal_final)
 
     def _guardar_fichas(self):

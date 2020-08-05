@@ -121,23 +121,22 @@ def crear_layout(config):
     frame_2 = [
         [sg.Frame("Tiempo (en minutos)",layout=[[sg.Slider((1,60),default_value=tiempo[0],orientation="horizontal",key="-tiempo-")]])]
     ]
-    ayuda_config= [
-[sg.Text("""•Dificultad: según la dificultad que se elija, se podrán formar
-distintos tipos de palabras y se jugará con distintos tableros.
-	• Fácil: se permiten formar Sustantivos, adjetivos y verbos
-	• Medio: se permiten formar Adjetivos y verbos
-	• Difícil: se permiten formar palabras de tipo aleatorio
+    texto_ayuda_config = '• DIFICULTAD: según la dificultad que se elija, se podrán formar\n'+ \
+                  'distintos tipos de palabras y se jugará con distintos tableros.\n'+ \
+                  '    • FACIL: se permiten formar Sustantivos, adjetivos y verbos\n'+ \
+                  '    • MEDIO: se permiten formar Adjetivos y verbos\n' + \
+                  '    • DIFICIL: se permiten formar palabras de tipo aleatorio\n' + \
+                  '\n• TIEMPO: Indica cuánto dura la partida de principio a fin, teniendo\n'+ \
+                  'en cuenta que la máquina tarda un segundo en hacer su jugada.\n'+ \
+                  '\n• PUNTOS POR LETRA: cuántos puntos vale cada letra, al colocar una\n'+\
+                  'palabra válida los puntos de las letras utilizadas se sumaran al puntaje\n'+\
+                  'del jugador.\n'+ \
+                  '\n• CANTIDAD DE LETRAS: esta opción permite elegir con cuántas letras se\n'+\
+                  'quiere jugar. Una partida con pocas letras será una partida mas corta y \n'+\
+                  'mientras menos vocales haya será más difícil armar palabras.'
 
-•Tiempo: Indica cuánto dura la partida de principio a fin, teniendo en cuenta
-que la máquina tarda un segundo en hacer su jugada.
-
-•Puntos por letra: cuántos puntos vale cada letra, al colocar una palabra válida
- los puntos de las letras utilizadas se sumaran al puntaje del jugador.
-
-•Cantidad de letras: esta opción permite elegir con cuántas letras se quiere jugar.
-Una partida con pocas letras será una partida mas corta y mientras menos
-vocales haya será más difícil armar palabras.""")]
-    ]
+    
+    ayuda_config= [[sg.Text(texto_ayuda_config, auto_size_text=True)]]
     tab2_layout0 = [
         [sg.Column(frame_2),sg.Frame("Dificultad",layout=frame_0)],
         [sg.Frame("Puntos por letra",layout=frame_1),sg.Column(frame_col)],
@@ -159,24 +158,26 @@ vocales haya será más difícil armar palabras.""")]
           alternating_row_color='#8fa8bf', key='top_10', def_col_width=30)]
     ]
     tab3_layout = [
-        [sg.Frame("Puntuaciones de los ultimos 10 juegos",layout= frame_top_10)]
+        [sg.Frame("TOP 10 mejores jugadas",layout= frame_top_10)]
     ]
+    texto_ayuda0 = ' ScrabbleAR es un juego de estrategia en el cual se juega Jugador vs Máquina por turnos,\n'+\
+                  'con el objetivo de formar palabras colocando letras en los casilleros de un tablero\n'+\
+                  'para sumar puntos. Si se consiguen más puntos que la máquina al final de la partida\n'+\
+                  'se gana el juego, de lo contrario se pierde.'
+    texto_ayuda1 = ' Antes de empezar a jugar desde ScrabbleAR recomendamos echar un vistazo,\n'+\
+                   'a la pestaña "Configuración de nivel", en ella se tiene la opción de\n'+\
+                   'modificar aspectos importantes del juegos, como por ej: la duración de\n'+\
+                   'la partida, la dificultad, etc.\n '+\
+                   ' En caso de que no se quiera modificar las configuraciones de partida se\n'+\
+                   'pueden dejar como estan por defecto. Para empezar a jugar nada más basta\n' +\
+                   'con clickear en el botón "JUGAR" que se encuentra en la pestaña "Juego" de\n'+\
+                   'este menú y empezará la partida dandote la opcion de ingresar tu nombre de\n'+\
+                   'usuario para guardar tu puntaje o jugar como jugador invitado.'
+
     frame_ayuda_0 = [
-        [sg.T("""ScrabbleAR es un juego de estrategia en el cual se juega Jugador vs Máquina por turnos,
-con el objetivo de formar palabras colocando letras en los casilleros de un tablero
-para sumar puntos.
-Si se consiguen más puntos que la máquina al final de la partida se gana el juego, de
-lo contrario se pierde.""")]
-    ]
+        [sg.T(texto_ayuda0)]]
     frame_ayuda_1 = [
-        [sg.Text("""Antes de empezar a jugar desde ScrabbleAR recomendamos echar un vistazo
-a la pestaña "Configuración de nivel", en ella se tiene la opción de modificar aspectos
-importantes del juegos como por ej: la duración de la partida, la dificultad, etc.
-En caso de que no se quiera modificar las configuraciones de partida se pueden dejar
-con estan por defecto.
-Para empezar a jugar nada más basta con clickear en el botón "JUGAR" que se encuentra en
-la pestaña "Juego" de este menú y empezará la partida dandote la opcion de ingresar tu nombre
-de usuario para guardar tu puntaje o jugar como jugador invitado.""")]]
+        [sg.Text(texto_ayuda1)]]
 
     tab_lista = [[sg.Tab("Introduccion",layout=frame_ayuda_0)],
                  [sg.Tab("Como empezar a jugar",layout=frame_ayuda_1)],

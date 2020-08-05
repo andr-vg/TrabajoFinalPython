@@ -183,23 +183,27 @@ def cargar_colores():
         return (dic_col)
 
 def empezando_la_partida():     #estas 2 funciones las importo al menu y al juego
-    return """Una vez empezada la partida se encuentran a disposición del jugador el tablero
-y el atril con las fichas para poder jugar, simplemente dando
-click en la ficha deseada y el casillero del tablero deseado podemos ir armando
-letra a letra la palabra de nuestro turno, de esta forma, formando palabras válidas, aprovechando
-los casilleros de bonus y evitando los casilleros de penalización, el jugador va sumando puntos.
-El objetivo del juego es obtener más puntos que la maquina antes de que se acabe el tiempo, se
-acaben las fichas del juego o que ya no se puedan formar palabras."""
+    texto = ' Una vez empezada la partida se encuentran a disposición del jugador el tablero \n'+\
+            'y el atril con las fichas para poder jugar, simplemente dando click en la ficha\n'+\
+            'deseada y el casillero del tablero deseado podemos ir armando letra a letra la \n'+\
+            'palabra de nuestro turno, de esta forma, formando palabras válidas, aprovechando\n'+\
+            'los casilleros de bonus y evitando los casilleros de penalización, el jugador va\n'+\
+            'sumando puntos.\n'+\
+            ' El objetivo del juego es obtener más puntos que la maquina antes de que se acabe\n'+\
+            'el tiempo, se acaben las fichas del juego o que ya no se puedan formar palabras.'
+    return texto
 
 def botones_especiales():
-    return """•"Confirmar": Una vez colocada una palabra sobre el tablero, verifica si esa palabra es válida,
-en caso de serlo se sumarán puntos al puntaje del jugador, de lo contrario las fichas usadas volverán al atril.
-•"Deshacer": Permite devolver al atril las fichas que se hayan puesto en el tablero en este turno.
-•"Terminar": Finaliza la partida.
-•"Cambiar Fichas": Permite seleccionar las fichas.
-•"Posponer": Guarda el estado del juego hasta el momento (fichas, puntos, palabras jugadas, etc)
-para poder continuar la partida en otro momento.
-•"Pasar Turno": Permite cederle el turno a la máquina."""
+    texto = '• CONFIRMAR: Una vez colocada una palabra sobre el tablero, verifica si esa \n'+\
+            'palabra es válida, en caso de serlo se sumarán puntos al puntaje del jugador,\n'+\
+            'de lo contrario las fichas usadas volverán al atril.\n'+\
+            '\n• DESHACER: Permite devolver al atril las fichas que se hayan puesto en el \n'+\
+            'tablero en este turno.\n\n• TERMINAR: Finaliza la partida.\n'+\
+            '\n• CAMBIAR FICHAS: Permite seleccionar las fichas.\n'+\
+            '\n• POSPONER: Guarda el estado del juego hasta el momento (fichas, puntos,\n'+\
+            'palabras jugadas, etc) para poder continuar la partida luego.\n'+\
+            '\n• PASAR TURNO: Permite cederle el turno a la máquina.'
+    return texto 
 
 def get_config_actual(guardado,pred):
     """

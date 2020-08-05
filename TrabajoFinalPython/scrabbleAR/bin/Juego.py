@@ -191,26 +191,29 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
     Funcion que se ocupa de realizar los calculos finales y guardar en top_10
     al finalizar la partida
     """
+    import time
+    sg.popup_no_frame('Descontando puntaje de las ultimas fichas ..', keep_on_top=True)
     pj.restar_puntos_finales()
     pc.restar_puntos_finales()
     gm.mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
     if pj.puntos > pc.puntos:
-        sg.popup_no_frame('Termino el juego \nTus puntos vs Puntos PC ',
-                        '     '+str(pj.puntos)+'         |        '+
-                        str(pc.puntos),' Ganaste!',keep_on_top=True)
+        ganador = 'Invitado' if nombre == None else nombre
+        puntos = pj.puntos
+        mensaje = 'GANASTE! :)'
     elif pj.puntos == pc.puntos:
-        sg.popup('Termino el juego \nTus puntos vs Puntos PC ',
-                '     '+str(pj.puntos)+'         |        '+str(pc.puntos),
-                ' EMPATE!',keep_on_top=True)
+        ganador = 'Empate'
+        puntos = pj.puntos
+        mensaje = 'EMPATE!'
     else:
-        sg.popup_no_frame('Termino el juego \nTus puntos vs Puntos PC \n',
-                '     '+str(pj.puntos)+'         |        '+str(pc.puntos),
-                ' Perdiste :(',keep_on_top=True)
-    from datetime import datetime
-    fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-    if nombre != None: # solo guarda si le pone un nombre
-        datos = nombre + ' - ' + str(fecha) + ' - ' + str(pj.puntos) + \
-                         ' - ' + str(dificultad)
+        ganador = 'Maquina'
+        puntos = pc.puntos
+        mensaje = 'PERDISTE :('
+    gm.mostrar_puntajes_finales(pj.puntos, pc.puntos, mensaje)
+    if puntos > 0:
+        from datetime import datetime
+        fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+        datos = ganador + ' - ' + str(fecha) + ' - ' + str(puntos) + \
+            ' - ' + str(dificultad)
         print(lista_puntajes)
         lista_puntajes.append(datos)
         puntos_jugador['puntos'] = lista_puntajes
