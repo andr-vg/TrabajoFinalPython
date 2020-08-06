@@ -327,7 +327,7 @@ def main():
                 popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "),keep_on_top=True)
                 if (popup == "   NO   "):
                     if ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):
-                        sg.popup('Esta a punto de jugar con las siguientes configuraciones',title='Aviso')
+                        sg.popup('Estas a punto de jugar con las siguientes configuraciones: ',title='Aviso')
                         get_config_actual(False,False) #Es False,False para que me muestre las config del usuario
                         popup = sg.popup('Usar configuracion actual?',title='Aviso',custom_text=('   SI   ','   NO   '))
                         if (popup == '   SI   '):
@@ -346,7 +346,7 @@ def main():
                     Juego.main(True)
 
             elif ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):
-                sg.popup('Esta a punto de jugar con las siguientes configuraciones',title='Aviso')
+                sg.popup('Estas a punto de jugar con las siguientes configuraciones:',title='Aviso')
                 get_config_actual(False,False) #Es False,False para que me muestre las config del usuario
                 popup = sg.popup('Usar configuracion actual?',title='Aviso',custom_text=('   SI   ','   NO   '))
                 if (popup == '   SI   '):

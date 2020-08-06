@@ -103,7 +103,7 @@ def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
     sg.Popup('Cambio de fichas:',
         'Seleccione las letras que quiere cambiar o el boton ',
         '\"seleccionar todas las fichas\" y vuelva a clickear',
-        'en ', '\"Cambiar fichas\" para confirmar el cambio',
+        'en \"Cambiar fichas\" para confirmar el cambio',
         keep_on_top=True)
     # para que no se minimice despues del popup
     window.BringToFront()
@@ -198,7 +198,7 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
     gm.mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
     # popup_animated using built-in GIF image
     cubito = Icono.obtener_gif()
-    for i in range(300000):
+    for i in range(30000):
         sg.popup_animated(cubito, title='ScrabbleAR', text_color='white', background_color='#8fa8bf',
                         message='              RECALCULANDO PUNTAJE        \n                                    ...                       \nDescontando puntaje de las fichas del atril..',
                       font=('Century Gothic',13), no_titlebar=True,
@@ -396,7 +396,6 @@ def main(guardado):
     puntos_jugador = cm.cargar_puntuaciones()
     lista_puntajes = puntos_jugador['puntos']
     terminar = False
-
     # cambios de fichas
     if guardado:
         cambios_de_fichas = int(config["cambios_fichas"])
@@ -407,11 +406,9 @@ def main(guardado):
         cambios_de_fichas = 3
     # aca vamos almacenando las posiciones (i,j) ocupadas en el tablero:
     # posiciones_ocupadas_tablero = []
-
     fin_fichas = False
     fin_juego = False
     guardar_partida = False
-
     # Configuracion del tiempo
     if not guardado:
         tiempo = tiempo.split(":")
