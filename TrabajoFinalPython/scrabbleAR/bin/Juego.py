@@ -192,17 +192,17 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
     al finalizar la partida
     """
     import time
+    pj.restar_puntos_finales()
+    pc.restar_puntos_finales()
+    gm.mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
     # popup_animated using built-in GIF image
     cubito = Icono.obtener_gif()
     for i in range(300000):
         sg.popup_animated(cubito, title='ScrabbleAR', text_color='white', background_color='#8fa8bf', 
                         message='              RECALCULANDO PUNTAJE        \n                                    ...                       \nDescontando puntaje de las fichas del atril..',  
                       font=('Century Gothic',13), no_titlebar=True,
-                      alpha_channel=0.9, time_between_frames=100)
+                      alpha_channel=0.9, time_between_frames=100, keep_on_top=True)
     sg.popup_animated(None)  # close all Animated Popups
-    pj.restar_puntos_finales()
-    pc.restar_puntos_finales()
-    gm.mostrar_fichas_compu(window, pc.getFichas(), img_nros, puntos_por_letra)
     if pj.puntos > pc.puntos:
         ganador = 'Invitado' if nombre == None else nombre
         puntos = pj.puntos
