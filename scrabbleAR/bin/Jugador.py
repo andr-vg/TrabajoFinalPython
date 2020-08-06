@@ -17,16 +17,22 @@ class Jugador(Jugadores):
             self._palabras_usadas = []
 
     def _input_palabra(self,lista):
+        """
+        Formatea la lista para el InputCombo
+        """
         lista_final = list()
         for pal in lista:
             lista_final.append(pal.replace("\n",""))
         return lista_final
 
     def _cargar_palabras_usadas(self,window):
+        """
+        Carga las palabras usadas en el InputCombo
+        """
         pal_final = self._input_palabra(self._palabras_usadas)
         lista_pal = [] if self._palabras_usadas == [] else self._palabras_usadas[0] 
         window["-pal-"].update(lista_pal, pal_final)
-        print("Teoricamente actualice",pal_final)
+        # print("Teoricamente actualice",pal_final)
 
     def _guardar_fichas(self):
         """
@@ -44,6 +50,9 @@ class Jugador(Jugadores):
         json.dump(self._palabras_usadas,datos,ensure_ascii=False)
 
     def get_palabras_usadas(self):
+        """
+        Retorna lista de palabras usadas
+        """
         return self._palabras_usadas
 
     def _cargar_datos(self,window):
@@ -107,9 +116,9 @@ class Jugador(Jugadores):
             palabra_obtenida = ''.join(lista_letras_ordenadas)
             palabra_obtenida.strip()
             if self.es_palabra_valida(palabra_obtenida) and not(palabra_obtenida in self._palabras_usadas):
-                self._palabras_usadas.append(palabra_obtenida)
                 al_centro = self._estan_en_el_centro(keys_ordenados)
                 if (not primer_turno) or (primer_turno and al_centro):
+                    self._palabras_usadas.append(palabra_obtenida)
                     posiciones_ocupadas_tablero.extend(palabra_nueva.keys())
                     ## funcion que suma los puntos por letra y segun cada boton duplica o resta puntos:
                     self.sumar_puntos(palabra_nueva)

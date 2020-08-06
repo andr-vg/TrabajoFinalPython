@@ -242,13 +242,17 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     return letras_usadas, palabra_nueva
 
 def pocas_fichas(fichas):
-    print('FICHASGM: ' ,fichas)
+    """
+    Retorna True si hay menos de 7 fichas para el atril
+    """
     lista_aux =  list(fichas.values())
     fichas_fin = list(filter(lambda x:x != '' ,lista_aux))
-    print(fichas_fin)
     return len(fichas_fin) < 7
 
 def input_palabra(lista):
+    """
+    Formatea la lista para el InputCombo
+    """
     lista_final = list()
     for pal in lista:
         lista_final.append(pal.replace("\n",""))
@@ -374,6 +378,9 @@ def cargar_fichas_jugador():
         return None #----> No pude cargar
 
 def mostrar_puntajes_finales(puntos_jugador, puntos_pc, mensaje_final):
+    """
+    Muestra una ventana con los puntajes finales de la partida
+    """
     table_data = [[puntos_jugador, puntos_pc]]
     headings = ['  TUS PUNTOS  ', '  PUNTOS PC  ']
     tablita = [[sg.Table(values=table_data, headings=headings, row_height=1,

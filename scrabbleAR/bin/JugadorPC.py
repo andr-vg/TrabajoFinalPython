@@ -83,6 +83,9 @@ class PC(Jugadores):
         return dic_aux
 # ---------------------------------------------------------------------
     def convertir_lista_tupla(self,lista):
+        """
+        Convierte la lista de listas a tuplas para las pos ocupadas del tablero
+        """
         lista_final = []
         for pos in lista:
             aux = (pos[0], pos[1]) 
@@ -174,9 +177,15 @@ class PC(Jugadores):
         return cant, posiciones
 # ----------------------------------------------------------------------
     def get_pos_tablero(self):
+        """
+        Retorna las pos usadas del tablero
+        """
         return self._posiciones_ocupadas_tablero
 # ----------------------------------------------------------------------
     def actualizar_pos_tablero(self,list_pos):
+        """
+        Actualiza las pos usadas del tablero
+        """
         self.posiciones_ocupadas_tablero = list_pos
 # ----------------------------------------------------------------------
     def _mapeoVertical(self, i, j):

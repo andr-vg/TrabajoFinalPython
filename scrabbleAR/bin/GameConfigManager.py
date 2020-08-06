@@ -14,6 +14,9 @@ from pathlib import Path
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 def convertirJson(botones):
+    """
+    Hace un parse del diccionario para guardarlo en json
+    """
     dic_aux = {}
     for clave,valor in botones.items():
         dic_aux[str(clave[0])+","+str(clave[1])] = valor
@@ -32,6 +35,9 @@ def convertirDic(botones):
     return dic_aux
 
 def cargar_tablero(tablero):
+    """
+    Carga el tablero dependiendo la dificultad y devuelve en forma de diccionario
+    """
     try:
         if tablero == "facil":
             base = open(os.path.join(absolute_path,"lib","info","boards","facil.json"),"r",encoding='utf8')
@@ -188,6 +194,9 @@ def cargar_config_guardada():
 
 
 def cargar_colores():
+    """
+    Carga los colores del archivo colores.json
+    """
     try:
         col = open(os.path.join(absolute_path, "lib", "info","config" ,"colores.json"),"r")
         dic_col = json.load(col)
@@ -232,7 +241,11 @@ def cargar_colores():
     finally:
         return (dic_col)
 
-def empezando_la_partida():     #estas 2 funciones las importo al menu y al juego
+def empezando_la_partida():  
+    """
+    Popup para inicio de partida
+    """
+      #estas 2 funciones las importo al menu y al juego
     texto = ' Una vez empezada la partida se encuentran a disposición del jugador el tablero \n'+\
             'y el atril con las fichas para poder jugar, simplemente dando click en la ficha\n'+\
             'deseada y el casillero del tablero deseado podemos ir armando letra a letra la \n'+\
@@ -244,6 +257,9 @@ def empezando_la_partida():     #estas 2 funciones las importo al menu y al jueg
     return texto
 
 def botones_especiales():
+    """
+    Popup de botones especiales
+    """
     texto = '• CONFIRMAR: Una vez colocada una palabra sobre el tablero, verifica si esa \n'+\
             'palabra es válida, en caso de serlo se sumarán puntos al puntaje del jugador,\n'+\
             'de lo contrario las fichas usadas volverán al atril.\n'+\
