@@ -1,5 +1,5 @@
 {
-  "tiempo": "2:56",
+  "tiempo": "2:28",
   "dificultad": "dificil",
   "grupo_1": 1,
   "grupo_2": 2,
@@ -17,7 +17,7 @@
   "grupo_7_cant": 1,
   "tipo": "sust",
   "puntos_j": 0,
-  "puntos_pc": 3,
+  "puntos_pc": 18,
   "nombre": "Invitado",
   "turno_jugador": "True",
   "turno_pc": "False",
