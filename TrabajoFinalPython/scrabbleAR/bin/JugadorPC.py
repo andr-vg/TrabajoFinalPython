@@ -127,11 +127,11 @@ class PC(Jugadores):
                     p = list(it.permutations(combinacion))
                     for f in p:
                         evaluation = "".join(f)
-                        if evaluation in s and evaluation in le:
+                        if evaluation in s and evaluation in le and not evaluation.upper() in self._palabras_usadas:
                             l.append(evaluation)
 
         l = list(set(l))
-        print(l)
+        print('Largo: ',l)
         valido = False
         hay_palabras = True
         while not valido and hay_palabras:
@@ -141,7 +141,7 @@ class PC(Jugadores):
             except:  # caso en que la lista no tiene palabras
                 palabra = ""
                 hay_palabras = False      
-            if not palabra in self._palabras_usadas: # no puede formar palabras que ya formo antes
+            if not palabra.upper() in self._palabras_usadas: # no puede formar palabras que ya formo antes
                 valido = self.es_palabra_valida(palabra)            
         if valido:
             self._palabras_usadas.append(palabra.upper())
@@ -404,6 +404,11 @@ class PC(Jugadores):
             # veamos si la palabra entra ubicando la mejor letra ahi
             inicio = pos_premio_letra - len(mejor_palabra[:max_i])
             fin = pos_premio_letra + len(mejor_palabra[max_i+1:])
+            print('============================================')
+            print('POS: ',posiciones)
+            print('POStipo: ',type(posiciones))
+            print('INICIO:'+ str(inicio))
+            print('============================================')
             if inicio >= 0 and fin < len(posiciones):
                 palabra_nueva = dict()
                 j = 0
@@ -415,6 +420,7 @@ class PC(Jugadores):
                 self.setPuntos(puntos_actuales)
             else:
                 puntos_con_mejor_letra = 0
+                pos_premio_letra = 0        
 
         # calculemos puntaje si encontro casillero que duplique/triplique palabra
         if len(posiciones_finales_pal) > 0:
@@ -436,10 +442,12 @@ class PC(Jugadores):
         # caso en que solo encontramos casillero que duplique/triplique letra
         elif pos_premio_letra != -1:
             posiciones_finales = posiciones[inicio:fin+1]
+        elif (pos_premio_letra == 0):
+            posiciones_finales = posiciones[0:len(mejor_palabra)] 
         # caso en que solo encontramos casillero que duplique/triplique palabra
         else:
             posiciones_finales = posiciones_finales_pal
-
+        print('POS FINALES',posiciones_finales)
         return posiciones_finales
 # ---------------------------------------------------------------------
     def _turno_random(self, long_y_posiciones, mejor_palabra, long_max_tablero):
