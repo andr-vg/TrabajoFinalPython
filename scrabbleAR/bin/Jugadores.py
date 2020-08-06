@@ -12,8 +12,8 @@ class Jugadores:
         self._tipo = tipo  # tipo es una lista de tags en los que se pueden clasificar a los verbos, sustantivos y adjetivos
 
     def setFichas(self, fichas_nuevas):
+
         self.fichas = fichas_nuevas
-        print("fichas", self.fichas)
 
     def getFichas(self):
         return self.fichas
@@ -84,6 +84,9 @@ class Jugadores:
         self.sumPuntos(puntos)
 
     def restar_puntos_finales(self):
+        """
+        Resta los puntos al finalizar la partida
+        """
         for letra in self.fichas.values():
             if (letra != ''):
                 if (self.puntaje != 0) and (self.puntaje - self.puntos_por_letra[letra] > 0):

@@ -83,6 +83,9 @@ def seleccion_de_fichas(window, event, letras_usadas, palabra_nueva, letras, bot
     return cont_tiempo_seg, cont_tiempo_min, terminar
 
 def mostrar_popups_info (event,guardado,pred):
+    """
+    Muestra los popups correspondientes de cada boton
+    """
     if event == 'como_jugar':
         sg.popup(cm.empezando_la_partida(), title='Como jugar')
     elif event == 'botonera':
@@ -168,7 +171,7 @@ def guardar_datos(config, tipo_palabra, tiempo_str, pj_puntos, pc_puntos,
     datos['turno_jugador'] = str(turno_jugador)
     datos['turno_pc'] = str(turno_pc)
     datos['cambios_fichas'] = cambios_de_fichas
-    datos['primer_turno'] = primer_turno
+    datos['primer_turno'] = str(primer_turno).capitalize()
     return datos
 
 def posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,

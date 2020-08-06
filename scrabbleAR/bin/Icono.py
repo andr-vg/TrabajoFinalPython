@@ -1,3 +1,7 @@
+
+"""
+En este archivo se contienen los base64 de el logo de la ventana y el popup animado
+"""
 def obtener_logo():
     """
     Tuve que crear esta funcion para poder respetar las Pep.
