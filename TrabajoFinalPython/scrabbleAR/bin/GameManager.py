@@ -372,7 +372,8 @@ def mostrar_puntajes_finales(puntos_jugador, puntos_pc, mensaje_final):
     tablita = [[sg.Table(values=table_data, headings=headings, row_height=1,
           auto_size_columns=True, text_color='black',font='Courier 14',
           justification='center', num_rows=4, background_color="#c5dbf1",
-          alternating_row_color='#8fa8bf', key='table', def_col_width=15)]]
+          alternating_row_color='#8fa8bf', key='table', def_col_width=15,
+          header_text_color='white', header_background_color='#8fa8bf')]]
     layout = [[sg.Frame("Terminó el juego",layout=tablita)],
               [sg.T(mensaje_final, justification='center', pad=(140, None))],
               [sg.B("OK",key="ok",pad=(156,None))]]

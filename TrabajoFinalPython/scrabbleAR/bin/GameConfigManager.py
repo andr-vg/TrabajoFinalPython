@@ -225,14 +225,15 @@ def get_config_actual(guardado,pred):
             ['Z',data["grupo_7_cant"],data["grupo_7"]]
             ]
 
-        headings = ['  LETRAS  ', '  CANTIDAD  ', '  PUNTOS  ']
+        headings = ['        LETRAS        ', ' CANTIDAD ', ' PUNTOS ']
         frame = [[sg.T("Dificultad: "+data["dificultad"].capitalize()),sg.T("Tiempo: "+data["tiempo"]+" minutos")]]
         layout = [
         [sg.Frame("",layout=frame)],
         [sg.Table(values=table_data, headings=headings, max_col_width=400,
           auto_size_columns=True, text_color='black',font='Courier 14',
-          justification='center', num_rows=10,
-          alternating_row_color='lightblue', key='table', def_col_width=30)
+          justification='center', num_rows=7,
+          alternating_row_color='#8fa8bf', key='table', def_col_width=35,
+          header_text_color='white', header_background_color='#8fa8bf')
           ],
           [sg.B("OK",key="ok",pad=(170,None))]]
 

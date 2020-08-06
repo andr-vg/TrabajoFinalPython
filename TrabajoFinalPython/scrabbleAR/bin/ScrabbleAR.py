@@ -153,9 +153,10 @@ def crear_layout(config):
          sg.B("Actualizar",key="act")],
          [sg.Table(values= list_facil if len(list_facil) != 0 else sin_datos,
           headings=headings, max_col_width=400, auto_size_columns=True,
-          text_color='black', justification='right',
+          text_color='black', justification='center',
           num_rows=10, font='Courier 12', pad=(12,2), background_color="#c5dbf1",
-          alternating_row_color='#8fa8bf', key='top_10', def_col_width=30)]
+          alternating_row_color='#8fa8bf', key='top_10', def_col_width=30,
+          header_text_color='white', header_background_color='#8fa8bf')]
     ]
     tab3_layout = [
         [sg.Frame("TOP 10 mejores jugadas",layout= frame_top_10)]
