@@ -10,6 +10,7 @@ import PySimpleGUI as sg
 import csv
 from pathlib import Path
 
+
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
 def convertirJson(botones):
@@ -42,10 +43,10 @@ def cargar_tablero(tablero):
             base = open(os.path.join(absolute_path,"lib","info","boards","dificil.json"),"r",encoding='utf8')
         tablero = json.load(base)
         tab = convertirDic(tablero)
-    except (FileNotFoundError):
-        sg.popup("NO SE ENCONTRO TABLERO",keep_on_top=True)
-    finally:
         return tab
+    except (FileNotFoundError):
+        return None
+
 
 def guardar_info_partida(datos):
     """
@@ -73,12 +74,29 @@ def cargar_config_pred():
     """
     try:
         arch = open(os.path.join(absolute_path, "lib","info","config","configPred.json"), "r") #os.path.join() forma un string con forma de directorio con los argumentos que le pases, con / o \ segun el sis op
-        config = dict()
         config = json.load(arch)
         arch.close()
     except (FileNotFoundError):
-        sg.popup("No se encontro el archivo de configuraciones predetermiadas \n el juego se cerrara",keep_on_top=True)
-        exit()
+       config = {
+             "tiempo": "3:00",
+             "dificultad": "facil",
+             "grupo_1": 1,
+             "grupo_2": 2,
+             "grupo_3": 3,
+             "grupo_4": 4,
+             "grupo_5": 6,
+             "grupo_6": 8,
+             "grupo_7": 10,
+             "grupo_1_cant": 11,
+             "grupo_2_cant": 4,
+             "grupo_3_cant": 3,
+             "grupo_4_cant": 2,
+             "grupo_5_cant": 2,
+             "grupo_6_cant": 1,
+             "grupo_7_cant": 1
+       }
+       arch = open(os.path.join(absolute_path, "lib","info","config","configPred.json"), "w")
+       json.dump(config,arch,indent=2)
     return config
 
 def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
@@ -98,6 +116,8 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     else:
         config = cargar_config_guardada()
         pred =  False
+         
+    
 
     grupo_1 = ["A", "E", "O", "S", "I", "U", "N", "L","R", "T"]
     grupo_2 = ["C", "D", "G"]
@@ -164,9 +184,8 @@ def cargar_config_guardada():
         arch.close()
         return config
     except (FileNotFoundError):
-        sg.popup("No se encontraron datos de una partida guardada, inicie una nueva partida",keep_on_top=True)
-        ScrabbleAR.main()
-        # Se me quedan 2 menus abiertos y no es la idea...
+        sg.popup("No se encontraron datos de una partida guardada, reinicie el juego",keep_on_top=True)
+
 
 def cargar_colores():
     try:
@@ -175,10 +194,41 @@ def cargar_colores():
         col.close()
     except (FileNotFoundError):
         sg.popup("No se encontro colores.json \n usando colores predeterminados",keep_on_top=True)
-        dic_col = {'facil' : {'' : '#FFFFFF', '+' : '#004080', '++' : '#0E6371', "+++": "#efcfe8", "++++": "#c1a4ff", '-' : '#008080', '--' : '#005555', '---' : '#000000'},
-               'medio' : {'': '#82b1ff', '+': 'white', '++': '#d50000', "+++": "#efcfe8", "++++": "#c1a4ff", '-': '#c5cae9', '--': '#ffeb3b', '---': '#ff5722'},
-               'dificil' : {'' : '#00102e', '+' : '#b7c2cc', '++' : '#57024d', "+++": "#efcfe8", "++++": "#c1a4ff", '-' : '#9c037d', '--' : '#8a88b3', '---' : '#ffc27d'}
-              }
+        dic_col = {
+                 "facil": {
+                        "": "#FFFFFF",
+                        "+": "#ff6699",
+                        "++": "#ff99cc",
+                        "+++": "#efcfe8",
+                        "++++": "#c1a4ff",
+                        "-": "#9999ff",
+                        "--": "#9966cc",
+                        "---": "#6633cc"
+                    },
+                    "medio": {
+                        "": "#82b1ff",
+                        "+": "white",
+                        "++": "#d50000",
+                        "+++": "#efcfe8",
+                        "++++": "#c1a4ff",
+                        "-": "#c5cae9",
+                        "--": "#ffeb3b",
+                        "---": "#ff5722"
+                    },
+                    "dificil": {
+                        "": "#e4f3fa",
+                        "+": "#f89d89",
+                        "++": "#e59e72",
+                        "+++": "#9986a9",
+                        "++++": "#ce5a57",
+                        "-": "#efd692",
+                        "--": "#5386a6",
+                        "---": "#4fadac"
+                    },
+                    "atril":"#006699",
+                    "letra_jugador": "#8da8b7",
+                    "letra_pc": "#fed0b9"
+                }
     finally:
         return (dic_col)
 

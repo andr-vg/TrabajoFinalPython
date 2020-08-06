@@ -318,15 +318,17 @@ def main(guardado):
     if guardado: #Si hay partida guardada carga el tablero guardado
         tab = cm.cargar_tablero('guardado')
     else:
-        try:
-            if dificultad == 'facil':
+        if dificultad == 'facil':
                 tab = cm.cargar_tablero('facil')
-            elif dificultad == 'medio':
+        elif dificultad == 'medio':
                 tab = cm.cargar_tablero('medio')
-            else:
+        else:
                 tab = cm.cargar_tablero('dificil')
-        except FileNotFoundError:
-            sg.popup("No se ha encontrado el tablero", keep_on_top=True)
+    if (tab is None):
+        sg.popup(f'No se encontro el tablero {dificultad}')
+        ScrabbleAR.main()
+        return None
+    
     # ----------------------------------------------------------------------
         # Opciones de dificultad --> lista de tags
     # ----------------------------------------------------------------------
@@ -528,6 +530,7 @@ def main(guardado):
             fichas_pc = pc.getFichas()
             gm.dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)
+            print('FICAHS PC', pc.getFichas)
             fin_fichas = gm.pocas_fichas(pc.getFichas())
             if (fin_fichas):
                 finalizar_juego(pj, pc, gm, cm, window, img_nros,

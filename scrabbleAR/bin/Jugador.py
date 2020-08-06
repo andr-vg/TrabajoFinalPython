@@ -11,7 +11,7 @@ class Jugador(Jugadores):
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardado, window):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         if(guardado):
-            self._cargar_datos()
+            self._cargar_datos(window)
             self._cargar_palabras_usadas(window)
         else:
             self._palabras_usadas = []
@@ -46,7 +46,7 @@ class Jugador(Jugadores):
     def get_palabras_usadas(self):
         return self._palabras_usadas
 
-    def _cargar_datos(self):
+    def _cargar_datos(self,window):
         """
         Carga la lista de palabras usadas por el jugador
         """
@@ -54,7 +54,12 @@ class Jugador(Jugadores):
             datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r",encoding='utf8')
             self._palabras_usadas = list(json.load(datos))
         except (FileNotFoundError):
-            self._palabras_usadas = []
+            from ScrabbleAR import main as sc_main
+            sg.popup('No se encontro archivo palabras_jugador.json, inicie otra partida.',title='Error')
+            window.close()
+            sc_main()
+
+
 
 
     def _analizo(self, keys_ordenados, menor_1, menor_2, j,

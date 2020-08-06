@@ -18,16 +18,22 @@ class PC(Jugadores):
         self._posiciones_ocupadas_tablero = []
         self._colores = cm.cargar_colores()
         if (guardada):
-            self._cargar_estado()
+            self._cargar_estado(window)
             self._cargar_palabras_usadas(window)
 # ---------------------------------------------------------------------
     def _input_palabra(self,lista):
+        """
+        Formatea la lista para el InputCombo
+        """
         lista_final = list()
         for pal in lista:
             lista_final.append(pal.replace("\n",""))
         return lista_final
 
     def _cargar_palabras_usadas(self,window):
+        """
+        Carga las palabras usadas en el InputCombo de la pc
+        """
         pal_final = self._input_palabra(self._palabras_usadas)
         lista_pal = [] if self._palabras_usadas == [] else self._palabras_usadas[0]
         window["-palpc-"].update(lista_pal, pal_final)
@@ -93,16 +99,24 @@ class PC(Jugadores):
         json.dump(datos,arch,indent = 4,ensure_ascii=False)
         arch.close()
 # ----------------------------------------------------------------------
-    def _cargar_estado(self):
+    def _cargar_estado(self,window):
         """
         Si la partida esta guardada carga el estado guardado en un json
         """
-        datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r",encoding='utf8')
-        data = {}
-        data = json.load(datos)
-        self._botones = self._convertirDic(data["botones"])
-        self._palabras_usadas = data["palabras_usadas"]
-        self._posiciones_ocupadas_tablero = self.convertir_lista_tupla(data["pos_usadas"])
+        try:
+            datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r",encoding='utf8')
+            data = {}
+            data = json.load(datos)
+            self._botones = self._convertirDic(data["botones"])
+            self._palabras_usadas = data["palabras_usadas"]
+            self._posiciones_ocupadas_tablero = self.convertir_lista_tupla(data["pos_usadas"])
+        except (FileNotFoundError):
+            sg.Popup('No se encontro el archivo datos_pc.json, Inicie otra partida',title='Error')
+            from ScrabbleAR import main as sg_main
+            window.close()
+            sg_main()
+            
+            
 # ----------------------------------------------------------------------
     def _obtenerPalabra(self, long_max):
         """

@@ -213,9 +213,27 @@ def cargar_config_pred():
         config = dict()
         config = json.load(arch)
         arch.close()
-    except (FileNotFoundError):
-        sg.popup("Algo salio mal! no hay config predeterminada :(",keep_on_top=True)
-        exit()
+    except (FileNotFoundError):        
+        config = {
+             "tiempo": "3:00",
+             "dificultad": "facil",
+             "grupo_1": 1,
+             "grupo_2": 2,
+             "grupo_3": 3,
+             "grupo_4": 4,
+             "grupo_5": 6,
+             "grupo_6": 8,
+             "grupo_7": 10,
+             "grupo_1_cant": 11,
+             "grupo_2_cant": 4,
+             "grupo_3_cant": 3,
+             "grupo_4_cant": 2,
+             "grupo_5_cant": 2,
+             "grupo_6_cant": 1,
+             "grupo_7_cant": 1
+       }
+        arch = open(os.path.join(absolute_path, "lib","info","config","configPred.json"), "w")
+        json.dump(config,arch,indent=2)        
     return config
 # ----------------------------------------------------------------------
 def cargar_config_usr():
@@ -299,9 +317,13 @@ def main():
                 config = cargar_config_pred()
             finally:
                 sg.popup("Configuraciones reiniciadas",keep_on_top=True)
+
         elif (event == "-jugar-"):
             print("Estoy jugando")
-            if ("guardado.json" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
+            lista_guardados = ['guardado.json','datos_guardados.json','datos_pc.json','fichas_jugador.json','palabras_jugador.json']
+            path = os.listdir(os.path.join(absolute_path, "lib","info","saves"))
+            lista_no_encontro =  list(filter(lambda x: x not in path,lista_guardados))
+            if not(lista_no_encontro):
                 popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "),keep_on_top=True)
                 if (popup == "   NO   "):
                     if ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):
@@ -313,11 +335,16 @@ def main():
                             Juego.main(False)
                         else:
                             pass
+                    else:
+                        get_config_actual(False,True) #----> Mostra la predeterminada
+                        window.close()
+                        Juego.main(False)
                 elif (popup == None):
                     pass
                 else:
                     window.close()
                     Juego.main(True)
+        
             elif ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):             
                 sg.popup('Esta a punto de jugar con las siguientes configuraciones',title='Aviso')
                 get_config_actual(False,False) #Es False,False para que me muestre las config del usuario

@@ -242,10 +242,11 @@ def sacar_del_tablero(window, keys, palabra_nueva, botones, dificultad):
     return letras_usadas, palabra_nueva
 
 def pocas_fichas(fichas):
-    if len("".join(fichas.values())) < len(fichas.keys()):
-        return True
-    else:
-        return False
+    print('FICHASGM: ' ,fichas)
+    lista_aux =  list(fichas.values())
+    fichas_fin = list(filter(lambda x:x != '' ,lista_aux))
+    print(fichas_fin)
+    return len(fichas_fin) < 7
 
 def input_palabra(lista):
     lista_final = list()
@@ -349,6 +350,9 @@ def preguntar_si_sigue_el_juego():
     return seguir
 
 def cargar_fichas_maquina():
+    """
+    Carga los datos de la pc
+    """
     try:
         datos = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "r",encoding='utf8')
         data = {}
@@ -359,6 +363,9 @@ def cargar_fichas_maquina():
         return None
 
 def cargar_fichas_jugador():
+    """
+    Carga las fichas del jugador
+    """
     try:
         fichas = open(os.path.join(absolute_path,"lib","info","saves","fichas_jugador.json"),"r",encoding='utf8')
         fichas_j = json.load(fichas)
