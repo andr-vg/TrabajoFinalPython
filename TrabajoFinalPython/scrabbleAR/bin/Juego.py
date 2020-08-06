@@ -529,7 +529,13 @@ def main(guardado):
             gm.dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)
             fin_fichas = gm.pocas_fichas(pc.getFichas())
-            turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
+            if (fin_fichas):
+                finalizar_juego(pj, pc, gm, cm, window, img_nros,
+                    puntos_por_letra, nombre, dificultad, lista_puntajes,
+                    puntos_jugador, guardado, absolute_path)
+                break
+            else:
+                turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
                                                     turno_pc, window)
     window.close()
     ScrabbleAR.main()
