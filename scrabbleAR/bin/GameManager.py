@@ -48,7 +48,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
 
 
     casillero = lambda name, key: sg.Button('', border_width=3, size=(3, 1), key=key,
-                                         pad=(0, 0), button_color=('black', colores[dificultad][name]))
+                                         pad=(0, 0), button_color=('black', colores[dificultad][name]), disabled_button_color = ("#000000","#000000"))
 
     # casilleros con letras de una partida anterior:
 
@@ -184,7 +184,7 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
     frame_fichas_maquina = [[sg.Button(button_text=" ", key=(list(letras_maquina.keys())[i]),border_width=0, font=('Gadugi', 25), image_filename=img_nros[11],  image_size=(50, 50), image_subsample=21,
                              button_color=('white', colores["atril"]),disabled=True) for i in range(fichas_por_jugador)] + [sg.Frame('Palabras Usadas',layout=frame_palabras_usadas_pc)]]
     fila_fichas_jugador = [sg.Frame("Fichas de "+nombre, layout=frame_fichas_jugador,key="nombre")] + [sg.Frame("Palabras Usadas",layout=frame_palabras_usadas)]
-    fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)] + [sg.Text("",key="turnopc", size=(25, 1))] 
+    fila_fichas_maquina = [sg.Frame("Fichas de la Maquina",layout=frame_fichas_maquina)] + [sg.Text("",key="turnopc", size=(25, 1))]
     fila_botones = [sg.Button("Confirmar", key="-c", disabled=True), sg.Button("Deshacer", key="-d", disabled=True),sg.Button("Pasar Turno",key="-paso"),
                     sg.Button("Cambiar fichas", key="-cf",tooltip='Click aqui para seleccionar las letras a cambiar\n si ya hay fichas jugadas en el tablero volveran al atril.'),
                     sg.Button("Posponer", key="-p"), sg.Button("Terminar", key="-t"), sg.Button("Seleccionar todas las fichas", key="-selec", visible=False), sg.Button("Deshacer selección", key="-deshacer-selec", visible=False)]
@@ -378,7 +378,7 @@ def mostrar_puntajes_finales(puntos_jugador, puntos_pc, mensaje_final):
     headings = ['  TUS PUNTOS  ', '  PUNTOS PC  ']
     tablita = [[sg.Table(values=table_data, headings=headings, row_height=1,
           auto_size_columns=True, text_color='black',font='Courier 14',
-          justification='center', num_rows=4, background_color="#c5dbf1",
+          justification='center', num_rows=18, background_color="#c5dbf1",
           alternating_row_color='#8fa8bf', key='table', def_col_width=15,
           header_text_color='white', header_background_color='#8fa8bf')]]
     layout = [[sg.Frame("Terminó el juego",layout=tablita)],
@@ -388,4 +388,3 @@ def mostrar_puntajes_finales(puntos_jugador, puntos_pc, mensaje_final):
     window = sg.Window('Puntaje final', layout, grab_anywhere=False, no_titlebar=True)
     window.Read(close=True)
     window.finalize()
-    

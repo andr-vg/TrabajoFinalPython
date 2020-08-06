@@ -213,7 +213,7 @@ def cargar_config_pred():
         config = dict()
         config = json.load(arch)
         arch.close()
-    except (FileNotFoundError):        
+    except (FileNotFoundError):
         config = {
              "tiempo": "3:00",
              "dificultad": "facil",
@@ -233,7 +233,7 @@ def cargar_config_pred():
              "grupo_7_cant": 1
        }
         arch = open(os.path.join(absolute_path, "lib","info","config","configPred.json"), "w")
-        json.dump(config,arch,indent=2)        
+        json.dump(config,arch,indent=2)
     return config
 # ----------------------------------------------------------------------
 def cargar_config_usr():
@@ -344,8 +344,8 @@ def main():
                 else:
                     window.close()
                     Juego.main(True)
-        
-            elif ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):             
+
+            elif ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):
                 sg.popup('Esta a punto de jugar con las siguientes configuraciones',title='Aviso')
                 get_config_actual(False,False) #Es False,False para que me muestre las config del usuario
                 popup = sg.popup('Usar configuracion actual?',title='Aviso',custom_text=('   SI   ','   NO   '))

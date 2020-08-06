@@ -21,5 +21,6 @@
   "nombre": "Invitado",
   "turno_jugador": "True",
   "turno_pc": "False",
-  "cambios_fichas": 3
+  "cambios_fichas": 3,
+  "primer_turno": "True"
 }

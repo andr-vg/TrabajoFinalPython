@@ -154,7 +154,7 @@ def cambio_de_fichas(window, letras, cambios_de_fichas, gm, pj, bolsa,
     return cambios_de_fichas, turno_pc, turno_jugador
 
 def guardar_datos(config, tipo_palabra, tiempo_str, pj_puntos, pc_puntos,
-                    nombre, turno_jugador, turno_pc, cambios_de_fichas):
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas, primer_turno):
     """
     Función que guarda los datos al posponer partida
     """
@@ -168,17 +168,18 @@ def guardar_datos(config, tipo_palabra, tiempo_str, pj_puntos, pc_puntos,
     datos['turno_jugador'] = str(turno_jugador)
     datos['turno_pc'] = str(turno_pc)
     datos['cambios_fichas'] = cambios_de_fichas
+    datos['primer_turno'] = primer_turno
     return datos
 
 def posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
-                    nombre, turno_jugador, turno_pc, cambios_de_fichas):
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas,primer_turno):
     """
     funcion de posponer y guardar partida
     """
     boton = pc.get_botones()
     cm.guardar_partida(boton)
     datos = guardar_datos(config, tipo_palabra, tiempo_str, pj.puntos,
-            pc.puntos, nombre, turno_jugador, turno_pc, cambios_de_fichas)
+            pc.puntos, nombre, turno_jugador, turno_pc, cambios_de_fichas,primer_turno)
     pc.guardar_estado()
     pj.guardar_info()
     cm.guardar_info_partida(datos)
@@ -198,8 +199,8 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
     # popup_animated using built-in GIF image
     cubito = Icono.obtener_gif()
     for i in range(300000):
-        sg.popup_animated(cubito, title='ScrabbleAR', text_color='white', background_color='#8fa8bf', 
-                        message='              RECALCULANDO PUNTAJE        \n                                    ...                       \nDescontando puntaje de las fichas del atril..',  
+        sg.popup_animated(cubito, title='ScrabbleAR', text_color='white', background_color='#8fa8bf',
+                        message='              RECALCULANDO PUNTAJE        \n                                    ...                       \nDescontando puntaje de las fichas del atril..',
                       font=('Century Gothic',13), no_titlebar=True,
                       alpha_channel=0.9, time_between_frames=100, keep_on_top=True)
     sg.popup_animated(None)  # close all Animated Popups
@@ -328,7 +329,7 @@ def main(guardado):
         sg.popup(f'No se encontro el tablero {dificultad}')
         ScrabbleAR.main()
         return None
-    
+
     # ----------------------------------------------------------------------
         # Opciones de dificultad --> lista de tags
     # ----------------------------------------------------------------------
@@ -395,10 +396,7 @@ def main(guardado):
     puntos_jugador = cm.cargar_puntuaciones()
     lista_puntajes = puntos_jugador['puntos']
     terminar = False
-    if guardado:
-        primer_turno = False
-    else:
-        primer_turno = True
+
     # cambios de fichas
     if guardado:
         cambios_de_fichas = int(config["cambios_fichas"])
@@ -431,20 +429,23 @@ def main(guardado):
     # se decide de forma aleatoria quien comienza la partida si no se abrio
     # el archivo guardado
     if guardado:
+        primer_turno = True if config['primer_turno'] == 'True' else False
         turno_pc = True if config['turno_pc'] == 'True' else False
         turno_jugador = True if config['turno_jugador'] == 'True' else False
     else:
+        primer_turno = True
         turno = random.choice([True, False])
         turno_jugador,turno_pc = gm.cambiar_turno(turno,not(turno), window)
         sg.popup("Se eligió aleatoriamente que {} coloque sus fichas en el primer turno.".format('la maquina' if turno_pc else 'el jugador \''+nombre+'\''),
                  '¡A jugar!', title='Empieza la partida', line_width=100)
-        if (dificultad == 'dificil'):
-            if (tipo_palabra == 'sust'):
-                sg.Popup('Dificultad: Dificil, tipo de palabras: solo sustantivos',no_titlebar=True,keep_on_top=True)
-            elif (tipo_palabra == 'adj'):
-                sg.Popup('Dificultad: Dificil, tipo de palabras: solo adjetivos',no_titlebar=True,keep_on_top=True)
-            else:
-                sg.Popup('Dificultad: Dificil, tipo de palabras: solo verbos',no_titlebar=True,keep_on_top=True)
+
+    if (dificultad == 'dificil'):
+        if (tipo_palabra == 'sust'):
+            sg.Popup('Dificultad: Dificil, tipo de palabras: solo sustantivos',no_titlebar=True,keep_on_top=True)
+        elif (tipo_palabra == 'adj'):
+            sg.Popup('Dificultad: Dificil, tipo de palabras: solo adjetivos',no_titlebar=True,keep_on_top=True)
+        else:
+            sg.Popup('Dificultad: Dificil, tipo de palabras: solo verbos',no_titlebar=True,keep_on_top=True)
 
     # ----------------------------------------------------------------------
         #Loop de ventana
@@ -452,7 +453,7 @@ def main(guardado):
     while True:
         event, values = window.read(timeout=1000)
         # actualizamos el tiempo:
-       
+
         cont_tiempo_min, cont_tiempo_seg, tiempo_seg_final = contar_tiempo(
                         cont_tiempo_min, cont_tiempo_seg)
         tiempo_str = '{}:{}'.format(cont_tiempo_min, tiempo_seg_final)
@@ -477,7 +478,7 @@ def main(guardado):
             # boton de guardar partida
             if event == '-p' or guardar_partida:
                 posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
-                    nombre, turno_jugador, turno_pc, cambios_de_fichas)
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas, primer_turno)
                 break
             # si selecciona botones del atril del jugador
             elif event in letras.keys():
