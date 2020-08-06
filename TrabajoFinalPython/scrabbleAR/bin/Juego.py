@@ -436,13 +436,21 @@ def main(guardado):
         turno_jugador,turno_pc = gm.cambiar_turno(turno,not(turno), window)
         sg.popup("Se eligió aleatoriamente que {} coloque sus fichas en el primer turno.".format('la maquina' if turno_pc else 'el jugador \''+nombre+'\''),
                  '¡A jugar!', title='Empieza la partida', line_width=100)
+        if (dificultad == 'dificil'):
+            if (tipo_palabra == 'sust'):
+                sg.Popup('Dificultad: Dificil, tipo de palabras: solo sustantivos',no_titlebar=True,keep_on_top=True)
+            elif (tipo_palabra == 'adj'):
+                sg.Popup('Dificultad: Dificil, tipo de palabras: solo adjetivos',no_titlebar=True,keep_on_top=True)
+            else:
+                sg.Popup('Dificultad: Dificil, tipo de palabras: solo verbos',no_titlebar=True,keep_on_top=True)
+
     # ----------------------------------------------------------------------
         #Loop de ventana
     # ----------------------------------------------------------------------
     while True:
         event, values = window.read(timeout=1000)
         # actualizamos el tiempo:
-        print(event)
+       
         cont_tiempo_min, cont_tiempo_seg, tiempo_seg_final = contar_tiempo(
                         cont_tiempo_min, cont_tiempo_seg)
         tiempo_str = '{}:{}'.format(cont_tiempo_min, tiempo_seg_final)
