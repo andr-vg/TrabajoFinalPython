@@ -464,37 +464,37 @@ def main(guardado):
                 if not guardar_partida:
                     sg.popup_no_frame('Salió de la partida', keep_on_top=True)
                     break
+            # boton de guardar partida
+            if event == '-p' or guardar_partida:
+                posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
+                    nombre, turno_jugador, turno_pc, cambios_de_fichas)
+                break
             # si selecciona botones del atril del jugador
-            if event in letras.keys():
+            elif event in letras.keys():
                 cont_tiempo_seg, cont_tiempo_min, terminar = \
                     seleccion_de_fichas(window, event, letras_usadas,
                                 palabra_nueva, letras, botones, terminar,
                                 cont_tiempo_seg, cont_tiempo_min, colores)
             # boton de deshacer las palabras puestas en el tablero
-            if event == '-d':
+            elif event == '-d':
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window,
                 letras.keys(), palabra_nueva, botones_aux, dificultad)
             # boton de pasar el turno a la pc
-            if event == '-paso':
+            elif event == '-paso':
                 turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
                                           turno_pc, window)
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window,
                         letras.keys(), palabra_nueva, botones_aux, dificultad)
             # boton cambio de fichas
-            if (event == '-cf') and (cambios_de_fichas != 0):
+            elif (event == '-cf') and (cambios_de_fichas != 0):
                 # si ya hay fichas jugadas en el tablero volveran al atril
                 letras_usadas, palabra_nueva = gm.sacar_del_tablero(window,
                         letras.keys(), palabra_nueva, botones_aux, dificultad)
                 cambios_de_fichas, turno_pc, turno_jugador = cambio_de_fichas(
                             window, letras, cambios_de_fichas, gm, pj, bolsa,
                             img_nros, puntos_por_letra, turno_pc, turno_jugador, guardado, pred)
-            # boton de guardar partida
-            if event == '-p' or guardar_partida:
-                posponer_partida(pc, pj, cm, config, tipo_palabra, tiempo_str,
-                    nombre, turno_jugador, turno_pc, cambios_de_fichas)
-                break
             # boton de terminar partida
-            if event == '-t' or fin_fichas or fin_juego:
+            elif event == '-t' or fin_fichas or fin_juego:
                 seguir = False
                 if event == '-t':
                     # le preguntamos si realmente quiere finalizar el juego
@@ -506,13 +506,13 @@ def main(guardado):
                     puntos_jugador, guardado, absolute_path)
                     break
             # boton de confirmar palabra
-            if event == '-c':
+            elif event == '-c':
                 letras_usadas, palabra_nueva, turno_jugador, turno_pc, \
                 fin_fichas, primer_turno = analizar_palabra(
                     window, letras, botones, palabra_nueva, letras_usadas,
                     puntos_por_letra, pj, pc, bolsa, primer_turno, img_nros,
                     botones_aux, turno_pc, dificultad)
-            if event in ('como_jugar', 'botonera', 'ver_config'):
+            elif event in ('como_jugar', 'botonera', 'ver_config'):
                 mostrar_popups_info(event,guardado,pred)
         if turno_pc:
             time.sleep(0.5)   # maquina pensando la jugarreta
