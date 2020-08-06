@@ -135,7 +135,7 @@ def crear_layout(config):
                   'quiere jugar. Una partida con pocas letras será una partida mas corta y \n'+\
                   'mientras menos vocales haya será más difícil armar palabras.'
 
-    
+
     ayuda_config= [[sg.Text(texto_ayuda_config, auto_size_text=True)]]
     tab2_layout0 = [
         [sg.Column(frame_2),sg.Frame("Dificultad",layout=frame_0)],
