@@ -7,6 +7,7 @@ import pathlib
 import Icono
 from GameConfigManager import empezando_la_partida
 from GameConfigManager import botones_especiales
+from GameConfigManager import get_config_actual
 # ----------------------------------------------------------------------
 #Path making
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
@@ -301,19 +302,35 @@ def main():
         elif (event == "-jugar-"):
             print("Estoy jugando")
             if ("guardado.json" in os.listdir(os.path.join(absolute_path, "lib","info","saves"))):
-                print("Entre al if")
                 popup = sg.popup("Hay una partida guardada desea continuarla?", custom_text=("   SI   ","   NO   "),keep_on_top=True)
                 if (popup == "   NO   "):
-                    window.close()
-                    Juego.main(False)
+                    if ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):
+                        sg.popup('Esta a punto de jugar con las siguientes configuraciones',title='Aviso')
+                        get_config_actual(False,False) #Es False,False para que me muestre las config del usuario
+                        popup = sg.popup('Usar configuracion actual?',title='Aviso',custom_text=('   SI   ','   NO   '))
+                        if (popup == '   SI   '):
+                            window.close()
+                            Juego.main(False)
+                        else:
+                            pass
                 elif (popup == None):
                     pass
                 else:
                     window.close()
                     Juego.main(True)
+            elif ('configUsuario.json' in  os.listdir(os.path.join(absolute_path, 'lib','info','config'))):             
+                sg.popup('Esta a punto de jugar con las siguientes configuraciones',title='Aviso')
+                get_config_actual(False,False) #Es False,False para que me muestre las config del usuario
+                popup = sg.popup('Usar configuracion actual?',title='Aviso',custom_text=('   SI   ','   NO   '))
+                if (popup == '   SI   '):
+                    window.close()
+                    Juego.main(False)
             else:
+                get_config_actual(False,True)
                 window.close()
                 Juego.main(False)
+
+
         elif (event == "act"):
             if (window["t_Facil"].get()):
                 window["top_10"].update(list_facil if len(list_facil) != 0 else sin_datos)
