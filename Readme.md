@@ -1,5 +1,12 @@
 ![Logo](https://github.com/andr-vg/TrabajoFinalPython/blob/master/scrabbleAR/lib/media/Logo.png?raw=true)
 
+## Sobre el juego
+
+ScrabbleAR es un juego de estrategia basado en el popular juego Scrabble, en el que se intenta ganar puntos mediante la asociación de letras para la construcción de distintos tipos de palabras (según el nivel de dificultad) sobre un tablero.
+Está ideado para un único jugador, el cual deberá competir por puntos contra la computadora.
+
+El juego fue desarrollado con las librerías PySimpleGUI y Pattern de Python. 
+
 ## Dependencias
 -    [Python 3.6.8](https://www.python.org/downloads/)
 -    [Pattern 3.6](https://github.com/clips/pattern#installation)
