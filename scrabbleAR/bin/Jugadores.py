@@ -36,8 +36,6 @@ class Jugadores:
         if (palabra.lower() in verbs) or (palabra.lower() in spelling) or (palabra.lower() in lexicon) or (
                 palabra.upper() in lexicon) or (palabra.capitalize() in lexicon):
             tipo_palabra = parse(palabra).split('/')[1] # devuelve un string de tipo 'mario/NN/B-NP/O', nos quedamos con el elem 'NN'
-            print(tipo_palabra)
-            print(tipo_palabra in self._tipo)
             return (tipo_palabra in self._tipo)
         else:
             return False
@@ -79,8 +77,6 @@ class Jugadores:
             puntos -= 2
         elif restar_uno and puntos >= 1:
             puntos -= 1
-
-        print(puntos)
         self.sumPuntos(puntos)
 
     def restar_puntos_finales(self):

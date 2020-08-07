@@ -225,7 +225,6 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
         fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
         datos = ganador + ' - ' + str(fecha) + ' - ' + str(puntos) + \
             ' - ' + str(dificultad)
-        print(lista_puntajes)
         lista_puntajes.append(datos)
         puntos_jugador['puntos'] = lista_puntajes
         cm.guardar_puntuaciones(puntos_jugador)
@@ -531,7 +530,6 @@ def main(guardado):
             fichas_pc = pc.getFichas()
             gm.dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)
-            print('FICAHS PC', pc.getFichas)
             fin_fichas = gm.pocas_fichas(pc.getFichas())
             if (fin_fichas):
                 finalizar_juego(pj, pc, gm, cm, window, img_nros,

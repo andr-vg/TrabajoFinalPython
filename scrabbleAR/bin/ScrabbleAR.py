@@ -12,7 +12,6 @@ from GameConfigManager import get_config_actual
 #Path making
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 icono_ventana = Icono.obtener_logo()
-# print("ABSOLUTE PATH: ",absolute_path)
 logo = os.path.join(absolute_path, "lib","media","Logo.png")
 jugar = os.path.join(absolute_path, "lib", "media", "Jugar.png")
 salir = os.path.join(absolute_path, "lib", "media", "Salir.png")
@@ -273,14 +272,12 @@ def main():
                                         'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,}
     sg.theme("MyNewTheme")
     sg.set_options(font=('verdana', 10))
-    # sg.theme("lightblue")
     layout, list_facil, list_medio, list_dificil = crear_layout(config)
     window = sg.Window("ScrabbleAR", layout,element_justification='c', resizable=True,auto_size_buttons=True,auto_size_text=True,finalize=True,icon=icono_ventana)
     sin_datos = [['' for i in range(10)] for j in range(10)]
 
     while True:
         event, values = window.read()
-        # print("Evento",event)
         if (event == None):
             limpiar_json()
             break
@@ -319,7 +316,6 @@ def main():
                 sg.popup("Configuraciones reiniciadas",keep_on_top=True)
 
         elif (event == "-jugar-"):
-            print("Estoy jugando")
             lista_guardados = ['guardado.json','datos_guardados.json','datos_pc.json','fichas_jugador.json','palabras_jugador.json']
             path = os.listdir(os.path.join(absolute_path, "lib","info","saves"))
             lista_no_encontro =  list(filter(lambda x: x not in path,lista_guardados))
@@ -400,7 +396,6 @@ def main():
                         valido = False
                         break
                 except ValueError:
-                    print('haber')
                     sg.Popup('Solo puede ingresar puntajes de 1 al 10',
                              'y cantidades de 1 a 11',
                              'por favor intente nuevamente', title="Error")
