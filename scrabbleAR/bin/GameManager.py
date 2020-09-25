@@ -6,7 +6,7 @@ En este archivo se encuentran las funciones que se usan durante el juego
 ------------------------------------------------------------------------------------------
 """
 import os
-import ScrabbleAR
+import Menu
 import json
 import PySimpleGUI as sg
 import random
@@ -84,9 +84,6 @@ def crear_layout(bolsa,tab, dificultad, tipo, img_nros, puntos_por_letra, nombre
 
     i = 0  # i lleva la posicion de fila
 
-    # import pprint
-    # p = pprint.PrettyPrinter(indent=2)
-    # p.pprint(tab)
     layout = []
     botones = dict()
     largo = int(math.sqrt(len(tab)))

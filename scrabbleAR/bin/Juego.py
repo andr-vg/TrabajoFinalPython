@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 import time
 import os
-import ScrabbleAR   #-----------------> Menu del juego
+import Menu   #-----------------> Menu del juego
 import GameConfigManager as cm #---------> Manejo de configuraciones
 import GameManager as gm
 import Icono
@@ -21,7 +21,6 @@ def contar_tiempo(cont_tiempo_min, cont_tiempo_seg):
         cont_tiempo_seg = 59
         if cont_tiempo_min - 1 <= 0:
             cont_tiempo_min =0
-            print(cont_tiempo_min)
         else:
             cont_tiempo_min -= 1
     else:
@@ -328,7 +327,7 @@ def main(guardado):
                 tab = cm.cargar_tablero('dificil')
     if (tab is None):
         sg.popup(f'No se encontro el tablero {dificultad}')
-        ScrabbleAR.main()
+        Menu.main()
         return None
 
     # ----------------------------------------------------------------------
@@ -354,7 +353,7 @@ def main(guardado):
     if not guardado:
         nombre = sg.popup_get_text('ScrabbleAR está por comenzar, ingrese su nombre de jugador', title='Ingrese su nombre',
                 default_text='Invitado', size=(None, None), keep_on_top=True)
-        if nombre in (None, ''):
+        if nombre.strip() in (None, ''):
             nombre = 'Invitado'
     else:
         nombre = config['nombre']
@@ -539,4 +538,4 @@ def main(guardado):
                 turno_jugador, turno_pc = gm.cambiar_turno(turno_jugador,
                                                     turno_pc, window)
     window.close()
-    ScrabbleAR.main()
+    Menu.main()

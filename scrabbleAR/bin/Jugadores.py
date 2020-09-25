@@ -1,7 +1,40 @@
-# ----------------------------------------------------------------------
-#Clase padre de Jugador y JugadorPC
-# ----------------------------------------------------------------------
 class Jugadores:
+    '''
+    Clase Jugadores atributos y comportamientos compartidos para Jugador y para la Maquina
+    
+    Parametros 
+    ----
+    fichas : dict
+    
+    long_tablero : int
+    
+    botones : dict
+    
+    puntos_por_letra : dict
+    
+    dificultad : string
+    
+    tipo : list
+    ____
+    
+    Metodos
+    ----
+    
+    es_palabra_valida(palabra:string)
+    
+        Verifica si la cadena pasada por parametro existe y devuelve true si es
+        Adjetivo/Sustantivo/Verbo segun la dificultad
+    
+    sumar_puntos(palabra:string)
+
+        Calcula el puntaje sumando el puntaje de cada letra usando el diccionario puntos_por_letra
+        
+    restar_puntos_finales
+    
+        Calcula el puntaje final restando la suma de los puntos de las fichas que quedaron en el atril
+        
+    
+    '''
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo):
         self.fichas = fichas
         self.puntaje = 0
@@ -28,9 +61,6 @@ class Jugadores:
         self.puntaje += punt
 
     def es_palabra_valida(self, palabra):
-        """
-        Verifica si la palabra formada existe y devuelve true y es un Sustantivo, Adjetivo o Verbo segun a dificultad
-        """
         from pattern.text.es import verbs, spelling, lexicon, parse
         import string
         if (palabra.lower() in verbs) or (palabra.lower() in spelling) or (palabra.lower() in lexicon) or (

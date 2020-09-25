@@ -3,7 +3,6 @@ import random
 import json
 from Jugadores import Jugadores
 import os
-from pathlib import Path
 import GameConfigManager as cm
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
@@ -37,7 +36,7 @@ class PC(Jugadores):
         pal_final = self._input_palabra(self._palabras_usadas)
         lista_pal = [] if self._palabras_usadas == [] else self._palabras_usadas[0]
         window["-palpc-"].update(lista_pal, pal_final)
-        print("Teoricamente actualice",pal_final)
+
 # ---------------------------------------------------------------------
     def reinicioFichas(self, palabra):
         """
@@ -62,9 +61,6 @@ class PC(Jugadores):
         """
         Parsea el Json para poder guardarlo
         """
-        # import pprint
-        # p = pprint.PrettyPrinter(indent = 2)
-        # p.pprint(self._botones)
         dic_aux = {}
         for clave,valor in self._botones.items():
             dic_aux[str(clave[0])+","+str(clave[1])] = valor        
@@ -77,9 +73,6 @@ class PC(Jugadores):
         dic_aux = {}
         for clave,valor in botones.items():
             dic_aux[tuple(map(int,clave.split(",")))] = valor  
-        # import pprint
-        # p = pprint.PrettyPrinter(indent=4)
-        # p.pprint(dic_aux)
         return dic_aux
 # ---------------------------------------------------------------------
     def convertir_lista_tupla(self,lista):
@@ -97,7 +90,6 @@ class PC(Jugadores):
         Guarda el estado interno del jugador PC
         """
         arch = open(os.path.join(absolute_path, "lib","info","saves","datos_pc.json"), "w",encoding='utf8')
-        print(self._posiciones_ocupadas_tablero)
         datos = {"fichas":self.fichas,"botones":self._convertirJson(),"palabras_usadas":self._palabras_usadas,"pos_usadas":self._posiciones_ocupadas_tablero}
         json.dump(datos,arch,indent = 4,ensure_ascii=False)
         arch.close()
@@ -115,7 +107,7 @@ class PC(Jugadores):
             self._posiciones_ocupadas_tablero = self.convertir_lista_tupla(data["pos_usadas"])
         except (FileNotFoundError):
             sg.Popup('No se encontro el archivo datos_pc.json, Inicie otra partida',title='Error')
-            from ScrabbleAR import main as sg_main
+            from Menu import main as sg_main
             window.close()
             sg_main()
             
@@ -130,7 +122,6 @@ class PC(Jugadores):
         
         letras = ""
         for letra in self.fichas.values():
-            # print("LETRA;", letra)
             letras += letra
         letras = letras.lower()
         l = []
@@ -148,7 +139,6 @@ class PC(Jugadores):
                             l.append(evaluation)
 
         l = list(set(l))
-        print('Largo: ',l)
         valido = False
         hay_palabras = True
         while not valido and hay_palabras:
@@ -289,7 +279,6 @@ class PC(Jugadores):
 
         long_max = len(self.fichas.values())
         mejor_palabra = self._obtenerPalabra(long_max)  # obtenemos la mejor palabra posible
-        print("MEJOR PALABRA = ",mejor_palabra)
 
         # momento de ubicar la mejor palabra obtenida
         if mejor_palabra != "":  # caso en que encuentra una palabra valida    
@@ -359,7 +348,6 @@ class PC(Jugadores):
                 self.fichas.values()))    
         # obtenemos la mejor palabra posible
         mejor_palabra = self._obtenerPalabra(long_max)  
-        print("MEJOR PALABRA = ",mejor_palabra)
         return posiciones, long_max_tablero, mejor_palabra, opcion
 # ---------------------------------------------------------------------
     def _turno_medio(self, posiciones, mejor_palabra):
@@ -413,7 +401,6 @@ class PC(Jugadores):
                 break
         # nos guardamos los puntos actuales por si hay que comparar    
         puntos_actuales = self.getPuntos()
-        print("puntos actuales = ", puntos_actuales)
         # calculemos puntaje y posiciones alrededor
         # si encontro casillero que duplique letra
         if pos_premio_letra != -1:
@@ -427,11 +414,6 @@ class PC(Jugadores):
             # veamos si la palabra entra ubicando la mejor letra ahi
             inicio = pos_premio_letra - len(mejor_palabra[:max_i])
             fin = pos_premio_letra + len(mejor_palabra[max_i+1:])
-            print('============================================')
-            print('POS: ',posiciones)
-            print('POStipo: ',type(posiciones))
-            print('INICIO:'+ str(inicio))
-            print('============================================')
             if inicio >= 0 and fin < len(posiciones):
                 palabra_nueva = dict()
                 j = 0
@@ -470,7 +452,6 @@ class PC(Jugadores):
         # caso en que solo encontramos casillero que duplique/triplique palabra
         else:
             posiciones_finales = posiciones_finales_pal
-        print('POS FINALES',posiciones_finales)
         return posiciones_finales
 # ---------------------------------------------------------------------
     def _turno_random(self, long_y_posiciones, mejor_palabra, long_max_tablero):

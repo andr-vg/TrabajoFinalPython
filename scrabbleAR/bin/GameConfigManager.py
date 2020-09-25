@@ -4,11 +4,11 @@ En este archivo se encuentran las funciones que guardan y cargan la informacion 
 ------------------------------------------------------------------------------------------
 """
 import os
-import ScrabbleAR
+import Menu
 import json
 import PySimpleGUI as sg
-import csv
-from pathlib import Path
+
+
 
 
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
@@ -29,9 +29,6 @@ def convertirDic(botones):
     dic_aux = {}
     for clave,valor in botones.items():
         dic_aux[tuple(map(int,clave.split(",")))] = valor
-    # import pprint
-    # p = pprint.PrettyPrinter(indent=4)
-    # p.pprint(dic_aux)
     return dic_aux
 
 def cargar_tablero(tablero):
@@ -112,11 +109,9 @@ def cargar_configuraciones(bolsa,puntos_por_letra,guardado):
     config = dict()
     if not(guardado):
         if "configUsuario.json" in os.listdir(os.path.join(absolute_path, "lib","info","config")):
-            # print("HAY CONFIG")
             config = cargar_config_usr()
             pred = False
         else:
-            # print("NO HAY CONFIG")
             config = cargar_config_pred()
             pred = True
     else:

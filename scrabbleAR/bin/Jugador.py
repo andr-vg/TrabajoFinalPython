@@ -3,11 +3,32 @@ from Jugadores import Jugadores
 import os
 import json
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
-# ----------------------------------------------------------------------
-#Clase Jugador
-# ----------------------------------------------------------------------
 
 class Jugador(Jugadores):
+    '''
+    Clase Jugador
+
+       Abstraccion de un jugador, subclase de Jugadores
+        
+    Metodos
+    ---
+    
+    _input_palabra(lista:list)
+
+        Formatea la lista de palabras usadas para una mejor visualizacion en el componente
+        InputCombo
+        
+    _cargar_palabras_usadas(window:sg.Window)
+    
+        Recibe la ventana del juego y carga las palabras usadas en el componente 
+        InputCombo (se usa al cargar una partida)
+        
+    _guardar_fichas
+    
+        Guarda en un Json las fichas del jugador
+            clave -> pos en el atril 
+             valor -> letra
+    '''
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardado, window):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         if(guardado):
@@ -32,7 +53,6 @@ class Jugador(Jugadores):
         pal_final = self._input_palabra(self._palabras_usadas)
         lista_pal = [] if self._palabras_usadas == [] else self._palabras_usadas[0] 
         window["-pal-"].update(lista_pal, pal_final)
-        # print("Teoricamente actualice",pal_final)
 
     def _guardar_fichas(self):
         """
@@ -63,7 +83,7 @@ class Jugador(Jugadores):
             datos = open(os.path.join(absolute_path, "lib","info","saves","palabras_jugador.json"),"r",encoding='utf8')
             self._palabras_usadas = list(json.load(datos))
         except (FileNotFoundError):
-            from ScrabbleAR import main as sc_main
+            from Menu import main as sc_main
             sg.popup('No se encontro archivo palabras_jugador.json, inicie otra partida.',title='Error')
             window.close()
             sc_main()
