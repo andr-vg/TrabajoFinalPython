@@ -216,8 +216,7 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
         puntos = pj.puntos
         mensaje = 'EMPATE!'
     else:
-        ganador = 'Maquina'
-        puntos = pc.puntos
+        puntos = 0
         mensaje = 'PERDISTE :('
     gm.mostrar_puntajes_finales(pj.puntos, pc.puntos, mensaje)
     if puntos > 0:
