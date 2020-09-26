@@ -6,11 +6,139 @@ import os
 import GameConfigManager as cm
 absolute_path = os.path.join(os.path.dirname(__file__), '..')
 
-# ----------------------------------------------------------------------
-#Clase Jugador PC
-# ----------------------------------------------------------------------
-
 class PC(Jugadores):
+    '''
+    Clase PC
+        
+        Abstraccion de la computadora jugando, subclase de Jugadores
+        
+        Metodos
+        ---
+        
+        _input_palabra(lista:list)
+
+            Formatea la lista de palabras usadas para una mejor visualizacion en el componente
+            InputCombo
+        
+        _cargar_palabras_usadas(window:sg.Window)
+        
+            Recibe la ventana del juego y carga las palabras usadas en el componente 
+            InputCombo (se usa al cargar una partida)
+        
+        reinicioFichas(palabra)
+            
+            palabra: string
+            
+            Reinicia los valores de las fichas usadas para luego ser actualizados
+            por nuevos valores en la bolsa
+        
+        _convertirJson
+
+            Parsea el diccionario de botones para poder guardarlo en un
+            Json
+            
+        _convertirDic(botones)
+        
+            botones: dict
+
+            Le da forma al diccionario de botones cargado del Json
+            
+        convertir_lista_tupla
+        
+            Convierte la lista de listas a tuplas para las pos ocupadas del tablero
+            
+        guardar_estado
+
+            Guarda el estado interno del jugadorPc en un json
+                (se usa al posponer la partida)
+                
+        _cargar_estado(window)
+
+            window: sg.Window
+            
+            Carga los datos del json en caso de empezar una partida guardada
+        
+        _obtenerPalabra(long_max)
+
+            long_max: integer ---> long max de la palabra
+            
+            Itera combinaciones de fichas hasta formar una palabra valida
+            
+        _mapeoHorizontal(i,j)
+                
+                i -> filas
+                j -> columnas
+                
+                Mapea el tablero y devuelve un diccionario de posiciones libres en el tablero
+            
+        _mapeoVertical
+            
+            Misma funcion de _mapeoHorizontal pero en posiciones verticales
+            
+         _agrego_posiciones
+         
+            Agregamos a long_y_posiciones las posiciones libres encontradas de longitud >=2
+            En nivel medio -> tambien agregamos a una lista las posiciones con al menos un casillero premio
+            En nivel dificil -> tambien agregamos a un dic las posiciones con al menos un casillero premio
+            donde la clave es la cant de casilleros premio que tenga esa pos.
+        
+        _mapear_tablero
+        
+            Esta funcion recibe las posiciones ocupadas en el tablero, mapea lugares disponibles y los devuelve
+            en un diccionario long_y_posiciones cuyas claves son la longitud del lugar disponible y valores son
+            listas con listas de las posiciones disponibles para esas longitudes 
+        
+        _calcular_long_maxima(long_max_tablero,cant_fichas)
+
+            Esta funcion retorna la longitud maxima segun dos cosas: la cantidad de fichas disponibles
+            y el mayor numero de casilleros contiguos libres en el tablero. Tenemos dos casos:
+            - si el nro de casilleros supera o es igual a la cant de fichas, con mandarle la cant de fichas
+            que tengo le basta.
+            - si el nro de casilleros es menor que la cantidad de fichas: ahi la palabra a formar tiene que ocupar
+            como maximo esos casilleros, asique le mando ese valor
+        
+        _actualizar_tablero(window, posiciones_finales, mejor_palabra):
+
+                window: sg.Window
+                posiciones_finales: dict
+                mejor_palabra:string ---> palabra final
+
+                Pone las fichas en el tablero y actualiza la lista de palabras usadas
+        
+        _mapeo_y_palabra
+
+            Realiza el mapeo en todo el tablero y
+            devuelve la palabra obtenida y las posiciones
+            
+        _turno_medio
+        
+            nivel medio: se asegura de que las posiciones contengan al menos
+            un casillero premio, se queda con el primero que encuentre
+            
+        _turno_dificil
+        
+            nivel dificil: realiza un filtrado más fino asegurandose 
+            de devolver las posiciones con el mejor casillero premio posible
+        
+        _turno_random
+        
+            nivel facil o no encontro posiciones con casilleros premio: retorna posiciones aleatorias
+            
+        jugar
+        
+            Jugada del usuario: se forma la palabra más larga posible según la dificultad.
+            Se mapea el tablero para obtener las posiciones libres donde puede ubicarse la palabra obtenida.
+            
+            Dificultad facil: Se obtiene una lista de posiciones aleatoria en la que entre en la palabra.
+                          -- > Por el momento implementamos esta dificultad para los tres niveles.
+                          
+            Dificultad media: Se obtiene una lista de posiciones con al menos un casillero premio (de ser posible)
+                          y la palabra más larga que quepe en esas posiciones. --> falta implementar 
+                          
+            Dificultad dificil: Se obtiene una lista con las posiciones que sumen más puntos, la palabra que sume 
+                            más puntos y quepa ahí, y se ubica la letra de mayor puntaje en alguna casillero 
+                            premio (de ser posible) --> falta implementar
+    '''
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardada,window):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
         self._palabras_usadas = []
@@ -110,7 +238,6 @@ class PC(Jugadores):
             from Menu import main as sg_main
             window.close()
             sg_main()
-            
             
 # ----------------------------------------------------------------------
     def _obtenerPalabra(self, long_max):
@@ -466,7 +593,9 @@ class PC(Jugadores):
         return posiciones_finales
 # ---------------------------------------------------------------------
     def _calculamos_puntos(self, palabra_nueva, mejor_palabra, window):
-        ## llamamos a la funcion sumar_puntos de la clase padre y actualizamos los puntos:
+        """ 
+        llamamos a la funcion sumar_puntos de la clase padre y actualizamos los puntos:
+        """
         self.sumar_puntos(palabra_nueva)
         ## actualizamos las fichas de la pc:        
         self.reinicioFichas(mejor_palabra)

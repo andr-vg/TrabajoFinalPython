@@ -28,6 +28,44 @@ class Jugador(Jugadores):
         Guarda en un Json las fichas del jugador
             clave -> pos en el atril 
              valor -> letra
+
+    guardar_info
+
+        Guarda en un Json la lista de palabras que logro formar el jugador
+        
+    _cargar_datos
+    
+        Carga la lista de palabras formadas del jugador
+            (se usa al cargar una partida guardada)
+            
+    _analizo(keys_ordenados,menor_1,menor_2,j,k)
+
+        Analiza si las posiciones ocupadas fueron contiguas y sobre la misma columna
+        o fila
+        menor_1 = fila_menor o columna menor
+        
+        menor_2 = columna_menor (caso horizontal) o fila_menor (caso vertical)
+    
+        k = 1 si es la columna (horizontal) o 0 si es la fila (vertical)
+    
+    _esta_en_el_centro(keys_ordenados)
+
+        keys_ordenados: dict
+
+        Retorna si la posicion del centro fue ocupada en el primer turno
+
+    jugar(palabra_nueva,letras_usadas,posiciones_ocupadas_tablero,primer_turno)
+        
+        palabra_nueva: string
+        letras_usadas: dict
+        posiciones_ocupadas_tablero: dict
+        primer_turno: boolean
+        
+        Jugada del usuario: analiza si la palabra fue colocada de forma correcta 
+        y si esta incluida en pattern
+    
+
+
     '''
     def __init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo, guardado, window):
         Jugadores.__init__(self, fichas, long_tablero, botones, puntos_por_letra, dificultad, tipo)
@@ -87,9 +125,6 @@ class Jugador(Jugadores):
             sg.popup('No se encontro archivo palabras_jugador.json, inicie otra partida.',title='Error')
             window.close()
             sc_main()
-
-
-
 
     def _analizo(self, keys_ordenados, menor_1, menor_2, j,
                  k):  # menor_1 = fila_menor (caso horizontal) o columna_menor (caso vertical)
