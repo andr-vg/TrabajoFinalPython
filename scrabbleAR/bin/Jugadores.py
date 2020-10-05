@@ -108,6 +108,7 @@ class Jugadores:
         elif restar_uno and puntos >= 1:
             puntos -= 1
         self.sumPuntos(puntos)
+        return puntos
 
     def restar_puntos_finales(self):
         """

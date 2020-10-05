@@ -176,7 +176,8 @@ class Jugador(Jugadores):
                     self._palabras_usadas.append(palabra_obtenida)
                     posiciones_ocupadas_tablero.extend(palabra_nueva.keys())
                     ## funcion que suma los puntos por letra y segun cada boton duplica o resta puntos:
-                    self.sumar_puntos(palabra_nueva)
+                    puntos_sumados = self.sumar_puntos(palabra_nueva)                    
+                    sg.popup_timed(f'Sumaste {puntos_sumados} puntos!',auto_close_duration=3,no_titlebar=True,keep_on_top=True)
                     actualizar_juego = True  # con esto despues se actualiza la ventana
                     for k in letras_usadas.keys():  # saco fichas de la bolsa para ponerlas en letras
                         self.fichas[k] = ""
