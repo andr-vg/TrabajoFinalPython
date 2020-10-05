@@ -206,22 +206,18 @@ def finalizar_juego(pj, pc, gm, cm, window, img_nros, puntos_por_letra, nombre,
                       font=('Century Gothic',13), no_titlebar=True,
                       alpha_channel=0.9, time_between_frames=100, keep_on_top=True)
     sg.popup_animated(None)  # close all Animated Popups
+    nombre_top_ten = 'Invitado' if nombre == None else nombre
     if pj.puntos > pc.puntos:
-        ganador = 'Invitado' if nombre == None else nombre
-        puntos = pj.puntos
         mensaje = 'GANASTE! :)'
     elif pj.puntos == pc.puntos:
-        ganador = 'Empate'
-        puntos = pj.puntos
         mensaje = 'EMPATE!'
     else:
-        puntos = 0
         mensaje = 'PERDISTE :('
     gm.mostrar_puntajes_finales(pj.puntos, pc.puntos, mensaje)
-    if puntos > 0:
+    if pj.puntos > 0:
         from datetime import datetime
         fecha =  datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-        datos = ganador + ' - ' + str(fecha) + ' - ' + str(puntos) + \
+        datos = nombre_top_ten + ' - ' + str(fecha) + ' - ' + str(pj.puntos) + \
             ' - ' + str(dificultad)
         lista_puntajes.append(datos)
         puntos_jugador['puntos'] = lista_puntajes

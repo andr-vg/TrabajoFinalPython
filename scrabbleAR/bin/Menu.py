@@ -379,12 +379,16 @@ def main():
             #-----------------------------------
             #Guardando las configs
             #-----------------------------------
+            cantidad_letras_por_grupo = {1: 10, 2: 3, 3: 3, 4: 4,
+                                        5: 1, 6: 7, 7: 1}
             valido = True
+            sum_cant_fichas = 0
             for i in range(7):
                 ind = i+1
                 try:
                     valor_punt = int(window["grupo_"+str(ind)].get())
                     valor_cant = int(window["grupo_"+str(ind)+"_cant"].get())
+                    sum_cant_fichas += (valor_cant*cantidad_letras_por_grupo[ind])
                     if valor_cant > 0 and valor_cant < 12 and valor_punt > 0 and valor_punt < 11:
                         config["grupo_"+str(ind)] = int(window.FindElement("grupo_"+str(ind)).get())
                         config["grupo_"+str(ind)+"_cant"] =  int(window.FindElement("grupo_"+str(ind)+"_cant").get())
@@ -400,6 +404,10 @@ def main():
                              'por favor intente nuevamente', title="Error")
                     valido = False
                     break
+            if sum_cant_fichas > (15*15):
+                valido = False
+                sg.Popup('La cantidad de fichas supera el espacio del tablero,',
+                         'por favor intente nuevamente', title="Error")
             if (valido):
                 guardar_configuracion(config)
                 sg.popup("Se han guardado las configuraciones",keep_on_top=True)
