@@ -254,7 +254,6 @@ class PC(Jugadores):
         l = []
         s = spelling.keys()
         le = lexicon.keys()
-
         for opcion in range(2, long_max + 1):  # iterar por la combinación
             pals = it.combinations(letras, opcion)
             for combinacion in pals:
@@ -462,17 +461,17 @@ class PC(Jugadores):
             long_max_tablero = len(posiciones)
             opcion = "medio"
         elif self._dificultad == "dificil" and len(mejores_posiciones_dificil.values()) > 0:
-            long_max_tablero = max(mejores_posiciones_dificil.keys()) # filtramos las posiciones con mayor cant de casillas premio
+            cant_casilleros_premio_max = max(mejores_posiciones_dificil.keys()) # filtramos las posiciones con mayor cant de casillas premio
             # nos quedamos con las posiciones con mayor cant de casilleros dentro de los que tienen mayor cant de casillas premios
-            posiciones = sorted(mejores_posiciones_dificil[long_max_tablero], key=lambda x: len(x), reverse=True)[0]
+            posiciones = sorted(mejores_posiciones_dificil[cant_casilleros_premio_max], key=lambda x: len(x), reverse=True)[0]
             opcion = "dificil"
+            long_max_tablero = len(posiciones)
         else:
             long_max_tablero = max(long_y_posiciones.keys())  # calculamos la long maxima entre todas esas posiciones libres    
             opcion = "random"
             posiciones = long_y_posiciones # en este caso en vez de retornar una lista de pos retorna un diccionario con todas las que encontro
         # nos quedamos con la long max entre casillas y cant fichas  
-        long_max = self._calcular_long_maxima(long_max_tablero, len(
-                self.fichas.values()))    
+        long_max = self._calcular_long_maxima(long_max_tablero, 7)    
         # obtenemos la mejor palabra posible
         mejor_palabra = self._obtenerPalabra(long_max)  
         return posiciones, long_max_tablero, mejor_palabra, opcion
