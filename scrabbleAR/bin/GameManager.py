@@ -200,7 +200,6 @@ def dar_fichas(dic, bolsa):
     """
     se ingresa un diccionario, y a las keys vacias se les asigna una ficha retirando esa ficha de la bolsa
     """
-
     letras_juntas = [] # armamos una lista con todas las letras posibles
     for letra, cant in bolsa.items():
         for i in range(cant):

@@ -348,7 +348,8 @@ def main(guardado):
         tipo = dificultad_random['adj'] + dificultad_random['verbo']
     if not guardado:
         nombre = sg.popup_get_text('ScrabbleAR está por comenzar, ingrese su nombre de jugador', title='Ingrese su nombre',
-                default_text='Invitado', size=(None, None), keep_on_top=True)
+                default_text='Invitado', size=(None, None), keep_on_top=True, no_titlebar=True)
+        nombre = "" if nombre == None else nombre
         if nombre.strip() in (None, ''):
             nombre = 'Invitado'
     else:
@@ -520,10 +521,12 @@ def main(guardado):
                 mostrar_popups_info(event,guardado,pred)
         if turno_pc:
             time.sleep(0.5)   # maquina pensando la jugarreta
-            primer_turno = pc.jugar(window, primer_turno)
+            primer_turno, fichas_devolver_bolsa = pc.jugar(window, primer_turno)
             fichas_pc = pc.getFichas()
             gm.dar_fichas(fichas_pc, bolsa)
             pc.setFichas(fichas_pc)
+            if fichas_devolver_bolsa != '':
+                gm.devolver_fichas(fichas_devolver_bolsa, [10,11,12,13,14,15,16], bolsa)
             fin_fichas = gm.pocas_fichas(pc.getFichas())
             if (fin_fichas):
                 finalizar_juego(pj, pc, gm, cm, window, img_nros,

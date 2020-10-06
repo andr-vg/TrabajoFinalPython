@@ -331,13 +331,13 @@ class PC(Jugadores):
                 long_y_posiciones[cant].append(posiciones)
             if self._dificultad == "medio":
                 for pos in posiciones:
-                    if self._botones[pos] == "+" or self._botones[pos] == "++" or self._botones[pos] == "+++" or self._botones[pos] == "++++":
+                    if self._botones[pos] == "++++" or self._botones[pos] == "+++" or self._botones[pos] == "++" or self._botones[pos] == "+":
                         mejores_posiciones.append(posiciones)
                         break
             elif self._dificultad == "dificil":
                 cant_pos_premio = 0
                 for pos in posiciones:
-                    if self._botones[pos] == "+" or self._botones[pos] == "++" or self._botones[pos] == "+++" or self._botones[pos] == "++++":
+                    if self._botones[pos] == "++++" or self._botones[pos] == "++" or self._botones[pos] == "++" or self._botones[pos] == "++":
                         cant_pos_premio += 1
                 if cant_pos_premio > 0: 
                     if not cant_pos_premio in mejores_posiciones_dificil.keys():
@@ -514,8 +514,11 @@ class PC(Jugadores):
                 if self._botones[pos] == "++++": # nos guardamos las posiciones que contienen una que duplica o triplica palabra
                     encontro_el_mejor_1 = True
                     posiciones_finales_pal = posiciones_finales
+                    break
                 elif self._botones[pos] == "+++" and len(posiciones_finales_pal)==0:
+                    encontro_el_mejor_1 = True
                     posiciones_finales_pal = posiciones_finales
+                    break
                 elif self._botones[pos] == "++": # nos guardamos la pos que contienen una que duplique o triplique el valor de la letra
                     encontro_el_mejor_2 = True
                     pos_premio_letra = indice_lista_posiciones
@@ -619,6 +622,7 @@ class PC(Jugadores):
                             más puntos y quepa ahí, y se ubica la letra de mayor puntaje en alguna casillero 
                             premio (de ser posible) --> falta implementar
         """
+        fichas_a_devolver_a_bolsa = ''
         if primer_turno:
             primer_turno = self._primer_turno(window)
         else:
@@ -636,5 +640,6 @@ class PC(Jugadores):
                 ## actualizamos fichas y puntos:
                 self._calculamos_puntos(palabra_nueva, mejor_palabra, window)
             else:
+                fichas_a_devolver_a_bolsa = self.fichas.copy()
                 self._pasar_turno()
-        return primer_turno
+        return primer_turno, fichas_a_devolver_a_bolsa
